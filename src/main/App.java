@@ -12,9 +12,9 @@ public class App {
         partidaNueva.agregarJugador("Marcos");
         partidaNueva.crearMazo();
         partidaNueva.repartirCartas();
+
         for (jugadorActual j: partidaNueva.getJugadorActuales()) {
-            consola.presentarCartasNombreJugador(j.getNombre());
-            
+            consola.mostrarCartasJugador(j);
         }
     }
 }

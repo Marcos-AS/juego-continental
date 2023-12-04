@@ -27,7 +27,6 @@ public class Partida {
     private void iniciarMazo() {
         int numBarajas = determinarNumBarajas();
         int i = 0;
-        Carta carta = null;
         while(i < numBarajas) {
             for(Palo p: Palo.values()) {
                 for(int j = 1; j < 14; j++) {
@@ -36,7 +35,7 @@ public class Partida {
                 }
             }
             for(int j = 0; j < NUM_COMODINES_POR_BARAJA; j++) {
-                Carta joker = new Carta(carta.getComodin(), null);
+                Carta joker = new Carta();
                 this.mazo.add(joker);
             }
             i++;

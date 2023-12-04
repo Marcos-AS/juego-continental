@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class jugadorActual extends Jugador {
     private int numeroJugador;
-    private ArrayList<Carta> mano;
+    private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
     private ArrayList<ArrayList<Carta>> juegos;
 
@@ -48,4 +48,7 @@ public class jugadorActual extends Jugador {
         this.numeroJugador = num;
     }
     
+    public ArrayList<Carta> getMano() {
+        return this.mano;
+    }
 }

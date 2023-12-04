@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Jugador {
     protected String nombre;
-    protected ArrayList<Partida> partidas;
+    protected ArrayList<Partida> partidas = new ArrayList<>();
     private int puestoRanking;
     private int puntosTotales;
 
