@@ -1,3 +1,5 @@
+package src.modelo;
+
 public class Carta {
 
     private int numero;  
@@ -9,4 +11,7 @@ public class Carta {
         this.palo = palo;
     }
 
+    public int getComodin() {
+        return COMODIN;
+    }
 }
