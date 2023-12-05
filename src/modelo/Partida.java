@@ -111,4 +111,8 @@ public class Partida {
     public ArrayList<jugadorActual> getJugadorActuales() {
         return this.jugadoresActuales;
     }
+
+    public int getRonda() {
+        return this.ronda;
+    }
 }

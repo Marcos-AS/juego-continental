@@ -7,8 +7,6 @@ public class jugadorActual extends Jugador {
     private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
     private ArrayList<ArrayList<Carta>> juegos;
-
-    public jugadorActual() {}
     
     //PRIVATE -------------------------------------------------------------
     private Partida getPartidaActual() {
@@ -18,6 +16,20 @@ public class jugadorActual extends Jugador {
         }
         return partActual;
     }
+
+	private ArrayList<Carta> seleccionarCartasABajar(int[] indicesCartasABajar) {
+		ArrayList<Carta> juego = new ArrayList<>();
+		for(int i = 0; i < indicesCartasABajar.length; i++) {
+			juego.add(this.mano.get(indicesCartasABajar[i]));
+		}
+		return juego;
+	}
+
+	private void eliminarDeLaMano(int[] indicesCartasABajar) {
+		for(int i = 0; i < indicesCartasABajar.length; i++) {
+			this.mano.remove(this.mano.get(indicesCartasABajar[i]));
+		}
+	}
 
     //PUBLIC-----------------------------------------------------------------
     public void robarDelMazo() {
@@ -39,7 +51,26 @@ public class jugadorActual extends Jugador {
     public void agregarCarta(Carta c) {
 		this.mano.add(c);
 	}
+   
+    public void moverCartaEnMano(int indCarta, int destino) {
+		Carta c = this.mano.get(indCarta);
+		this.mano.remove(indCarta);
+		this.mano.add(destino, c);
+	}
+    
+    public boolean bajarJuego(int[] indicesCartasABajar) {
+		boolean puedeBajar = false;
+		ArrayList<Carta> juego = seleccionarCartasABajar(indicesCartasABajar);
+		if(Juego.comprobarJuego(juego, getPartidaActual().getRonda())) {
+			puedeBajar = true;
+			this.juegos.add(juego);
+			this.eliminarDeLaMano(indicesCartasABajar);
+		}
+		return puedeBajar;
+	}
     //SETTERS Y GETTERS-----------------------
+    public jugadorActual() {}
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
