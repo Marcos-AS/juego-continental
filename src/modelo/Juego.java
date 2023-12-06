@@ -1,11 +1,92 @@
 package src.modelo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Juego {
     private static final int FIGURA = 10;
     private static final int AS = 20;
+	private static final int PUNTOS_COMODIN = 50;
+	private static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
     private ArrayList<Jugador> jugadores;
+
+	//PRIVATE-----------------------------------------------------
+	private static boolean comprobarEscalera(ArrayList<Carta> juego) {
+		boolean esEscalera = false;
+		if(comprobarMismoPalo(juego)) {
+			ArrayList<Carta> comodines = new ArrayList<>();
+			int formaEscalera = 1;
+			juego = ordenarCartas(juego);
+			//si es un comodin lo almaceno, sino: si es un numero siguiente inc
+			//contador, sino: veo si puedo usar comodin
+			for(int i = 0; i < juego.size(); i++) {
+				Carta cartaActual = juego.get(i);
+				int numCartaActual = cartaActual.getNumero();
+				int numCartaSiguiente = juego.get(i+1).getNumero();
+				if(numCartaActual == COMODIN) {
+					comodines.add(cartaActual);
+					juego.remove(cartaActual);
+				} else if(numCartaSiguiente == numCartaActual+1) {
+					formaEscalera++;
+				} else { 
+					if(!comodines.isEmpty()) {
+						if(numCartaSiguiente == numCartaActual+2) {
+							formaEscalera++;
+							comodines.remove(0);	
+						} 
+					} else {
+						formaEscalera = 1;
+					}
+				}
+			}
+			if(formaEscalera >= 4)
+				esEscalera = true;
+		}
+		return esEscalera;
+	}
+	
+	private static boolean comprobarMismoPalo(ArrayList<Carta> cartas) {
+		boolean mismoPalo = false;
+		for(int i = 0; i < cartas.size()-1; i++) {
+			Palo palo = cartas.get(i).getPalo();
+			mismoPalo = (palo == cartas.get(i+1).getPalo()) || palo == null;
+		}
+		return mismoPalo;
+	}
+	
+	private static ArrayList<Carta> ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
+		cartas.sort(null);
+		boolean intercambio = true;
+		while(intercambio) {
+			intercambio = false;
+			for(int i = 0; i < cartas.size()-1; i++) {
+				Carta cartaActual = cartas.get(i); 
+				if(cartaActual.getNumero() > cartas.get(i+1).getNumero()) {
+					intercambio = true;
+					Carta swap = cartaActual;
+					cartas.set(i, cartas.get(i+1));
+					cartas.set(i+1, swap);
+				}
+			}
+		}
+		return cartas;
+	}
+
+	private static boolean comprobarTrio(ArrayList<Carta> juego) {
+		int formaTrio = 1;
+		boolean esTrio = false;
+		for(int i = 0; i < juego.size()-1; i++) {
+			int numCarta = juego.get(i).getNumero();
+			if((numCarta == juego.get(i+1).getNumero()) || numCarta == COMODIN) 
+				formaTrio++;
+		}
+		if(formaTrio >= 3)
+			esTrio = true;
+		return esTrio;
+	}
+
+
+	//PUBLIC-------------------------------------------------------
 
     public static int cartasPorRonda(int ronda) {
 		int cantCartas = 7;
@@ -51,58 +132,4 @@ public class Juego {
         }
 		return esJuego;
 	}
-
-	//usa las funciones comprobarMismoPalo y ordenarCartas 
-	protected static boolean comprobarEscalera(ArrayList<Carta> juego) {
-		boolean mismoPalo = comprobarMismoPalo(juego);
-		boolean esEscalera = false;
-		if(mismoPalo) {
-			ArrayList<Carta> comodines = new ArrayList<>();
-			int formaEscalera = 1;
-			juego = ordenarCartas(juego);
-			//si es un comodin lo almaceno, sino: si es un n�mero siguiente inc
-			//contador, sino: veo si puedo usar comod�n
-			for(int i = 0; i < juego.size(); i++) {
-				Carta c = juego.get(i);
-				if(c.getNumero() == COMODIN) {
-					comodines.add(c);
-					juego.remove(c);
-				} else if(juego.get(i+1).getNumero() == c.getNumero() + 1) {
-					formaEscalera++;
-				} else { 
-					if(!comodines.isEmpty()) {
-						if(juego.get(i+1).getNumero() == c.getNumero() + 2) {
-							formaEscalera++;
-							comodines.remove(0);	
-						} 
-					} else {
-						formaEscalera = 1;
-			}}}
-			if(formaEscalera >= 4)
-				esEscalera = true;
-		}
-		return esEscalera;
-	}
-
-	private static boolean comprobarMismoPalo(ArrayList<Carta> cartas) {
-		boolean mismoPalo = true;
-		for(int i = 0; i < cartas.size()-1; i++) {
-			if(cartas.get(i).getPalo() != cartas.get(i+1).getPalo())
-				mismoPalo = false;
-		}
-		return mismoPalo;
-	}
-	
-	protected static boolean comprobarTrio(ArrayList<Carta> juego) {
-		int formaTrio = 1;
-		boolean esTrio = false;
-		for(int i = 0; i < juego.size()-1; i++) {
-			if(juego.get(i).getNumero() == juego.get(i+1).getNumero()) 
-				formaTrio++;
-		}
-		if(formaTrio >= 3)
-			esTrio = true;
-		return esTrio;
-	}
-
 }

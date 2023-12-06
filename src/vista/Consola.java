@@ -2,18 +2,21 @@ package src.vista;
 
 import src.modelo.jugadorActual;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import src.modelo.Carta;
+import src.controlador.Controlador;
 
 public class Consola {
     Scanner s = new Scanner(System.in);
+    Controlador ctrl;
 
     private void mostrarCartasNombreJugador(String nombreJugador) {
 		System.out.println("Cartas de " + nombreJugador);
 	}
 
-    private String transformarNumCarta(int numCarta) {
+    public String transformarNumCarta(int numCarta) {
 		String num = ((Integer) numCarta).toString();
 		if(numCarta <= 1 || numCarta >= 11) { 
 			switch(num) {
@@ -29,7 +32,7 @@ public class Consola {
                 case "13":
                     num = "K";
                     break;
-                case "50":
+                case "-1":
                     num = "COMODIN";
                     break;
 			}
@@ -37,30 +40,25 @@ public class Consola {
 		return num;
 	}
 
-    private void mostrarComodin(String numCarta) {
-        System.out.println(numCarta);
-	}
+    // private void mostrarComodin(String numCarta) {
+    //     System.out.println(numCarta);
+	// }
 
-    private void mostrarCarta(String numero, Carta c) {
-		System.out.println(numero + " de " + c.getPalo());	
-	}
-
+    // private void mostrarCarta(String numero, Carta c) {
+	// 	System.out.println(numero + " de " + c.getPalo());	
+	// }
 
     //PUBLIC-----------------------------------------------------------
     public Consola(){}
 
-    public void mostrarCartasJugador(jugadorActual j) {
+    public void mostrarCartasJugador(String nombreJugador) {
         int i = 1;
-        mostrarCartasNombreJugador(j.getNombre());
-        for (Carta c : j.getMano()) {
-            System.out.println(i + " - ");
-    		String numString = transformarNumCarta(c.getNumero());
-            if (numString == "COMODIN") {
-                mostrarComodin(numString);
-            } else {
-                mostrarCarta(numString, c);        
-            }
-        }		
+        mostrarCartasNombreJugador(nombreJugador);
+        ArrayList<String> mano = this.ctrl.enviarManoJugador(nombreJugador);
+        for (String carta : mano) {
+            System.out.println(i + " - " + carta);
+            i++;
+        }
 	}
 
     private int preguntarCantParaBajar() {

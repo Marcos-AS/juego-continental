@@ -115,4 +115,14 @@ public class Partida {
     public int getRonda() {
         return this.ronda;
     }
+
+    public jugadorActual getJugador(String nombreJugador) {
+        jugadorActual j = null;
+        for (jugadorActual jugadorActual : jugadoresActuales) {
+            if (jugadorActual.getNombre() == nombreJugador) {
+                j = jugadorActual;
+            }
+        }
+        return j;
+    }
 }

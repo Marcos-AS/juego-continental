@@ -4,7 +4,7 @@ public class Carta {
 
     private int numero;  
     private Palo palo;
-    private static final int COMODIN = 50;
+    private static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
 
     public Carta(int num, Palo palo) {
         this.numero = num;
