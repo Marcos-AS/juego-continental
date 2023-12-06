@@ -10,34 +10,11 @@ import src.controlador.Controlador;
 
 public class Consola {
     Scanner s = new Scanner(System.in);
-    Controlador ctrl;
+    Controlador ctrl = new Controlador();
 
-    private void mostrarCartasNombreJugador(String nombreJugador) {
-		System.out.println("Cartas de " + nombreJugador);
-	}
-
-    public String transformarNumCarta(int numCarta) {
-		String num = ((Integer) numCarta).toString();
-		if(numCarta <= 1 || numCarta >= 11) { 
-			switch(num) {
-                case "1":
-                    num = "A";
-                    break;
-                case "11":
-                    num = "J";
-                    break;
-                case "12":
-                    num = "Q";
-                    break;
-                case "13":
-                    num = "K";
-                    break;
-                case "-1":
-                    num = "COMODIN";
-                    break;
-			}
-		}
-		return num;
+    private int preguntarCantParaBajar() {
+		System.out.println("Cuantas cartas quiere bajar para el juego?");
+        return this.s.nextInt();
 	}
 
     // private void mostrarComodin(String numCarta) {
@@ -51,19 +28,16 @@ public class Consola {
     //PUBLIC-----------------------------------------------------------
     public Consola(){}
 
-    public void mostrarCartasJugador(String nombreJugador) {
+    public void mostrarCartasNombreJugador(String nombreJugador) {
+		System.out.println("Cartas de " + nombreJugador);
+	}
+
+    public void mostrarCartasJugador(ArrayList<String> mano) {
         int i = 1;
-        mostrarCartasNombreJugador(nombreJugador);
-        ArrayList<String> mano = this.ctrl.enviarManoJugador(nombreJugador);
         for (String carta : mano) {
             System.out.println(i + " - " + carta);
             i++;
         }
-	}
-
-    private int preguntarCantParaBajar() {
-		System.out.println("Cuantas cartas quiere bajar para el juego?");
-        return this.s.nextInt();
 	}
 	
 	public int[] preguntarQueBajar(int k) {

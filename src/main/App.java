@@ -1,11 +1,13 @@
 package src.main;
 
 import src.modelo.Partida;
-import src.modelo.jugadorActual;
 import src.vista.Consola;
+import src.controlador.Controlador;
 
 public class App {
+    private static Controlador ctrl;
     public static void main(String[] args) {
+        ctrl = new Controlador();
         Partida partidaNueva = new Partida();
         Consola consola = new Consola();
         String j1 = "AnitaSSJ";
@@ -14,8 +16,9 @@ public class App {
         partidaNueva.agregarJugador(j2);
         partidaNueva.crearMazo();
         partidaNueva.repartirCartas();
-    
-        consola.mostrarCartasJugador(j1);
-        consola.mostrarCartasJugador(j2);
+        consola.mostrarCartasNombreJugador(j1);
+        consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
+        consola.mostrarCartasNombreJugador(j2);
+        consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));
     }
 }
