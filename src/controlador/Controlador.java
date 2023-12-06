@@ -9,7 +9,7 @@ import src.vista.Consola;
 
 public class Controlador {
     private Partida juego;
-	private Consola vista;
+	private Consola vista = new Consola();
 	
 //PRIVATE----------------------------------------------------------------------
     public String transformarNumCarta(int numCarta) {
@@ -61,5 +61,25 @@ public class Controlador {
         jugadorActual j = p.getJugador(nombreJugador);
         ArrayList<Carta> mano = j.getMano();
         return recorrerMano(mano);
+    }
+
+    public void bajarJuego(jugadorActual j) {
+        int[] bajar = vista.preguntarQueBajar();
+        if (bajar.length >= 3) {
+            if(j.bajarJuego(bajar))
+                j.setPuedeBajar();
+        }
+    }
+
+    public boolean cortar(Partida p, jugadorActual j) {
+        boolean corte = false;
+        if (j.comprobarCorte()) {
+            if (j.getMano().size()==1) {
+                j.tirarAlPozo(0);
+            }
+            p.incrementarRonda();
+            corte = true;
+        }
+        return corte;
     }
 }

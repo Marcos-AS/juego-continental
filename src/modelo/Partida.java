@@ -7,11 +7,12 @@ public class Partida {
     private int ronda;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo = new ArrayList<>();
-    private ArrayList<Carta> pozo;
+    private ArrayList<Carta> pozo = new ArrayList<>();
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
     private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
+    private static final int CANT_TOTAL_RONDAS = 7;
 //PRIVATE ----------------------------------------------------
 
     private int determinarNumBarajas() {
@@ -60,7 +61,12 @@ public class Partida {
         return this.pozo.get(this.pozo.size()-1);
     }
 
-//PUBLIC ----------------------------------------------------
+    private void iniciarPozo() {
+		this.pozo.add(this.sacarPrimeraDelMazo());
+		this.mazo.remove(this.mazo.size()-1);
+	}
+
+    //PUBLIC ----------------------------------------------------
     public Partida() {}
 
     public void agregarJugador(String nombre) {
@@ -101,14 +107,20 @@ public class Partida {
 				j.agregarCarta(c);		
 			}
 		}
+        this.iniciarPozo();
+        this.ronda = 1;
 	}
+
+    public void incrementarRonda() {
+        this.ronda++;
+    } 
 
 //SETTERS Y GETTERS------------
     public int getNumJugadores() {
         return this.jugadoresActuales.size();
     }
 
-    public ArrayList<jugadorActual> getJugadorActuales() {
+    public ArrayList<jugadorActual> getJugadoresActuales() {
         return this.jugadoresActuales;
     }
 
@@ -124,5 +136,9 @@ public class Partida {
             }
         }
         return j;
+    }
+
+    public int getTotalRondas() {
+        return CANT_TOTAL_RONDAS;
     }
 }
