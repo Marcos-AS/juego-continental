@@ -1,18 +1,20 @@
 package src.main;
 
-import src.modelo.Partida;
-import src.modelo.jugadorActual;
-import src.vista.Consola;
 import java.util.ArrayList;
 
 import src.controlador.Controlador;
+import src.modelo.Partida;
+import src.modelo.jugadorActual;
+import src.vista.VentanaInicio;
 
-public class App {
-
+public class AppGui {
+    private static final String NOMBRE_VENTANA = "Continental";
     public static void main(String[] args) {
         Controlador ctrl = new Controlador();    
         Partida partidaNueva = new Partida();
-        Consola consola = new Consola(ctrl);
+        VentanaInicio gui = new VentanaInicio();
+        gui.iniciarVentana(gui, NOMBRE_VENTANA);
+
         String j1 = "AnitaSSJ";
         String j2 = "Marcos";
         int eleccion = 0;
@@ -23,11 +25,11 @@ public class App {
             partidaNueva.crearMazo();
             partidaNueva.repartirCartas();
             Thread.sleep(300);
-            consola.mostrarCartasNombreJugador(j1);
-            consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
+            //gui.mostrarCartasNombreJugador(j1);
+            //gui.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
             Thread.sleep(300);
-            consola.mostrarCartasNombreJugador(j2);
-            consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            
+            //gui.mostrarCartasNombreJugador(j2);
+            //gui.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,62 +41,62 @@ public class App {
 
             while (!corte) {
                 try {
-                    consola.mostrarPozo(ctrl.enviarPrimeraCartaPozo(partidaNueva));
+                    //gui.mostrarPozo(ctrl.enviarPrimeraCartaPozo(partidaNueva));
                     jugadorActual j = jugadoresActuales.get(i);
-                    consola.mostrarTurnoJugador(j.getNombre());
+                    //gui.mostrarTurnoJugador(j.getNombre());
                     mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
                     Thread.sleep(300);
-                    consola.mostrarCartasJugador(mano);                    
+                    //gui.mostrarCartasJugador(mano);                    
                     
                     //robar
-                    eleccion = consola.menuRobar();
+                    //eleccion = gui.menuRobar();
                     j.eleccionMenuRobo(eleccion);
                     mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
                     Thread.sleep(300);            
-                    consola.mostrarCartasJugador(mano);                    
+                    //gui.mostrarCartasJugador(mano);                    
 
                     //BAJARSE, ORDENAR O CORTAR
-                    eleccion = consola.menuBajar();
+                    //eleccion = gui.menuBajar();
 
                     //ordenar cartas en la mano
-                    while (eleccion == consola.getEleccionOrdenarCartas()) {
-                        int[] ordenar = consola.preguntarParaOrdenarCartas();
+                    /*while (eleccion == gui.getEleccionOrdenarCartas()) {
+                        int[] ordenar = gui.preguntarParaOrdenarCartas();
                         j.eleccionOrdenar(ordenar);
                         mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
                         Thread.sleep(300);                
-                        consola.mostrarCartasJugador(mano);                    
-                        eleccion = consola.menuBajar();
-                    }
+                        gui.mostrarCartasJugador(mano);                    
+                        eleccion = gui.menuBajar();
+                    }*/
                     
                     //bajarse
-                    if (eleccion == consola.getEleccionBajarse()) {
-                        Object [] cartasABajar = consola.preguntarQueBajarParaJuego();
+                    /*if (eleccion == gui.getEleccionBajarse()) {
+                        Object [] cartasABajar = gui.preguntarQueBajarParaJuego();
                         if(!ctrl.bajarJuego(j, cartasABajar)) {
-                            consola.mostrarNoPuedeBajarJuego();
+                            gui.mostrarNoPuedeBajarJuego();
                         } else {
                             ArrayList<ArrayList<String>> juegos = ctrl.enviarJuegosJugador(j);
                             int numJuego = 1;
                             for (ArrayList<String> juego : juegos) {
-                                consola.mostrarJuego(numJuego);
-                                consola.mostrarCartasJugador(juego);
+                                gui.mostrarJuego(numJuego);
+                                gui.mostrarCartasJugador(juego);
                                 numJuego++;
                             }
                         }
-                    }
+                    }*/
                     //si quiere cortar, comprobar si puede
-                    if (eleccion == consola.getEleccionCortar()) {
+                    /*if (eleccion == gui.getEleccionCortar()) {
                         corte = ctrl.cortar(partidaNueva, j);
                         if (!corte) {
                             int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar();
-                            consola.mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
+                            gui.mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
                             //ctrl.tratarDeBajarParaCortar(triosYEscalerasQueFaltan);
                         }
-                    }         
+                    }*/         
                     //tirar
                     if (!corte) {
                         mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                        consola.mostrarCartasJugador(mano);                    
-                        eleccion = consola.preguntarQueBajarParaPozo();
+                        //gui.mostrarCartasJugador(mano);                    
+                        //eleccion = gui.preguntarQueBajarParaPozo();
                         j.tirarAlPozo(eleccion);
                     }
                     i++;
@@ -107,4 +109,4 @@ public class App {
         }//while partida
     }
 }
-
+//}
