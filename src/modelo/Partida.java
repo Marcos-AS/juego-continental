@@ -53,14 +53,6 @@ public class Partida {
         this.mazo = mazoMezclado;
 	}
 
-    private Carta sacarPrimeraDelMazo() {
-        return this.mazo.get(this.mazo.size()-1);
-    }
-
-    private Carta sacarPrimeraDelPozo() {
-        return this.pozo.get(this.pozo.size()-1);
-    }
-
     private void iniciarPozo() {
 		this.pozo.add(this.sacarPrimeraDelMazo());
 		this.mazo.remove(this.mazo.size()-1);
@@ -68,6 +60,14 @@ public class Partida {
 
     //PUBLIC ----------------------------------------------------
     public Partida() {}
+
+    public Carta sacarPrimeraDelPozo() {
+        return this.pozo.get(this.pozo.size()-1);
+    }
+
+    public Carta sacarPrimeraDelMazo() {
+        return this.mazo.get(this.mazo.size()-1);
+    }
 
     public void agregarJugador(String nombre) {
 		jugadorActual nuevoJugador = new jugadorActual();
@@ -115,6 +115,14 @@ public class Partida {
         this.ronda++;
     } 
 
+    public void resetearJuegosJugadores() {
+        for (jugadorActual jugadorActual : jugadoresActuales) {
+            jugadorActual.setTriosBajados(0);
+            jugadorActual.setEscalerasBajadas(0);
+            jugadorActual.setPuedeBajar();
+        }
+    }
+
 //SETTERS Y GETTERS------------
     public int getNumJugadores() {
         return this.jugadoresActuales.size();
@@ -141,4 +149,5 @@ public class Partida {
     public int getTotalRondas() {
         return CANT_TOTAL_RONDAS;
     }
+
 }

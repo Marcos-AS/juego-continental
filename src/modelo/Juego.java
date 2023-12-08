@@ -1,7 +1,6 @@
 package src.modelo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Juego {
     private static final int FIGURA = 10;
@@ -12,7 +11,7 @@ public class Juego {
 
 	//PRIVATE-----------------------------------------------------
 	private static int comprobarEscalera(ArrayList<Carta> juego) {
-		int esEscalera = 0; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
+		int esEscalera = 2; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
 		if(comprobarMismoPalo(juego)) {
 			ArrayList<Carta> comodines = new ArrayList<>();
 			int formaEscalera = 1;
@@ -73,7 +72,7 @@ public class Juego {
 	}
 
 	private static int comprobarTrio(ArrayList<Carta> juego) {
-		int formaTrio = 1;
+		int formaTrio = 2;
 		int esTrio = 1; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
 		for(int i = 0; i < juego.size()-1; i++) {
 			int numCarta = juego.get(i).getNumero();
@@ -84,7 +83,6 @@ public class Juego {
 			esTrio = 0;
 		return esTrio;
 	}
-
 
 	//PUBLIC-------------------------------------------------------
 

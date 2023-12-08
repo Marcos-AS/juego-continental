@@ -6,7 +6,7 @@ public class jugadorActual extends Jugador {
     private int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
-    private ArrayList<ArrayList<Carta>> juegos;
+    private ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
 	private int escalerasBajadas;
 	private int triosBajados;
 	private boolean puedeBajar = true;
@@ -20,17 +20,42 @@ public class jugadorActual extends Jugador {
         return partActual;
     }
 
-	private ArrayList<Carta> seleccionarCartasABajar(int[] indicesCartasABajar) {
+	private ArrayList<Carta> seleccionarCartasABajar(Object[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
-		for(int i = 0; i < indicesCartasABajar.length; i++) {
-			juego.add(this.mano.get(indicesCartasABajar[i]));
+		int numCarta;
+		String paloCarta;
+		int j = 0;
+		for(int i = 0; i < cartasABajar.length/2; i++) {
+			numCarta = (int)cartasABajar[j];
+			paloCarta = cartasABajar[j+1].toString().toUpperCase();
+			juego.add(getCartaDeLaMano(this.mano, numCarta,paloCarta));
+			j += 2;
 		}
 		return juego;
 	}
 
-	private void eliminarDeLaMano(int[] indicesCartasABajar) {
-		for(int i = 0; i < indicesCartasABajar.length; i++) {
-			this.mano.remove(this.mano.get(indicesCartasABajar[i]));
+	private Carta getCartaDeLaMano(ArrayList<Carta> mano, int numCarta, String paloCarta) {
+		Carta cI = null;
+		boolean encontrada = false;
+		int i = 0;
+		while (!encontrada && i < mano.size()) {
+			cI = mano.get(i);
+			if (cI.getNumero() == numCarta && cI.getPalo().name().equals(paloCarta)) {
+				encontrada = true;
+			} else {
+				i++;
+			}
+		}
+		return cI;
+	}
+
+	private void eliminarDeLaMano(Object[] cartasABajar) {
+		int numCarta;
+		String paloCarta;
+		for(int i = 0; i < cartasABajar.length; i+=2) {
+			numCarta = (int)cartasABajar[i];
+			paloCarta = cartasABajar[i+1].toString();
+			this.mano.remove(getCartaDeLaMano(this.mano, numCarta, paloCarta));
 		}
 	}
 
@@ -50,17 +75,6 @@ public class jugadorActual extends Jugador {
 		case 2:
 			this.robarDelPozo();
 			break;
-		}
-	}
-
-	public void eleccionMenuTirar(int eleccion) {
-		switch (eleccion) {
-			case 1:
-				
-				break;
-		
-			default:
-				break;
 		}
 	}
 
@@ -94,14 +108,14 @@ public class jugadorActual extends Jugador {
 		this.mano.add(c);
 	}
     
-    public boolean bajarJuego(int[] indicesCartasABajar) {
+    public boolean bajarJuego(Object[] cartasABajar) {
 		boolean puedeBajar = false;
-		ArrayList<Carta> juego = seleccionarCartasABajar(indicesCartasABajar);
+		ArrayList<Carta> juego = seleccionarCartasABajar(cartasABajar);
 		int tipoJuego = Juego.comprobarJuego(juego, getPartidaActual().getRonda()); //si tipoJuego es 2, no es juego
 		if(tipoJuego < 2) {
 			puedeBajar = true;
 			this.juegos.add(juego);
-			this.eliminarDeLaMano(indicesCartasABajar);
+			this.eliminarDeLaMano(cartasABajar);
 			if (tipoJuego == 0) {
 				this.triosBajados++;
 			} else if(tipoJuego == 1) {
@@ -169,7 +183,19 @@ public class jugadorActual extends Jugador {
         return this.mano;
     }
 
+	public ArrayList<ArrayList<Carta>> getJuegos() {
+		return this.juegos;
+	}
+
 	public void setPuedeBajar() {
 		this.puedeBajar = !this.puedeBajar;
+	}
+
+	public void setTriosBajados(int trios) {
+		this.triosBajados = trios;
+	}
+
+	public void setEscalerasBajadas(int escaleras) {
+		this.escalerasBajadas = escaleras;
 	}
 }
