@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import src.modelo.Carta;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
+import src.vista.VentanaInicio;
+import src.vista.VentanaJuego;
 
 public class Controlador {
 	
@@ -142,4 +144,5 @@ public class Controlador {
         }
         return numCarta;
     } 
+
 }

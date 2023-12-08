@@ -6,15 +6,19 @@ import src.controlador.Controlador;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
 import src.vista.VentanaInicio;
+import src.vista.VentanaJuego;
 
 public class AppGui {
     private static final String NOMBRE_VENTANA = "Continental";
     public static void main(String[] args) {
-        Controlador ctrl = new Controlador();    
-        Partida partidaNueva = new Partida();
-        VentanaInicio gui = new VentanaInicio();
-        gui.iniciarVentana(gui, NOMBRE_VENTANA);
+        VentanaInicio gui = new VentanaInicio(1000, 700);
+        gui.iniciarVentana(NOMBRE_VENTANA);   
+        Controlador ctrl = new Controlador();
+        if (gui.getPartidaIniciada()) iniciarPartida(ctrl, gui.getVentanaJuego());      
+    }
 
+    public static void iniciarPartida(Controlador ctrl, VentanaJuego gui) {
+        Partida partidaNueva = new Partida();
         String j1 = "AnitaSSJ";
         String j2 = "Marcos";
         int eleccion = 0;
@@ -23,6 +27,7 @@ public class AppGui {
         partidaNueva.agregarJugador(j2);
         try {
             partidaNueva.crearMazo();
+            
             partidaNueva.repartirCartas();
             Thread.sleep(300);
             //gui.mostrarCartasNombreJugador(j1);
@@ -107,6 +112,5 @@ public class AppGui {
             }//while ronda
             partidaNueva.resetearJuegosJugadores();
         }//while partida
+    }        
     }
-}
-//}

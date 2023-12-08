@@ -2,27 +2,35 @@ package src.vista;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.*;
+
+import src.controlador.Controlador;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class VentanaInicio extends JFrame {
+    Controlador ctrl = new Controlador();
+    VentanaJuego ventanaJuego;
+    boolean partidaIniciada = false;
 
-    public VentanaInicio() {
-        setSize(1000, 700); //ajustarse al monitor*
+    public VentanaInicio(int ancho, int alto) {
+        setSize(ancho, alto);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // cerrar ventana cuando se selecciona la X
         setLocationRelativeTo(null);                    // centrar la ventana 
-
-        panelInicio();                                  
-        agregarMenuBarra();                          
-
-        setVisible(true);                               // hacer visible la ventana
+        agregarAPanelInicio(crearPanel());  
+        agregarMenuBarra();
     }
 
-    public void panelInicio() {
+    public VentanaInicio() {}
+
+    public JPanel crearPanel() {
         JPanel panel = new JPanel();                              
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));    // establecer el layout del panel como BoxLayout en el eje Y
         panel.setBackground(new Color(56, 102, 65));            
+        return panel;
+    }
 
+    public void agregarAPanelInicio(JPanel panel) {
         panel.add(agregarTitulo());
         
         // LABEL -------------------------------------------------
@@ -47,10 +55,13 @@ public class VentanaInicio extends JFrame {
             }
         });
 
-        // FALTA TERMINAR
-        // boton.addActionListener(new ActionListener() {  // realizar accion cuando se hace click
+        iniciarPartidaConBoton(botonIniciar);
+        // botonIniciar.addActionListener(new ActionListener() {  // realizar accion cuando se hace click
         //     public void actionPerformed(ActionEvent e) {
-        //         System.out.println("Boton seleccionado");
+        //         VentanaJuego ventanaJuego = new VentanaJuego();
+                
+        //         ventanaJuego.setVisible(true);
+        //         setPartidaIniciada();
         //     }
         // });
 
@@ -60,7 +71,17 @@ public class VentanaInicio extends JFrame {
         panel.add(agregarImagen("src\\vista\\imgs\\cartas_inicio.png"));
 
         getContentPane().add(panel, BorderLayout.CENTER);   // agregar el panel a la ventana
+    }
 
+    public void iniciarPartidaConBoton(JButton botonIniciar) {
+        botonIniciar.addActionListener(new ActionListener() {  // realizar accion cuando se hace click
+            public void actionPerformed(ActionEvent e) {
+                VentanaJuego ventanaJuego = new VentanaJuego();
+                ventanaJuego.setVisible(true);
+                setPartidaIniciada();
+            }
+        });
+        this.ventanaJuego = ventanaJuego;
     }
 
     public void agregarMenuBarra() {
@@ -87,9 +108,9 @@ public class VentanaInicio extends JFrame {
         setJMenuBar(menuBarra);             // establecer la barra de menú en la ventana
     }
 
-    public void iniciarVentana(VentanaInicio ventana, String titulo) {
-        ventana.setTitle(titulo);                
-        ventana.setVisible(true); 
+    public void iniciarVentana(String titulo) {
+        this.setTitle(titulo);                
+        this.setVisible(true); 
     }
 
     public JLabel agregarTitulo() {
@@ -179,5 +200,17 @@ public class VentanaInicio extends JFrame {
             }
         });
         return itemVerRanking;
+    }
+
+    public void setPartidaIniciada() {
+        this.partidaIniciada = !partidaIniciada;
+    }
+
+    public boolean getPartidaIniciada() {
+        return this.partidaIniciada;
+    }
+
+    public VentanaJuego getVentanaJuego() {
+        return this.ventanaJuego;
     }
 }
