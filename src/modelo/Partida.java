@@ -3,6 +3,8 @@ package src.modelo;
 import java.util.ArrayList;
 import java.util.Random;
 
+import src.main.Observer;
+
 public class Partida {
     private int ronda;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
@@ -13,6 +15,8 @@ public class Partida {
     private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private static final int CANT_TOTAL_RONDAS = 7;
+    private Estado partida;
+    private ArrayList<Observer> observadores = new ArrayList<>();
 //PRIVATE ----------------------------------------------------
 
     private int determinarNumBarajas() {
@@ -148,6 +152,10 @@ public class Partida {
 
     public int getTotalRondas() {
         return CANT_TOTAL_RONDAS;
+    }
+
+    public ArrayList<Carta> getMazo() {
+        return this.mazo;
     }
 
 }

@@ -2,19 +2,33 @@ package src.main;
 
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 import src.controlador.Controlador;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
+import src.vista.PartidaEventListener;
 import src.vista.VentanaInicio;
 import src.vista.VentanaJuego;
 
-public class AppGui {
+public class AppGui implements Observer {
     private static final String NOMBRE_VENTANA = "Continental";
     public static void main(String[] args) {
-        VentanaInicio gui = new VentanaInicio(1000, 700);
-        gui.iniciarVentana(NOMBRE_VENTANA);   
-        Controlador ctrl = new Controlador();
-        if (gui.getPartidaIniciada()) iniciarPartida(ctrl, gui.getVentanaJuego());      
+        VentanaInicio gui = new VentanaInicio(1000, 700, NOMBRE_VENTANA);
+        //Controlador ctrl = new Controlador();
+        //ctrl.addObserver(gui);
+        //SwingUtilities.invokeLater(() -> {
+        // boolean partidaIniciada = gui.getPartidaIniciada();
+        // while (!partidaIniciada) {
+        //     partidaIniciada = gui.getPartidaIniciada(); 
+        // }
+        // iniciarPartida(ctrl, gui.getVentanaJuego());
+        //});
+        
+    }
+
+    public void actualizar(Object o){
+
     }
 
     public static void iniciarPartida(Controlador ctrl, VentanaJuego gui) {
@@ -27,8 +41,13 @@ public class AppGui {
         partidaNueva.agregarJugador(j2);
         try {
             partidaNueva.crearMazo();
-            
             partidaNueva.repartirCartas();
+            ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
+            //SwingUtilities.invokeLater(() -> {
+                for (jugadorActual jugadorActual : jugadoresActuales) {
+                    gui.agregarImagenCartaAPanel(ctrl.enviarManoJugador(partidaNueva, jugadorActual.getNombre()));
+                }
+            //});
             Thread.sleep(300);
             //gui.mostrarCartasNombreJugador(j1);
             //gui.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));

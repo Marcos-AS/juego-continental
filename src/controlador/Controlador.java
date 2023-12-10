@@ -2,14 +2,17 @@ package src.controlador;
 
 import java.util.ArrayList;
 
+import src.main.Observable;
+import src.main.Observer;
 import src.modelo.Carta;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
-import src.vista.VentanaInicio;
-import src.vista.VentanaJuego;
 
-public class Controlador {
-	
+
+public class Controlador implements Observable{
+    private ArrayList<Observer> observadores = new ArrayList<>();
+    
+
 //PRIVATE----------------------------------------------------------------------
     private String transformarNumCarta(int numCarta) {
         String num = ((Integer) numCarta).toString();
@@ -39,7 +42,7 @@ public class Controlador {
         ArrayList<String> manoString = new ArrayList<>();
         for (Carta c : mano) {
     		String numString = transformarNumCarta(c.getNumero());
-            String palo = c.getPalo().name();
+            String palo = c.getPalo().name().toLowerCase();
             String carta = "";
             if (palo == null) {
                 carta = "COMODIN";
@@ -69,6 +72,11 @@ public class Controlador {
         return recorrerMano(mano);
     }
 
+    public ArrayList<String> enviarMazo(Partida p) {
+        ArrayList<Carta> mazo = p.getMazo();
+        return recorrerMano(mazo);
+    }
+ 
     public ArrayList<ArrayList<String>> enviarJuegosJugador(jugadorActual j) {
         ArrayList<ArrayList<Carta>> juegos = null;
         ArrayList<ArrayList<String>> juegosString = new ArrayList<>();
@@ -145,4 +153,11 @@ public class Controlador {
         return numCarta;
     } 
 
+    public void cambiarEstadoPartida(){};
+
+    //GETTERS, SETTERS, OBSERVER
+    @Override
+    public void addObserver(Observer observador) {
+        observadores.add(observador);
+    }
 }

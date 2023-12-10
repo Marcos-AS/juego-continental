@@ -4,21 +4,35 @@ import java.awt.*;
 import javax.swing.border.*;
 
 import src.controlador.Controlador;
+import src.main.Observer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-public class VentanaInicio extends JFrame {
-    Controlador ctrl = new Controlador();
-    VentanaJuego ventanaJuego;
-    boolean partidaIniciada = false;
+public class VentanaInicio extends JFrame implements Observer {
+    private Controlador ctrl = new Controlador();
+    private VentanaJuego ventanaJuego;
+    private boolean partidaIniciada = false;
+    private ArrayList<PartidaEventListener> listeners = new ArrayList<>();
 
-    public VentanaInicio(int ancho, int alto) {
+    //PRIVATE------------------------------------------------
+    private void firePartidaIniciadaEvent() {
+        for (PartidaEventListener listener : listeners) {
+            listener.partidaIniciada();
+        }
+    }
+
+    //PUBLIC------------------------------------------------
+    public VentanaInicio(int ancho, int alto, String titulo) {
         setSize(ancho, alto);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // cerrar ventana cuando se selecciona la X
-        setLocationRelativeTo(null);                    // centrar la ventana 
-        agregarAPanelInicio(crearPanel());  
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cerrar ventana cuando se selecciona la X
+        setLocationRelativeTo(null);           // centrar la ventana 
+        setTitle(titulo);   
+        JPanel panel = crearPanel();             
+        agregarAPanelInicio(panel);  
         agregarMenuBarra();
+        setVisible(true); 
     }
 
     public VentanaInicio() {}
@@ -45,6 +59,7 @@ public class VentanaInicio extends JFrame {
         JButton botonIniciar = crearBoton("Iniciar juego", Component.CENTER_ALIGNMENT, 200, 40);
         panel.add(botonIniciar);
 
+        // Eventos del boton
         botonIniciar.addMouseListener(new java.awt.event.MouseAdapter() {   // color al pasar el mouse
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonIniciar.setBackground(new Color(200, 220, 120)); 
@@ -55,15 +70,7 @@ public class VentanaInicio extends JFrame {
             }
         });
 
-        iniciarPartidaConBoton(botonIniciar);
-        // botonIniciar.addActionListener(new ActionListener() {  // realizar accion cuando se hace click
-        //     public void actionPerformed(ActionEvent e) {
-        //         VentanaJuego ventanaJuego = new VentanaJuego();
-                
-        //         ventanaJuego.setVisible(true);
-        //         setPartidaIniciada();
-        //     }
-        // });
+        botonIniciar.addActionListener(crearActionListenerIniciarPartida());
 
         panel.add(Box.createVerticalGlue());          // agregar espacio vertical antes del botón
         panel.add(botonIniciar);                           
@@ -73,15 +80,16 @@ public class VentanaInicio extends JFrame {
         getContentPane().add(panel, BorderLayout.CENTER);   // agregar el panel a la ventana
     }
 
-    public void iniciarPartidaConBoton(JButton botonIniciar) {
-        botonIniciar.addActionListener(new ActionListener() {  // realizar accion cuando se hace click
+    public ActionListener crearActionListenerIniciarPartida() {
+        ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 VentanaJuego ventanaJuego = new VentanaJuego();
-                ventanaJuego.setVisible(true);
                 setPartidaIniciada();
+                setVentanaJuego(ventanaJuego);
+                ventanaJuego.setVisible(true);
             }
-        });
-        this.ventanaJuego = ventanaJuego;
+        };
+        return actionListener;
     }
 
     public void agregarMenuBarra() {
@@ -106,11 +114,6 @@ public class VentanaInicio extends JFrame {
         menuBarra.add(menuRanking);
 
         setJMenuBar(menuBarra);             // establecer la barra de menú en la ventana
-    }
-
-    public void iniciarVentana(String titulo) {
-        this.setTitle(titulo);                
-        this.setVisible(true); 
     }
 
     public JLabel agregarTitulo() {
@@ -162,7 +165,7 @@ public class VentanaInicio extends JFrame {
     public JLabel agregarImagen(String rutaImagen) {
         ImageIcon imagen = new ImageIcon(rutaImagen); 
         JLabel labelImagen = new JLabel(imagen);
-        labelImagen.setAlignmentX(Component.CENTER_ALIGNMENT);      // centrar la imagen horizontalmente
+        labelImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
         return labelImagen;
     }
 
@@ -202,15 +205,33 @@ public class VentanaInicio extends JFrame {
         return itemVerRanking;
     }
 
+    public void addPartidaEventListener(PartidaEventListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removePartidaEventListener(PartidaEventListener listener) {
+        listeners.remove(listener);
+    }
+
+    //GETTERS Y SETTERS, OBSERVER-----------------
     public void setPartidaIniciada() {
         this.partidaIniciada = !partidaIniciada;
+        //firePartidaIniciadaEvent();
     }
 
     public boolean getPartidaIniciada() {
         return this.partidaIniciada;
     }
 
+    public void setVentanaJuego(VentanaJuego ventanaJuego) {
+        this.ventanaJuego = ventanaJuego;
+    }
+
     public VentanaJuego getVentanaJuego() {
         return this.ventanaJuego;
+    }
+
+    public void actualizar(Object actualizacion) {
+
     }
 }
