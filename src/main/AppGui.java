@@ -10,7 +10,6 @@ import javax.swing.SwingUtilities;
 import src.controlador.Controlador;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
-import src.vista.PartidaEventListener;
 import src.vista.VentanaInicio;
 import src.vista.VentanaJuego;
 

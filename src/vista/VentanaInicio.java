@@ -14,14 +14,6 @@ public class VentanaInicio extends JFrame implements Observer {
     protected Controlador ctrl = new Controlador();
     private VentanaJuego ventanaJuego;
     //private boolean partidaIniciada = false;
-    private ArrayList<PartidaEventListener> listeners = new ArrayList<>();
-
-    //PRIVATE------------------------------------------------
-    private void firePartidaIniciadaEvent() {
-        for (PartidaEventListener listener : listeners) {
-            listener.partidaIniciada();
-        }
-    }
 
     //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto, String titulo) {
@@ -203,14 +195,6 @@ public class VentanaInicio extends JFrame implements Observer {
             }
         });
         return itemVerRanking;
-    }
-
-    public void addPartidaEventListener(PartidaEventListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removePartidaEventListener(PartidaEventListener listener) {
-        listeners.remove(listener);
     }
 
     //GETTERS Y SETTERS, OBSERVER-----------------
