@@ -11,8 +11,10 @@ public class Consola {
     private static final int ELECCION_NO_BAJARSE = 2;
     private static final int ELECCION_ORDENAR_CARTAS = 3;
     private static final int ELECCION_CORTAR = 4;
+    private static final int ELECCION_ROBAR_DEL_POZO = 2;
 
-//PRIVATE-------------------------------------------------------
+
+    //PRIVATE-------------------------------------------------------
 
     private int preguntarCantParaBajar() {
         int numCartas = 0;
@@ -39,7 +41,7 @@ public class Consola {
         this.ctrl = ctrl;
     }
 	
-//preguntar-------------------------------------
+    //preguntar-------------------------------------
 
 	public Object[] preguntarQueBajarParaJuego() {
         int cantCartas = preguntarCantParaBajar();
@@ -52,6 +54,7 @@ public class Consola {
             System.out.println("Carta " + (j+1) + ": ");
             System.out.println("Indique el numero de la carta que quiere bajar: ");
             letraCarta = this.s.nextLine();
+            letraCarta = letraCarta.toUpperCase();
             if (letraCarta.equals("J") || letraCarta.equals("Q") ||
             letraCarta.equals("K") || letraCarta.equals("A") ||
             letraCarta.equals("COMODIN")) {
@@ -128,7 +131,7 @@ public class Consola {
         return eleccion;
     }
 
-//MOSTRAR---------------------------------------------------------
+    //MOSTRAR---------------------------------------------------------
 
     public void mostrarCartasNombreJugador(String nombreJugador) {
 		System.out.println("Cartas de " + nombreJugador);
@@ -174,6 +177,34 @@ public class Consola {
         System.out.println("Juego N° " + numJuego+":\n");
     }
 
+    public void mostrarCombinacionRequerida(int ronda) {
+        System.out.print("Para esta ronda deben bajarse: ");
+        switch (ronda) {
+            case 1:
+                System.out.println("2 tríos");
+                break;
+            case 2:
+                System.out.println("1 trío y 1 escalera");
+                break;
+            case 3:
+                System.out.println("2 escaleras");
+                break;
+            case 4:
+                System.out.println("3 tríos");
+                break;
+            case 5:
+                System.out.println("2 tríos y 1 escalera");
+                break;
+            case 6:
+                System.out.println("1 tríos y 2 escaleras");
+                break;
+            case 7:
+                System.out.println("3 escaleras");
+                break;
+        
+        }
+    }
+
     //GETTERS Y SETTERS---------------------------
     public int getEleccionOrdenarCartas(){
         return ELECCION_ORDENAR_CARTAS;
@@ -189,5 +220,9 @@ public class Consola {
 
     public int getEleccionCortar(){
         return ELECCION_CORTAR;
+    }
+
+    public int getEleccionRobarDelPozo() {
+        return ELECCION_ROBAR_DEL_POZO;
     }
 }

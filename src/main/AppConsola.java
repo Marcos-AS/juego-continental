@@ -19,38 +19,37 @@ public class AppConsola {
         boolean corte = false;
         partidaNueva.agregarJugador(j1);
         partidaNueva.agregarJugador(j2);
-        try {
-            partidaNueva.crearMazo();
-            partidaNueva.repartirCartas();
-            Thread.sleep(300);
-            consola.mostrarCartasNombreJugador(j1);
-            consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
-            Thread.sleep(300);
-            consola.mostrarCartasNombreJugador(j2);
-            consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        //reparto de cartas
+        partidaNueva.crearMazo();
+        partidaNueva.repartirCartas();
+        consola.mostrarCartasNombreJugador(j1);
+        consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
+        consola.mostrarCartasNombreJugador(j2);
+        consola.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            
+
         ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
         ArrayList<String> mano = null;
+
         //empiezan las rondas
         while (partidaNueva.getRonda()<partidaNueva.getTotalRondas()) {
             int i = 0;
-
             while (!corte) {
                 try {
+                    consola.mostrarCombinacionRequerida(partidaNueva.getRonda());
                     consola.mostrarPozo(ctrl.enviarPrimeraCartaPozo(partidaNueva));
                     jugadorActual j = jugadoresActuales.get(i);
                     consola.mostrarTurnoJugador(j.getNombre());
                     mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                    Thread.sleep(300);
                     consola.mostrarCartasJugador(mano);                    
                     
                     //robar
                     eleccion = consola.menuRobar();
+                    while (eleccion != consola.getEleccionRobarDelPozo()) {
+                        
+                    }
                     j.eleccionMenuRobo(eleccion);
-                    mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                    Thread.sleep(300);            
+                    mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());            
                     consola.mostrarCartasJugador(mano);                    
 
                     //BAJARSE, ORDENAR O CORTAR
@@ -61,7 +60,6 @@ public class AppConsola {
                         int[] ordenar = consola.preguntarParaOrdenarCartas();
                         j.eleccionOrdenar(ordenar);
                         mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                        Thread.sleep(300);                
                         consola.mostrarCartasJugador(mano);                    
                         eleccion = consola.menuBajar();
                     }

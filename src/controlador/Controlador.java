@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import src.main.Observable;
 import src.main.Observer;
 import src.modelo.Carta;
+import src.modelo.Palo;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
 
@@ -42,7 +43,7 @@ public class Controlador implements Observable{
         ArrayList<String> manoString = new ArrayList<>();
         for (Carta c : mano) {
     		String numString = transformarNumCarta(c.getNumero());
-            String palo = c.getPalo().name().toLowerCase();
+            Palo palo = c.getPalo();
             String carta = "";
             if (palo == null) {
                 carta = "COMODIN";
@@ -61,15 +62,17 @@ public class Controlador implements Observable{
 
     public ArrayList<String> enviarManoJugador(Partida p, String nombreJugador) {
         ArrayList<Carta> mano = null;
+        ArrayList<String> manoString = null;
         try {
             jugadorActual j = p.getJugador(nombreJugador);
-            Thread.sleep(500);
+            //Thread.sleep(500);
             mano = j.getMano();            
-            Thread.sleep(500);
+            //Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return recorrerMano(mano);
+        manoString = recorrerMano(mano);
+        return manoString;
     }
 
     public ArrayList<String> enviarMazo(Partida p) {
