@@ -1,7 +1,10 @@
 package src.main;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.ArrayList;
 
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import src.controlador.Controlador;
@@ -13,25 +16,21 @@ import src.vista.VentanaJuego;
 
 public class AppGui implements Observer {
     private static final String NOMBRE_VENTANA = "Continental";
+    
     public static void main(String[] args) {
-        VentanaInicio gui = new VentanaInicio(1000, 700, NOMBRE_VENTANA);
-        //Controlador ctrl = new Controlador();
-        //ctrl.addObserver(gui);
+        new VentanaInicio(1000, 700, NOMBRE_VENTANA);
         //SwingUtilities.invokeLater(() -> {
-        // boolean partidaIniciada = gui.getPartidaIniciada();
-        // while (!partidaIniciada) {
-        //     partidaIniciada = gui.getPartidaIniciada(); 
-        // }
-        // iniciarPartida(ctrl, gui.getVentanaJuego());
-        //});
-        
     }
+
+    public void AppGui() {}
 
     public void actualizar(Object o){
 
     }
 
-    public static void iniciarPartida(Controlador ctrl, VentanaJuego gui) {
+    public void iniciarPartida(VentanaJuego guiPartida) {
+        Controlador ctrl = new Controlador();
+        ctrl.addObserver(guiPartida);
         Partida partidaNueva = new Partida();
         String j1 = "AnitaSSJ";
         String j2 = "Marcos";
@@ -44,39 +43,41 @@ public class AppGui implements Observer {
             partidaNueva.repartirCartas();
             ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
             //SwingUtilities.invokeLater(() -> {
-                for (jugadorActual jugadorActual : jugadoresActuales) {
-                    gui.agregarImagenCartaAPanel(ctrl.enviarManoJugador(partidaNueva, jugadorActual.getNombre()));
-                }
-            //});
-            Thread.sleep(300);
-            //gui.mostrarCartasNombreJugador(j1);
-            //gui.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
-            Thread.sleep(300);
-            //gui.mostrarCartasNombreJugador(j2);
-            //gui.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
-        ArrayList<String> mano = null;
-        //empiezan las rondas
-        while (partidaNueva.getRonda()<partidaNueva.getTotalRondas()) {
-            int i = 0;
+            // for (jugadorActual jugadorActual : jugadoresActuales) {
+            //     ArrayList<String> mano = ctrl.enviarManoJugador(partidaNueva, jugadorActual.getNombre());
+            //     for (String carta : mano) {
+            //         JLabel labelImagen = guiPartida.agregarImagenCartaAPanel(carta);
+            //         guiPartida.getContentPane().add(labelImagen);
+            //     }
+            // }
 
-            while (!corte) {
-                try {
+            guiPartida.mostrarTurnoJugador(j1);
+            guiPartida.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
+            Thread.sleep(300);
+            //guiPartida.mostrarTurnoJugador(j2);
+            //guiPartida.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+        // ArrayList<String> mano = null;
+        //empiezan las rondas
+        // while (partidaNueva.getRonda()<partidaNueva.getTotalRondas()) {
+        //     int i = 0;
+
+        //     while (!corte) {
+        //         try {
                     //gui.mostrarPozo(ctrl.enviarPrimeraCartaPozo(partidaNueva));
-                    jugadorActual j = jugadoresActuales.get(i);
+                    //jugadorActual j = jugadoresActuales.get(i);
                     //gui.mostrarTurnoJugador(j.getNombre());
-                    mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                    Thread.sleep(300);
+                    //mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
+                    //Thread.sleep(300);
                     //gui.mostrarCartasJugador(mano);                    
                     
                     //robar
                     //eleccion = gui.menuRobar();
-                    j.eleccionMenuRobo(eleccion);
-                    mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                    Thread.sleep(300);            
+                    //j.eleccionMenuRobo(eleccion);
+                    //mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
+                    //Thread.sleep(300);            
                     //gui.mostrarCartasJugador(mano);                    
 
                     //BAJARSE, ORDENAR O CORTAR
@@ -117,19 +118,20 @@ public class AppGui implements Observer {
                         }
                     }*/         
                     //tirar
-                    if (!corte) {
-                        mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
-                        //gui.mostrarCartasJugador(mano);                    
-                        //eleccion = gui.preguntarQueBajarParaPozo();
-                        j.tirarAlPozo(eleccion);
-                    }
-                    i++;
-                    if (i>jugadoresActuales.size()-1) i = 0;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }//while ronda
-            partidaNueva.resetearJuegosJugadores();
+                //     if (!corte) {
+                //         mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
+                //         //gui.mostrarCartasJugador(mano);                    
+                //         //eleccion = gui.preguntarQueBajarParaPozo();
+                //         j.tirarAlPozo(eleccion);
+                //     }
+                //     i++;
+                //     if (i>jugadoresActuales.size()-1) i = 0;
+                // } catch (Exception e) {
+                //     e.printStackTrace();
+                // }
+            //}//while ronda
+            //partidaNueva.resetearJuegosJugadores();
         }//while partida
+        catch (Exception e) {}
     }        
-    }
+}

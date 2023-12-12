@@ -11,9 +11,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class VentanaInicio extends JFrame implements Observer {
-    private Controlador ctrl = new Controlador();
+    protected Controlador ctrl = new Controlador();
     private VentanaJuego ventanaJuego;
-    private boolean partidaIniciada = false;
+    //private boolean partidaIniciada = false;
     private ArrayList<PartidaEventListener> listeners = new ArrayList<>();
 
     //PRIVATE------------------------------------------------
@@ -70,26 +70,16 @@ public class VentanaInicio extends JFrame implements Observer {
             }
         });
 
-        botonIniciar.addActionListener(crearActionListenerIniciarPartida());
+        botonIniciar.setActionCommand("Iniciar");
+        eventHandler eventHandler = new eventHandler();
+        botonIniciar.addActionListener(eventHandler);
 
         panel.add(Box.createVerticalGlue());          // agregar espacio vertical antes del botón
         panel.add(botonIniciar);                           
 
-        panel.add(agregarImagen("src\\vista\\imgs\\cartas_inicio.png"));
+        panel.add(getLabelImagen("src\\vista\\imgs\\cartas_inicio.png"));
 
         getContentPane().add(panel, BorderLayout.CENTER);   // agregar el panel a la ventana
-    }
-
-    public ActionListener crearActionListenerIniciarPartida() {
-        ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                VentanaJuego ventanaJuego = new VentanaJuego();
-                setPartidaIniciada();
-                setVentanaJuego(ventanaJuego);
-                ventanaJuego.setVisible(true);
-            }
-        };
-        return actionListener;
     }
 
     public void agregarMenuBarra() {
@@ -162,10 +152,20 @@ public class VentanaInicio extends JFrame implements Observer {
         return boton;
     }
 
-    public JLabel agregarImagen(String rutaImagen) {
-        ImageIcon imagen = new ImageIcon(rutaImagen); 
-        JLabel labelImagen = new JLabel(imagen);
-        labelImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+    public JLabel getLabelImagen(String rutaImagen) {
+        JLabel labelImagen = null;
+        try {
+            ImageIcon imagen = new ImageIcon(rutaImagen); 
+            //Thread.sleep(300);
+            // boolean cargoImagen = imagen.getImageLoadStatus() == MediaTracker.COMPLETE;
+            // while (!cargoImagen) {            
+            //     cargoImagen = imagen.getImageLoadStatus() == MediaTracker.COMPLETE;
+            // }
+            labelImagen = new JLabel(imagen);
+            labelImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         return labelImagen;
     }
 
@@ -214,14 +214,14 @@ public class VentanaInicio extends JFrame implements Observer {
     }
 
     //GETTERS Y SETTERS, OBSERVER-----------------
-    public void setPartidaIniciada() {
-        this.partidaIniciada = !partidaIniciada;
-        //firePartidaIniciadaEvent();
-    }
+    // public void setPartidaIniciada() {
+    //     this.partidaIniciada = !partidaIniciada;
+    //     //firePartidaIniciadaEvent();
+    // }
 
-    public boolean getPartidaIniciada() {
-        return this.partidaIniciada;
-    }
+    // public boolean getPartidaIniciada() {
+    //     return this.partidaIniciada;
+    // }
 
     public void setVentanaJuego(VentanaJuego ventanaJuego) {
         this.ventanaJuego = ventanaJuego;
