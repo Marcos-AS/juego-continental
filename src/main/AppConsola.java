@@ -23,7 +23,7 @@ public class AppConsola {
         //     // TODO: handle exception
         // } catch (RMIMVCException e) {
         // }
-        String j1 = "AnitaSSJ";
+        String j1 = "Juan";
         String j2 = "Marcos";
         int eleccion = 0;
         boolean corte = false;
@@ -53,7 +53,6 @@ public class AppConsola {
                     mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
                     consola.mostrarCartasJugador(mano);                    
                     
-                    //robar
                     eleccion = consola.menuRobar();
                     //si no roba del pozo, los demas pueden hacerlo, con "castigo"
                     if (eleccion != consola.getEleccionRobarDelPozo()) {
@@ -80,6 +79,7 @@ public class AppConsola {
                         }                  
                         consola.mostrarContinuaTurno(j.getNombre());
                     } 
+                    //si el pozo esta vacio, se roba del mazo, si se eligio robar del mazo en un principio tambien sucede aca
                     if(!j.eleccionMenuRobo(eleccion)) {
                         consola.mostrarNoPuedeRobarDelPozo();
                         j.eleccionMenuRobo(consola.getEleccionRobarDelMazo());
