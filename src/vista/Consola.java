@@ -3,6 +3,7 @@ package src.vista;
 import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
+import src.modelo.Palo;
 
 public class Consola {
     private Controlador ctrl;
@@ -11,6 +12,7 @@ public class Consola {
     private static final int ELECCION_NO_BAJARSE = 2;
     private static final int ELECCION_ORDENAR_CARTAS = 3;
     private static final int ELECCION_CORTAR = 4;
+    private static final int ELECCION_ROBAR_DEL_MAZO = 1;
     private static final int ELECCION_ROBAR_DEL_POZO = 2;
 
 
@@ -24,6 +26,7 @@ public class Consola {
         while (numCartas > 4 || numCartas < 3) {
             System.out.println("La cantidad de cartas a bajar debe ser entre 3 y 4");
             numCartas = this.s.nextInt();
+            this.s.nextLine();
         }
         return numCartas;
 	}
@@ -51,26 +54,43 @@ public class Consola {
         int j = 0;
         int numCarta;
         for (int i = 0; i < cartasABajar.length; i+=2) {
+            boolean numValido = false;
             System.out.println("Carta " + (j+1) + ": ");
-            System.out.println("Indique el numero de la carta que quiere bajar: ");
+            System.out.println("Indique el numero o letra de la carta que quiere bajar: ");
             letraCarta = this.s.nextLine();
             letraCarta = letraCarta.toUpperCase();
             if (letraCarta.equals("J") || letraCarta.equals("Q") ||
-            letraCarta.equals("K") || letraCarta.equals("A") ||
-            letraCarta.equals("COMODIN")) {
+                letraCarta.equals("K") || letraCarta.equals("A") ||
+                letraCarta.equals("COMODIN")) {
                 numCarta = ctrl.transformarLetraCarta(letraCarta);
                 cartasABajar[i] = numCarta;
             } else {
-                cartasABajar[i] = Integer.parseInt(letraCarta);
+                //si lo ingresado no es una letra trato de pasarlo a int
+                while (!numValido) {                    
+                    try {
+                        cartasABajar[i] = Integer.parseInt(letraCarta);
+                        numValido = true;
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        System.out.println("Carta " + (j+1) + ": ");
+                        System.out.println("Indique nuevamente el numero o letra de la carta que quiere bajar: ");
+                        letraCarta = this.s.nextLine();
+                    }
+
+                }
 
             }
-            //this.s.nextLine();
-            System.out.println("Indique el palo de la carta que quiere bajar: ");
-            System.out.println("(PICAS, DIAMANTES, TREBOL, CORAZONES) ");
-            palo = this.s.nextLine();
-            while (!paloEsCorrecto(palo)) {
-                System.out.println("El palo ingresado no es correcto, ingrese de nuevo: ");
+
+            if (letraCarta.equals("COMODIN")) {
+                palo = "COMODIN";
+            } else {
+                System.out.println("Indique el palo de la carta que quiere bajar: ");
+                System.out.println("(PICAS, DIAMANTES, TREBOL, CORAZONES) ");
                 palo = this.s.nextLine();
+                while (!paloEsCorrecto(palo)) {
+                    System.out.println("El palo ingresado no es correcto, ingrese de nuevo: ");
+                    palo = this.s.nextLine();
+                }
             }
             cartasABajar[i+1] = palo;
             j++;
@@ -99,11 +119,16 @@ public class Consola {
         return eleccion;
     }
 
-    public int preguntarQueBajarParaPozo() {
+    public int preguntarQueBajarParaPozo(int cantCartas) {
         int eleccion = 0;
-        System.out.println("Indique el numero de carta para tirar al pozo: ");
+        System.out.println("Indique el indice de carta para tirar al pozo: ");
         eleccion = this.s.nextInt();
         System.out.println();
+        while (eleccion < 0 || eleccion >= cantCartas) {
+            System.out.println("Vuelva a ingresar un indice de carta");
+            eleccion = this.s.nextInt();
+            System.out.println();
+        }
         return eleccion;
     }
 
@@ -122,13 +147,24 @@ public class Consola {
 	
     public int menuBajar() {
         int eleccion = 0;
+        System.out.println("Elija una opcion: ");
         System.out.println("1 - Bajar algún juego");
-   		System.out.println("2 - No quiero bajarme");
+   		System.out.println("2 - Ir a tirar");
   		System.out.println("3 - Ordenar cartas");
-        System.out.println("4 - Cortar");
+        System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
+    }
+
+    public int menuRobarDelPozo() {
+        int eleccion = 0;
+		System.out.println("Quiere robar del pozo?");
+        System.out.println("1 - No");
+        System.out.println("2 - Si");
+        eleccion = this.s.nextInt();
+        System.out.println();
+        return eleccion;        
     }
 
     //MOSTRAR---------------------------------------------------------
@@ -148,7 +184,9 @@ public class Consola {
 	}
 
     public void mostrarTurnoJugador(String nombreJugador) {
+        System.out.println("*****************************************");
         System.out.println("Es el turno del jugador: " + nombreJugador);
+        System.out.println("*****************************************");
     }
 
     public void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar) {
@@ -205,6 +243,26 @@ public class Consola {
         }
     }
 
+    public void jugadorPuedeRobarConCastigo(String nombreJugador) {
+        System.out.println("El jugador " + nombreJugador + " puede robar con castigo.");
+    }
+
+    public void mostrarContinuaTurno(String nombreJugador) {
+        System.out.println("Continua el turno del jugador " + nombreJugador);
+    }
+
+    public void mostrarNoPuedeRobarDelPozo() {
+        System.out.println("No puede robar del pozo porque no hay cartas en el pozo");
+    }
+
+	public void mostrarGanador(String nombre) {
+		System.out.println("El jugador " + nombre + " es el ganador!");// con " + puntos + " puntos!");
+	}
+
+	public void mostrarPuntosJugador(String nombreJugador, int puntos) {
+		System.out.println("Jugador " + nombreJugador + ": " + puntos);
+	}
+
     //GETTERS Y SETTERS---------------------------
     public int getEleccionOrdenarCartas(){
         return ELECCION_ORDENAR_CARTAS;
@@ -225,4 +283,9 @@ public class Consola {
     public int getEleccionRobarDelPozo() {
         return ELECCION_ROBAR_DEL_POZO;
     }
+
+    public int getEleccionRobarDelMazo() {
+        return ELECCION_ROBAR_DEL_MAZO;
+    }
+
 }

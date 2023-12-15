@@ -72,11 +72,12 @@ public class Juego {
 	}
 
 	private static int comprobarTrio(ArrayList<Carta> juego) {
-		int formaTrio = 2;
-		int esTrio = 1; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
+		int formaTrio = 1;
+		int esTrio = 2; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
 		for(int i = 0; i < juego.size()-1; i++) {
 			int numCarta = juego.get(i).getNumero();
-			if((numCarta == juego.get(i+1).getNumero()) || numCarta == COMODIN) 
+			int numCartaSig = juego.get(i+1).getNumero(); 
+			if((numCarta == numCartaSig) || numCarta == COMODIN || numCartaSig == COMODIN) 
 				formaTrio++;
 		}
 		if(formaTrio >= 3)
@@ -87,25 +88,25 @@ public class Juego {
 	//PUBLIC-------------------------------------------------------
 
     public static int cartasPorRonda(int ronda) {
-		int cantCartas = 7;
+		int cantCartas = 6;
 		switch(ronda) {
             case 2:
-                cantCartas = 8;
+                cantCartas = 7;
                 break;
             case 3:
-                cantCartas = 9;
+                cantCartas = 8;
                 break;
             case 4:
-                cantCartas = 10;
+                cantCartas = 9;
                 break;
             case 5:
-                cantCartas = 11;
+                cantCartas = 10;
                 break;
             case 6:
-                cantCartas = 12;
+                cantCartas = 11;
                 break;
             case 7:
-                cantCartas = 13;
+                cantCartas = 12;
                 break;
 		}
 		return cantCartas;
@@ -170,4 +171,17 @@ public class Juego {
 		}
 		return puedeCortar;
     }
+
+	//GETTERS Y SETTERS
+	public static int getFigura() {
+		return FIGURA;
+	}
+
+	public static int getAs() {
+		return AS;
+	}
+
+	public static int getPuntosComodin() {
+		return PUNTOS_COMODIN;
+	}
 }

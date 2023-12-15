@@ -22,13 +22,13 @@ public class jugadorActual extends Jugador {
 
 	private ArrayList<Carta> seleccionarCartasABajar(Object[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
-		int numCarta;
-		String paloCarta;
+		int numCarta = 0;
+		String paloCarta = "";
 		int j = 0;
 		for(int i = 0; i < cartasABajar.length/2; i++) {
 			numCarta = (int)cartasABajar[j];
 			paloCarta = cartasABajar[j+1].toString().toUpperCase();
-			juego.add(getCartaDeLaMano(this.mano, numCarta,paloCarta));
+			juego.add(getCartaDeLaMano(this.mano, numCarta, paloCarta));
 			j += 2;
 		}
 		return juego;
@@ -40,7 +40,7 @@ public class jugadorActual extends Jugador {
 		int i = 0;
 		while (!encontrada && i < mano.size()) {
 			cI = mano.get(i);
-			if (cI.getNumero() == numCarta && cI.getPalo().name().equals(paloCarta)) {
+			if (cI.getNumero() == numCarta && cI.getPalo().name().equals(paloCarta.toUpperCase())) {
 				encontrada = true;
 			} else {
 				i++;
@@ -49,15 +49,21 @@ public class jugadorActual extends Jugador {
 		return cI;
 	}
 
-	private void eliminarDeLaMano(Object[] cartasABajar) {
-		int numCarta;
-		String paloCarta;
-		for(int i = 0; i < cartasABajar.length; i+=2) {
-			numCarta = (int)cartasABajar[i];
-			paloCarta = cartasABajar[i+1].toString();
-			this.mano.remove(getCartaDeLaMano(this.mano, numCarta, paloCarta));
-		}
+	// private void eliminarDeLaMano(Object[] cartasABajar) {
+	// 	int numCarta;
+	// 	String paloCarta;
+	// 	for(int i = 0; i < cartasABajar.length; i+=2) {
+	// 		numCarta = (int)cartasABajar[i];
+	// 		paloCarta = cartasABajar[i+1].toString();
+	// 		this.mano.remove(getCartaDeLaMano(this.mano, numCarta, paloCarta));
+	// 	}
+	// }
+
+	private void eliminarDeLaMano(ArrayList<Carta> cartas) {
+		for (Carta c : cartas)
+			this.mano.remove(c);
 	}
+	
 
     private void moverCartaEnMano(int indCarta, int destino) {
 		Carta c = this.mano.get(indCarta);
@@ -67,15 +73,21 @@ public class jugadorActual extends Jugador {
 
 	//PUBLIC-----------------------------------------------------------------
 
-	public void eleccionMenuRobo(int eleccion) {
+	public boolean eleccionMenuRobo(int eleccion) {
+		boolean puedeRobar = true;
 		switch(eleccion) {
 		case 1:
 			this.robarDelMazo();
 			break;
 		case 2:
-			this.robarDelPozo();
+			if (getPartidaActual().getPozo().size() == 0){
+				puedeRobar = false;
+			} else {
+				this.robarDelPozo();
+			}
 			break;
 		}
+		return puedeRobar;
 	}
 
 	public void eleccionOrdenar(int[] elecciones) {
@@ -90,6 +102,12 @@ public class jugadorActual extends Jugador {
 	public void robarDelPozo() {
 		Carta c = getPartidaActual().eliminarDelPozo();
 		this.mano.add(c);
+	}
+
+	public void robarConCastigo() {
+		//notificarRoboConCastigo();
+		this.robarDelPozo();
+		this.robarDelMazo();
 	}
 
 	public boolean comprobarCorte() {
@@ -115,7 +133,7 @@ public class jugadorActual extends Jugador {
 		if(tipoJuego < 2) {
 			puedeBajar = true;
 			this.juegos.add(juego);
-			this.eliminarDeLaMano(cartasABajar);
+			this.eliminarDeLaMano(juego);
 			if (tipoJuego == 0) {
 				this.triosBajados++;
 			} else if(tipoJuego == 1) {
@@ -197,5 +215,13 @@ public class jugadorActual extends Jugador {
 
 	public void setEscalerasBajadas(int escaleras) {
 		this.escalerasBajadas = escaleras;
+	}
+
+	public void setPuntos(int puntos) {
+		this.puntosPartida = puntos;
+	}
+
+	public int getPuntos() {
+		return this.puntosPartida;
 	}
 }

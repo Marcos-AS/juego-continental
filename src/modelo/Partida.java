@@ -14,7 +14,7 @@ public class Partida {
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
     private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
-    private static final int CANT_TOTAL_RONDAS = 7;
+    private static final int CANT_TOTAL_RONDAS = 1;
     private Estado partida;
     private ArrayList<Observer> observadores = new ArrayList<>();
 //PRIVATE ----------------------------------------------------
@@ -33,15 +33,25 @@ public class Partida {
         int numBarajas = determinarNumBarajas();
         int i = 0;
         while(i < numBarajas) {
-            for(Palo p: Palo.values()) {
-                for(int j = 1; j < 14; j++) {
-                    Carta c = new Carta(j, p);
-                    this.mazo.add(c);
-                }
+            for(int j = 1; j < 14; j++) {
+                Carta c = new Carta(j, Palo.PICAS);
+                this.mazo.add(c);
+            }
+            for(int j = 1; j < 14; j++) {
+                Carta c = new Carta(j, Palo.DIAMANTES);
+                this.mazo.add(c);
+            }
+            for(int j = 1; j < 14; j++) {
+                Carta c = new Carta(j, Palo.TREBOL);
+                this.mazo.add(c);
+            }
+            for(int j = 1; j < 14; j++) {
+                Carta c = new Carta(j, Palo.CORAZONES);
+                this.mazo.add(c);
             }
             for(int j = 0; j < NUM_COMODINES_POR_BARAJA; j++) {
-                Carta joker = new Carta();
-                this.mazo.add(joker);
+                Carta c = new Carta(-1, Palo.COMODIN);
+                this.mazo.add(c);
             }
             i++;
         }
@@ -105,12 +115,36 @@ public class Partida {
 
 	public void repartirCartas() {
 		int numCartasARepartir = Juego.cartasPorRonda(this.ronda);
-		for(jugadorActual j: this.jugadoresActuales) {
-			for(int i = 0; i < numCartasARepartir; i++) {
-				Carta c = this.eliminarDelMazo();
-				j.agregarCarta(c);		
-			}
-		}
+		//for(jugadorActual j: this.jugadoresActuales) {
+			// for(int i = 0; i < numCartasARepartir; i++) {
+			    // Carta c = this.eliminarDelMazo();
+			 	// j.agregarCarta(c);		
+			// }
+            Carta c = new Carta(-1, Palo.COMODIN);
+            Carta c1 = new Carta(5, Palo.TREBOL);
+            Carta c2 = new Carta(5, Palo.PICAS);
+            Carta c3 = new Carta(6, Palo.PICAS);
+            Carta c4 = new Carta(6, Palo.TREBOL);
+            Carta c5 = new Carta(6, Palo.DIAMANTES);
+            this.jugadoresActuales.get(0).agregarCarta(c);
+            this.jugadoresActuales.get(0).agregarCarta(c1);
+            this.jugadoresActuales.get(0).agregarCarta(c2);
+            this.jugadoresActuales.get(0).agregarCarta(c3);
+            this.jugadoresActuales.get(0).agregarCarta(c4);
+            this.jugadoresActuales.get(0).agregarCarta(c5);
+            Carta c6 = new Carta(3, Palo.PICAS);
+            Carta c7 = new Carta(3, Palo.DIAMANTES);
+            Carta c8 = new Carta(3, Palo.TREBOL);
+            Carta c9 = new Carta(-1, Palo.COMODIN);
+            Carta c10 = new Carta(8, Palo.PICAS);
+            Carta c11 = new Carta(8, Palo.TREBOL);
+            this.jugadoresActuales.get(1).agregarCarta(c6);
+            this.jugadoresActuales.get(1).agregarCarta(c7);
+            this.jugadoresActuales.get(1).agregarCarta(c8);
+            this.jugadoresActuales.get(1).agregarCarta(c9);
+            this.jugadoresActuales.get(1).agregarCarta(c10);
+            this.jugadoresActuales.get(1).agregarCarta(c11);
+		//}
         this.iniciarPozo();
         this.ronda = 1;
 	}
@@ -120,11 +154,59 @@ public class Partida {
     } 
 
     public void resetearJuegosJugadores() {
-        for (jugadorActual jugadorActual : jugadoresActuales) {
+        for (jugadorActual jugadorActual : this.jugadoresActuales) {
             jugadorActual.setTriosBajados(0);
             jugadorActual.setEscalerasBajadas(0);
             jugadorActual.setPuedeBajar();
         }
+    }
+
+    public void sumarPuntos() {
+		int n = 0;
+		int puntos = 0;
+		while(n < this.jugadoresActuales.size()) {
+			jugadorActual j = this.jugadoresActuales.get(n);
+			puntos = 0;
+            for(Carta c: j.getMano()) {
+                int num = c.getNumero();
+                switch(num) {
+                case 1:
+                    puntos += Juego.getAs();
+                    break;
+                case 11, 12, 13:
+                    puntos += Juego.getFigura();
+                    break;
+                case -1:
+                    puntos += Juego.getPuntosComodin();
+                    break;
+                case 2,3,4,5,6,7,8,9,10:
+                    puntos += num;
+                }
+            }
+            j.setPuntos(puntos);
+            n++;
+        }
+	}
+
+	public String determinarGanador() {
+		jugadorActual ganador = this.jugadoresActuales.get(0);
+		int menosPuntos = ganador.getPuntos();
+		for(jugadorActual j: this.jugadoresActuales) {
+			if(j.getPuntos() < menosPuntos) {
+				menosPuntos = j.getPuntos();
+				ganador = j;				
+			}
+		}
+		return ganador.getNombre();
+	}
+
+    public int[] getPuntosJugadores() {
+        int[] puntos = new int[this.jugadoresActuales.size()];
+        int i = 0;
+        for (jugadorActual jugadorActual : this.jugadoresActuales) {
+            puntos[i] = jugadorActual.getPuntos();
+        }
+        return puntos;
     }
 
 //SETTERS Y GETTERS------------
@@ -158,4 +240,7 @@ public class Partida {
         return this.mazo;
     }
 
+    public ArrayList<Carta> getPozo() {
+        return this.pozo;
+    }
 }

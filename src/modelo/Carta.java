@@ -12,10 +12,6 @@ public class Carta {
         this.palo = palo;
     }
 
-    public Carta() {
-        this.numero = COMODIN;
-    }
-
     //SETTERS Y GETTERS
     public int getComodin() {
         return COMODIN;

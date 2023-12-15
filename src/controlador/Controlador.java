@@ -45,7 +45,7 @@ public class Controlador implements Observable{
     		String numString = transformarNumCarta(c.getNumero());
             Palo palo = c.getPalo();
             String carta = "";
-            if (palo == null) {
+            if (palo == Palo.COMODIN) {
                 carta = "COMODIN";
             } else {
                 carta = numString + " de " + palo;
@@ -65,9 +65,7 @@ public class Controlador implements Observable{
         ArrayList<String> manoString = null;
         try {
             jugadorActual j = p.getJugador(nombreJugador);
-            //Thread.sleep(500);
             mano = j.getMano();            
-            //Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
