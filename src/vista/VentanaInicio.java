@@ -13,7 +13,6 @@ import java.util.ArrayList;
 public class VentanaInicio extends JFrame implements Observer {
     protected Controlador ctrl = new Controlador();
     private VentanaJuego ventanaJuego;
-    //private boolean partidaIniciada = false;
 
     //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto, String titulo) {

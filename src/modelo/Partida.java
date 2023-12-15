@@ -15,8 +15,8 @@ public class Partida {
     private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private static final int CANT_TOTAL_RONDAS = 1; //prueba
-    private Estado partida;
     private ArrayList<Observer> observadores = new ArrayList<>();
+    
 //PRIVATE ----------------------------------------------------
 
     private int determinarNumBarajas() {
@@ -87,7 +87,7 @@ public class Partida {
 		jugadorActual nuevoJugador = new jugadorActual();
 		nuevoJugador.setNombre(nombre);
 		this.jugadoresActuales.add(nuevoJugador);
-		nuevoJugador.setNumJugador(this.jugadoresActuales.size());
+		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.get(this.jugadoresActuales.size()-1).sumarPartida(this);	
 		//notificarJugadorNuevo(); HACER					
 	}

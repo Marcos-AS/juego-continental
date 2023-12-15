@@ -3,7 +3,7 @@ package src.modelo;
 import java.util.ArrayList;
 
 public class jugadorActual extends Jugador {
-    private int numeroJugador;
+	private int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
     private ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
@@ -193,7 +193,7 @@ public class jugadorActual extends Jugador {
         this.nombre = nombre;
     }
 
-    public void setNumJugador(int num) {
+    public void setNumueroJugador(int num) {
         this.numeroJugador = num;
     }
     

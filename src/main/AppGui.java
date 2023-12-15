@@ -1,11 +1,6 @@
 package src.main;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.util.ArrayList;
-
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 import src.controlador.Controlador;
 import src.modelo.Partida;

@@ -14,7 +14,7 @@ public class Controlador implements Observable{
     private ArrayList<Observer> observadores = new ArrayList<>();
     
 
-//PRIVATE----------------------------------------------------------------------
+    //PRIVATE----------------------------------------------------------------------
     private String transformarNumCarta(int numCarta) {
         String num = ((Integer) numCarta).toString();
         if(numCarta <= 1 || numCarta >= 11) { 
@@ -55,7 +55,7 @@ public class Controlador implements Observable{
         return manoString;
     }
 
-//PUBLIC---------------------------------------------------------------------
+    //PUBLIC---------------------------------------------------------------------
 	public Controlador() {
 		//this.miJuego.addObserver(this);
 	}
@@ -111,21 +111,6 @@ public class Controlador implements Observable{
         return corte;
     }
 
-    // public void tratarDeBajarParaCortar(int[] triosYEscalerasQueFaltan) {
-    //     while ((triosYEscalerasQueFaltan[0] != 0 && triosYEscalerasQueFaltan[1] != 0) && eleccion != 2) {
-    //         bajarJuego(j);
-    //         faltaParaCortar = j.comprobarQueFaltaParaCortar();
-    //         vista.mostrarLoQueFaltaParaCortar(faltaParaCortar);
-    //         eleccion = vista.preguntarSiDeseaContinuar();
-    //     }
-    //     if (faltaParaCortar[0] == 0 && faltaParaCortar[1] == 0) {
-    //         corte = cortar(p, j);
-    //     } else {
-    //         vista.mostrarNoPuedeCortar();
-    //     }     
-    //     return corte;
-    // }
-
     public String enviarPrimeraCartaPozo(Partida p) {
         Carta c = p.sacarPrimeraDelPozo();
         String carta = transformarNumCarta(c.getNumero()) + " de " + c.getPalo().name();
@@ -153,8 +138,6 @@ public class Controlador implements Observable{
         }
         return numCarta;
     } 
-
-    public void cambiarEstadoPartida(){};
 
     //GETTERS, SETTERS, OBSERVER
     @Override
