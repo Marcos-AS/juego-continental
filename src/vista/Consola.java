@@ -12,6 +12,8 @@ public class Consola {
     private static final int ELECCION_NO_BAJARSE = 2;
     private static final int ELECCION_ORDENAR_CARTAS = 3;
     private static final int ELECCION_CORTAR = 4;
+    private static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
+    private static final int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
     private static final int ELECCION_ROBAR_DEL_MAZO = 1;
     private static final int ELECCION_ROBAR_DEL_POZO = 2;
 
@@ -132,6 +134,19 @@ public class Consola {
         return eleccion;
     }
 
+	public int preguntarCartaParaAcomodar() {
+		System.out.println("Indique el numero de carta que quiere acomodar en un juego");
+		int numCarta = this.s.nextInt();
+        System.out.println();
+		return numCarta;
+	}
+
+    public int preguntarEnQueJuegoQuiereAcomodar() {
+        System.out.println("En que numero de juego quiere acomodar su carta?");
+        int eleccion = this.s.nextInt();
+        return eleccion;
+    }
+
     //MENUS-------------------------------
     public int menuRobar() {
         int eleccion = 0;
@@ -152,6 +167,8 @@ public class Consola {
    		System.out.println("2 - Ir a tirar");
   		System.out.println("3 - Ordenar cartas");
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
+        System.out.println("5 - Acomodar en un juego bajado propio");
+        System.out.println("6 - Acomodar en un juego bajado ajeno");
         eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
@@ -263,6 +280,10 @@ public class Consola {
 		System.out.println("Jugador " + nombreJugador + ": " + puntos);
 	}
 
+    public void mostrarNoPuedeAcomodarJuegoPropio() {
+        System.out.println("No puede acomodar porque no tiene juegos bajados.");
+    }
+
     //GETTERS Y SETTERS---------------------------
     public int getEleccionOrdenarCartas(){
         return ELECCION_ORDENAR_CARTAS;
@@ -288,4 +309,11 @@ public class Consola {
         return ELECCION_ROBAR_DEL_MAZO;
     }
 
+    public int getEleccionAcomodarJuegoPropio() {
+        return ELECCION_ACOMODAR_JUEGO_PROPIO;
+    }
+
+    public int getEleccionAcomodarJuegoAjeno() {
+        return ELECCION_ACOMODAR_JUEGO_AJENO;
+    }
 }

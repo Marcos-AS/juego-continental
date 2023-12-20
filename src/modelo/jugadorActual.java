@@ -186,6 +186,17 @@ public class jugadorActual extends Jugador {
 		return faltante;
 	}
 
+	public boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) {
+		boolean acomodo = false;
+		ArrayList<Carta> juegoElegido = this.juegos.get(numJuego);
+		juegoElegido.add(mano.get(numCarta));
+		if(Juego.comprobarJuego(juegoElegido, ronda) != 2) {
+			acomodo = true;
+			this.juegos.get(numJuego).add(mano.get(numCarta));
+		}
+		return acomodo;
+	}
+
     //SETTERS Y GETTERS-----------------------
     public jugadorActual() {}
 

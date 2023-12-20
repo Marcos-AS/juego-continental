@@ -7,6 +7,7 @@ public class Juego {
     private static final int AS = 20;
 	private static final int PUNTOS_COMODIN = 50;
 	private static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
+	private static final int CANT_CARTAS_INICIAL = 6;
     private ArrayList<Jugador> jugadores;
 
 	//PRIVATE-----------------------------------------------------
@@ -88,7 +89,7 @@ public class Juego {
 	//PUBLIC-------------------------------------------------------
 
     public static int cartasPorRonda(int ronda) {
-		int cantCartas = 6;
+		int cantCartas = CANT_CARTAS_INICIAL;
 		switch(ronda) {
             case 2:
                 cantCartas = 7;

@@ -13,6 +13,10 @@ import rmimvc.src.cliente.Cliente;
 public class AppConsola {
 
     public static void main(String[] args) {
+        ejecutarPartida();
+    }
+
+    private static void ejecutarPartida() {
         Controlador ctrl = new Controlador();    
         Partida partidaNueva = new Partida();
         Consola consola = new Consola(ctrl);
@@ -79,7 +83,7 @@ public class AppConsola {
                         }                  
                         consola.mostrarContinuaTurno(j.getNombre());
                     } 
-                    //si el pozo esta vacio, se roba del mazo, si se eligio robar del mazo en un principio tambien sucede aca
+                    //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
                     if(!j.eleccionMenuRobo(eleccion)) {
                         consola.mostrarNoPuedeRobarDelPozo();
                         j.eleccionMenuRobo(consola.getEleccionRobarDelMazo());
@@ -87,12 +91,37 @@ public class AppConsola {
                     mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());            
                     consola.mostrarCartasJugador(mano);                    
     
-                    eleccion = consola.menuBajar();
+                    eleccion = consola.menuBajar();//-------------------------------
 
                     //ordenar cartas en la mano
                     while (eleccion == consola.getEleccionOrdenarCartas()) {
                         int[] ordenar = consola.preguntarParaOrdenarCartas();
                         j.eleccionOrdenar(ordenar);
+                        mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
+                        consola.mostrarCartasJugador(mano);                    
+                        eleccion = consola.menuBajar();
+                    }
+
+                    //acomodar en un juego
+                    while (eleccion == consola.getEleccionAcomodarJuegoPropio()) {
+                        int iCarta = consola.preguntarCartaParaAcomodar();
+                        ArrayList<ArrayList<String>> juegos = ctrl.enviarJuegosJugador(j);
+                        if (juegos.size() > 0) {                            
+                            int numJuego = 1;
+                            for (ArrayList<String> juego : juegos) {
+                                consola.mostrarJuego(numJuego);
+                                consola.mostrarCartasJugador(juego);
+                                numJuego++;
+                            }
+                            int e = consola.preguntarEnQueJuegoQuiereAcomodar();
+                            if(j.acomodarCartaJuegoPropio(iCarta, e, partidaNueva.getRonda())) {
+                                juegos = ctrl.enviarJuegosJugador(j);
+                                ArrayList<String> juego = juegos.get(e);
+                                consola.mostrarCartasJugador(juego);
+                            }
+                        } else {
+                            consola.mostrarNoPuedeAcomodarJuegoPropio();
+                        }
                         mano = ctrl.enviarManoJugador(partidaNueva, j.getNombre());
                         consola.mostrarCartasJugador(mano);                    
                         eleccion = consola.menuBajar();
@@ -151,4 +180,3 @@ public class AppConsola {
         consola.mostrarGanador(ganador);
     }
 }
-
