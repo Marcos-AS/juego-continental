@@ -197,7 +197,7 @@ public class Consola {
 
     public void mostrarCartas(ArrayList<String> cartas) {
         int i = 0;
-        for (String carta : mano) {
+        for (String carta : cartas) {
             System.out.println(i + " - " + carta);
             i++;
         }
