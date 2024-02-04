@@ -1,0 +1,4 @@
+*.class
+*.json
+.idea/
+out/
