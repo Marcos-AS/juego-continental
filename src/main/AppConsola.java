@@ -6,9 +6,9 @@ import src.vista.Consola;
 import src.controlador.Controlador;
 
 import java.util.ArrayList;
-import java.rmi.RemoteException;
-import rmimvc.src.RMIMVCException;
-import rmimvc.src.cliente.Cliente;
+//import java.rmi.RemoteException;
+//import rmimvc.src.RMIMVCException;
+//import rmimvc.src.cliente.Cliente;
 
 public class AppConsola {
 
@@ -29,7 +29,7 @@ public class AppConsola {
         // }
         String j1 = "Juan";
         String j2 = "Marcos";
-        int eleccion = 0;
+        int eleccion;
         boolean corte = false;
         partidaNueva.agregarJugador(j1);
         partidaNueva.agregarJugador(j2);
@@ -43,7 +43,7 @@ public class AppConsola {
         consola.mostrarCartasJugador(j2);
 
         ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
-        ArrayList<String> mano = null;
+        ArrayList<String> mano;
 
         //empiezan las rondas
         while (partidaNueva.getRonda()<=partidaNueva.getTotalRondas()) {
@@ -145,6 +145,7 @@ public class AppConsola {
                         consola.mostrarCartas(mano);
                         eleccion = consola.menuBajar();
                     }
+
 
                     //si quiere cortar, comprobar si puede
                     if (eleccion == consola.getEleccionCortar()) {
