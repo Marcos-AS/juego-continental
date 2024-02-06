@@ -110,11 +110,19 @@ public class jugadorActual extends Jugador {
 		this.robarDelMazo();
 	}
 
-	public boolean comprobarCorte() {
+	public boolean cortar(Partida p) {
 		boolean puedeCortar = false;
-		puedeCortar = Juego.comprobarPosibleCorte(getPartidaActual().getRonda(), this.triosBajados, this.escalerasBajadas);
+		if(Juego.comprobarPosibleCorte(getPartidaActual().getRonda(), this.triosBajados, this.escalerasBajadas)) {
+			if (this.getMano().size()==1) {
+				this.tirarAlPozo(0);
+			}
+			p.incrementarRonda();
+			puedeCortar = true;
+		}
 		return puedeCortar;
 	}
+
+
 
     public void tirarAlPozo(int indiceCarta) {
 		Carta cartaATirar = this.mano.get(indiceCarta); 

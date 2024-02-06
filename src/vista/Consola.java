@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
 import src.modelo.Palo;
+import src.modelo.Partida;
 
 public class Consola {
     private Controlador ctrl;
@@ -42,8 +43,22 @@ public class Consola {
     }
 
     //PUBLIC-----------------------------------------------------------
-    public Consola(Controlador ctrl){
-        this.ctrl = ctrl;
+    public Consola(){
+        this.ctrl = new Controlador();
+    }
+
+    public void bajarse(Partida p, String nombreJugador, Object [] cartasABajar) {
+        if(!ctrl.bajarJuego(p, nombreJugador, cartasABajar)) {
+            mostrarNoPuedeBajarJuego();
+        } else {
+            ArrayList<ArrayList<String>> juegos = getJuegosJugador(p, nombreJugador);
+            int numJuego = 1;
+            for (ArrayList<String> juego : juegos) {
+                mostrarJuego(numJuego);
+                mostrarCartas(juego);
+                numJuego++;
+            }
+        }
     }
 	
     //preguntar-------------------------------------
@@ -224,7 +239,8 @@ public class Consola {
         System.out.println(carta);
     }
     
-    public void mostrarPozo(String carta) {
+    public void mostrarPozo(Partida p) {
+        String carta = getPrimeraCartaPozo(p);
         System.out.println("Pozo: ");
         mostrarCarta(carta);
     }
@@ -292,6 +308,14 @@ public class Consola {
     //GETTERS Y SETTERS---------------------------
     public ArrayList<String> getCartasJugador(String nombreJugador) {
         return ctrl.enviarManoJugador(nombreJugador);
+    }
+
+    public String getPrimeraCartaPozo(Partida p) {
+        return ctrl.enviarPrimeraCartaPozo(p);
+    }
+
+    public ArrayList<ArrayList<String>> getJuegosJugador(Partida p, String nombreJugador) {
+        return ctrl.enviarJuegosJugador(p, nombreJugador);
     }
 
     public int getEleccionOrdenarCartas(){

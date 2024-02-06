@@ -77,7 +77,8 @@ public class Controlador implements Observable{
         return recorrerMano(mazo);
     }
  
-    public ArrayList<ArrayList<String>> enviarJuegosJugador(jugadorActual j) {
+    public ArrayList<ArrayList<String>> enviarJuegosJugador(Partida p, String nombreJugador) {
+        jugadorActual j = p.getJugador(nombreJugador);
         ArrayList<ArrayList<Carta>> juegos = null;
         ArrayList<ArrayList<String>> juegosString = new ArrayList<>();
         juegos = j.getJuegos();
@@ -87,7 +88,8 @@ public class Controlador implements Observable{
         return juegosString;
     }
 
-    public boolean bajarJuego(jugadorActual j, Object[] cartasABajar) {
+    public boolean bajarJuego(Partida p, String nombreJugador, Object[] cartasABajar) {
+        jugadorActual j = p.getJugador(nombreJugador);
         boolean puedeBajar = false;
         if (cartasABajar.length >= 6) {
             if(j.bajarJuego(cartasABajar)) {
@@ -96,18 +98,6 @@ public class Controlador implements Observable{
             }
         }
         return puedeBajar;
-    }
-
-    public boolean cortar(Partida p, jugadorActual j) {
-        boolean corte = false;
-        if (j.comprobarCorte()) {
-            if (j.getMano().size()==1) {
-                j.tirarAlPozo(0);
-            }
-            p.incrementarRonda();
-            corte = true;
-        }
-        return corte;
     }
 
     public String enviarPrimeraCartaPozo(Partida p) {

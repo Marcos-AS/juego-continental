@@ -3,7 +3,6 @@ package src.main;
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
 import src.vista.Consola;
-import src.controlador.Controlador;
 
 import java.util.ArrayList;
 //import java.rmi.RemoteException;
@@ -17,9 +16,8 @@ public class AppConsola {
     }
 
     private static void ejecutarPartida() {
-        Controlador ctrl = new Controlador();    
         Partida partidaNueva = new Partida();
-        Consola consola = new Consola(ctrl);
+        Consola consola = new Consola();
         // Cliente cli = new Cliente(null, 0, null, 0);
         // try {
         //     cli.iniciar(null);
@@ -51,13 +49,14 @@ public class AppConsola {
             while (!corte) {
                 try {
                     consola.mostrarCombinacionRequerida(partidaNueva.getRonda());
-                    consola.mostrarPozo(ctrl.enviarPrimeraCartaPozo(partidaNueva));
+                    consola.mostrarPozo(partidaNueva);
                     jugadorActual j = jugadoresActuales.get(i);
                     consola.mostrarTurnoJugador(j.getNombre());
                     mano = consola.getCartasJugador(j.getNombre());
                     consola.mostrarCartas(mano);
                     
                     eleccion = consola.menuRobar();
+
                     //si no roba del pozo, los demas pueden hacerlo, con "castigo"
                     if (eleccion != consola.getEleccionRobarDelPozo()) {
                         ArrayList<jugadorActual> jugadoresRoboCastigo = new ArrayList<>();
@@ -105,8 +104,8 @@ public class AppConsola {
                     //acomodar en un juego
                     while (eleccion == consola.getEleccionAcomodarJuegoPropio()) {
                         int iCarta = consola.preguntarCartaParaAcomodar();
-                        ArrayList<ArrayList<String>> juegos = ctrl.enviarJuegosJugador(j);
-                        if (juegos.size() > 0) {                            
+                        ArrayList<ArrayList<String>> juegos = consola.getJuegosJugador(partidaNueva, j.getNombre());
+                        if (!juegos.isEmpty()) {
                             int numJuego = 1;
                             for (ArrayList<String> juego : juegos) {
                                 consola.mostrarJuego(numJuego);
@@ -115,7 +114,7 @@ public class AppConsola {
                             }
                             int e = consola.preguntarEnQueJuegoQuiereAcomodar();
                             if(j.acomodarCartaJuegoPropio(iCarta, e, partidaNueva.getRonda())) {
-                                juegos = ctrl.enviarJuegosJugador(j);
+                                juegos = consola.getJuegosJugador(partidaNueva,j.getNombre());
                                 ArrayList<String> juego = juegos.get(e);
                                 consola.mostrarCartas(juego);
                             }
@@ -130,17 +129,7 @@ public class AppConsola {
                     //bajarse
                     while (eleccion == consola.getEleccionBajarse()) {
                         Object [] cartasABajar = consola.preguntarQueBajarParaJuego();
-                        if(!ctrl.bajarJuego(j, cartasABajar)) {
-                            consola.mostrarNoPuedeBajarJuego();
-                        } else {
-                            ArrayList<ArrayList<String>> juegos = ctrl.enviarJuegosJugador(j);
-                            int numJuego = 1;
-                            for (ArrayList<String> juego : juegos) {
-                                consola.mostrarJuego(numJuego);
-                                consola.mostrarCartas(juego);
-                                numJuego++;
-                            }
-                        }
+                        consola.bajarse(partidaNueva, j.getNombre(), cartasABajar);
                         mano = consola.getCartasJugador(j.getNombre());
                         consola.mostrarCartas(mano);
                         eleccion = consola.menuBajar();
@@ -149,7 +138,7 @@ public class AppConsola {
 
                     //si quiere cortar, comprobar si puede
                     if (eleccion == consola.getEleccionCortar()) {
-                        corte = ctrl.cortar(partidaNueva, j);
+                        corte = j.cortar(partidaNueva);
                         if (!corte) {
                             int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar();
                             consola.mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
