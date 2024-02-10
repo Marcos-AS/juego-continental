@@ -96,4 +96,8 @@ public class VentanaJuego extends VentanaInicio{
         public JPanel getPanel() {
             return this.panel;
         }
+
+        public void actualizarValor(Object cambio) {
+
+        }
 }

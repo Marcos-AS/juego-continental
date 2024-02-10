@@ -1,8 +1,9 @@
 package src.modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Jugador {
+public class Jugador implements Serializable {
     protected String nombre;
     protected ArrayList<Partida> partidas = new ArrayList<>();
     private int puestoRanking;

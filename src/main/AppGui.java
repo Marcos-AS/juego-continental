@@ -8,12 +8,12 @@ import src.modelo.jugadorActual;
 import src.vista.VentanaInicio;
 import src.vista.VentanaJuego;
 
-public class AppGui implements Observer {
-    private static final String NOMBRE_VENTANA = "Continental";
+public class AppGui {
     
     public static void main(String[] args) {
-        new VentanaInicio(1000, 700, NOMBRE_VENTANA);
-        //SwingUtilities.invokeLater(() -> {
+        Controlador ctrl = new Controlador();
+        new VentanaInicio(500, 700);
+        new VentanaInicio(500, 700);
     }
 
     public void AppGui() {}
@@ -46,7 +46,7 @@ public class AppGui implements Observer {
             // }
 
             guiPartida.mostrarTurnoJugador(j1);
-            guiPartida.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j1));
+            guiPartida.mostrarCartasJugador(ctrl.enviarManoJugador(j1));
             Thread.sleep(300);
             //guiPartida.mostrarTurnoJugador(j2);
             //guiPartida.mostrarCartasJugador(ctrl.enviarManoJugador(partidaNueva, j2));            

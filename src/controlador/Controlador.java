@@ -1,15 +1,20 @@
 package src.controlador;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import src.main.Observable;
-import src.main.Observer;
+import rmimvc.src.observer.IObservableRemoto;
 import src.modelo.*;
+import rmimvc.src.cliente.IControladorRemoto;
+import src.vista.ifVista;
 
 
-public class Controlador implements Observable{
-    private ArrayList<Observer> observadores = new ArrayList<>();
-    
+public class Controlador implements IControladorRemoto {
+    ifPartida partida;
+    ifVista vista;
+    public Controlador(ifVista vista) {
+        this.vista = vista;
+    }
 
     //PRIVATE----------------------------------------------------------------------
     private String transformarNumCarta(int numCarta) {
@@ -36,7 +41,7 @@ public class Controlador implements Observable{
         return num;
     }  
 
-    private ArrayList<String> recorrerMano(ArrayList<Carta> mano) {
+    private ArrayList<String> cartasToStringArray(ArrayList<Carta> mano) {
         ArrayList<String> manoString = new ArrayList<>();
         for (Carta c : mano) {
     		String numString = transformarNumCarta(c.getNumero());
@@ -53,37 +58,32 @@ public class Controlador implements Observable{
     }
 
     //PUBLIC---------------------------------------------------------------------
-	public Controlador() {
-		//this.miJuego.addObserver(this);
-	}
 
-    public ArrayList<String> enviarManoJugador(String nombreJugador) {
-        Jugador j = Juego.getJugador(nombreJugador);
-        Partida p = j.getPartidaActiva();
-        ArrayList<Carta> mano = null;
-        ArrayList<String> manoString = null;
+    public ArrayList<String> enviarManoJugador(String nombreJugador) throws RemoteException {
+        ArrayList<String> manoString = new ArrayList<>();
         try {
+            Jugador j = Juego.getJugador(nombreJugador);
+            Partida p = j.getPartidaActiva();
             jugadorActual jA = p.getJugador(nombreJugador);
-            mano = jA.getMano();
+            ArrayList<Carta> mano = jA.getMano();
+            manoString = cartasToStringArray(mano);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        manoString = recorrerMano(mano);
         return manoString;
     }
 
     public ArrayList<String> enviarMazo(Partida p) {
         ArrayList<Carta> mazo = p.getMazo();
-        return recorrerMano(mazo);
+        return cartasToStringArray(mazo);
     }
  
     public ArrayList<ArrayList<String>> enviarJuegosJugador(Partida p, String nombreJugador) {
         jugadorActual j = p.getJugador(nombreJugador);
-        ArrayList<ArrayList<Carta>> juegos = null;
+        ArrayList<ArrayList<Carta>> juegos = j.getJuegos();
         ArrayList<ArrayList<String>> juegosString = new ArrayList<>();
-        juegos = j.getJuegos();
         for (ArrayList<Carta> juego : juegos) {
-            juegosString.add(recorrerMano(juego));
+            juegosString.add(cartasToStringArray(juego));
         }
         return juegosString;
     }
@@ -128,9 +128,25 @@ public class Controlador implements Observable{
         return numCarta;
     } 
 
-    //GETTERS, SETTERS, OBSERVER
+    public int getValor(int accion) throws RemoteException {
+        int valor = 0;
+        if (accion == 1) {
+            valor = partida.getRonda();
+        }
+        return valor;
+    }
+
+    //OBSERVER----------------------------------------------
     @Override
-    public void addObserver(Observer observador) {
-        observadores.add(observador);
+    public <T extends IObservableRemoto> void setModeloRemoto(T modeloRemoto) throws RemoteException {
+        this.partida = (ifPartida) modeloRemoto;
+    }
+
+    @Override
+    public void actualizar(IObservableRemoto modelo, Object cambio) throws RemoteException {
+        if (cambio instanceof Integer) {
+            int indice = (Integer) cambio;
+            vista.actualizar(getValor(indice), indice);
+        }
     }
 }

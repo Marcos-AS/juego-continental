@@ -1,11 +1,13 @@
 package src.modelo;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import rmimvc.src.observer.ObservableRemoto;
 import src.main.Observer;
 
-public class Partida {
+public class Partida extends ObservableRemoto implements ifPartida {
     private int ronda;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo = new ArrayList<>();
@@ -17,10 +19,27 @@ public class Partida {
     private static final int CANT_TOTAL_RONDAS = 1; //prueba
     private boolean enCurso = false;
     private ArrayList<Observer> observadores = new ArrayList<>();
-    
+
+    //OBSERVER--------------------------------------------------
+//    public void addObserver(Observer o) {
+//        observadores.add(o);
+//    }
+
+//    private void notificarObservadores(int i) {
+//        for (Observer o : observadores) {
+//            o.notificarCambio(i);
+//        }
+//    }
+
+    @Override
+    public void setValorAccion1(Integer valor) {
+
+    }
+
 //PRIVATE ----------------------------------------------------
 
-    private int determinarNumBarajas() {
+    @Override
+    public int determinarNumBarajas() {
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
         if (this.jugadoresActuales.size() >= 4 && this.jugadoresActuales.size() <= 6) {
             cantBarajas = BARAJAS_MAS_4_JUGADORES;
@@ -30,7 +49,8 @@ public class Partida {
         return cantBarajas;
     }
 
-    private void iniciarMazo() {
+    @Override
+    public void iniciarMazo() {
         int numBarajas = determinarNumBarajas();
         int i = 0;
         while(i < numBarajas) {
@@ -58,7 +78,8 @@ public class Partida {
         }
     }
 
-    private void mezclarCartas() {
+    @Override
+    public void mezclarCartas() {
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
         while(this.mazo.size() > 0) {
@@ -68,7 +89,8 @@ public class Partida {
         this.mazo = mazoMezclado;
 	}
 
-    private void iniciarPozo() {
+    @Override
+    public void iniciarPozo() {
 		this.pozo.add(this.sacarPrimeraDelMazo());
 		this.mazo.remove(this.mazo.size()-1);
 	}
@@ -76,46 +98,54 @@ public class Partida {
     //PUBLIC ----------------------------------------------------
     public Partida() {}
 
+    @Override
     public Carta sacarPrimeraDelPozo() {
         return this.pozo.get(this.pozo.size()-1);
     }
 
+    @Override
     public Carta sacarPrimeraDelMazo() {
         return this.mazo.get(this.mazo.size()-1);
     }
 
-    public void agregarJugador(String nombre) {
+    @Override
+    public void agregarJugador(String nombre) throws RemoteException {
 		jugadorActual nuevoJugador = new jugadorActual();
 		nuevoJugador.setNombre(nombre);
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.get(this.jugadoresActuales.size()-1).sumarPartida(this);
         Juego.agregarJugador(nuevoJugador);
-		//notificarJugadorNuevo(); HACER					
+		notificarObservadores(1);
 	}
 
+    @Override
     public Carta eliminarDelMazo() {
 		Carta c = sacarPrimeraDelMazo();
 		this.mazo.remove(mazo.size()-1);
 		return c;
 	}
 
+    @Override
     public Carta eliminarDelPozo() {
 		Carta c = sacarPrimeraDelPozo();
 		this.pozo.remove(this.pozo.size()-1);
 		return c;
 	}
 
+    @Override
     public void agregarAlPozo(Carta c) {
 		this.pozo.add(c);
 	}
 
+    @Override
     public void crearMazo() {
         iniciarMazo();
         mezclarCartas();
     }
 
-	public void repartirCartas() {
+	@Override
+    public void repartirCartas() {
 		int numCartasARepartir = Juego.cartasPorRonda(this.ronda);
 //		for(jugadorActual j: this.jugadoresActuales) {
 //			for(int i = 0; i < numCartasARepartir; i++) {
@@ -151,10 +181,12 @@ public class Partida {
         this.ronda = 1;
 	}
 
+    @Override
     public void incrementarRonda() {
         this.ronda++;
     } 
 
+    @Override
     public void resetearJuegosJugadores() {
         for (jugadorActual jugadorActual : this.jugadoresActuales) {
             jugadorActual.setTriosBajados(0);
@@ -163,6 +195,7 @@ public class Partida {
         }
     }
 
+    @Override
     public void sumarPuntos() {
 		int n = 0;
 		int puntos = 0;
@@ -190,7 +223,8 @@ public class Partida {
         }
 	}
 
-	public String determinarGanador() {
+	@Override
+    public String determinarGanador() {
 		jugadorActual ganador = this.jugadoresActuales.get(0);
 		int menosPuntos = ganador.getPuntos();
 		for(jugadorActual j: this.jugadoresActuales) {
@@ -202,6 +236,7 @@ public class Partida {
 		return ganador.getNombre();
 	}
 
+    @Override
     public int[] getPuntosJugadores() {
         int[] puntos = new int[this.jugadoresActuales.size()];
         int i = 0;
@@ -213,18 +248,22 @@ public class Partida {
     }
 
 //SETTERS Y GETTERS------------
+    @Override
     public int getNumJugadores() {
         return this.jugadoresActuales.size();
     }
 
+    @Override
     public ArrayList<jugadorActual> getJugadoresActuales() {
         return this.jugadoresActuales;
     }
 
+    @Override
     public int getRonda() {
         return this.ronda;
     }
 
+    @Override
     public jugadorActual getJugador(String nombreJugador) {
         jugadorActual j = null;
         for (jugadorActual jugadorActual : jugadoresActuales) {
@@ -235,22 +274,27 @@ public class Partida {
         return j;
     }
 
+    @Override
     public int getTotalRondas() {
         return CANT_TOTAL_RONDAS;
     }
 
+    @Override
     public ArrayList<Carta> getMazo() {
         return this.mazo;
     }
 
+    @Override
     public ArrayList<Carta> getPozo() {
         return this.pozo;
     }
 
+    @Override
     public boolean getEstadoPartida() {
         return this.enCurso;
     }
 
+    @Override
     public void setEstadoPartida() {
         this.enCurso = !this.enCurso;
     }

@@ -2,6 +2,7 @@ package src.main;
 
 import src.modelo.Partida;
 import src.modelo.jugadorActual;
+import src.serializacion.Serializador;
 import src.vista.Consola;
 
 import java.util.ArrayList;
@@ -12,12 +13,39 @@ import java.util.ArrayList;
 public class AppConsola {
 
     public static void main(String[] args) {
-        ejecutarPartida();
+        bienvenida();
     }
 
-    private static void ejecutarPartida() {
+    private static void bienvenida() {
+        Consola consola = new Consola();
+        int eleccion = consola.menuBienvenida();
+        while (eleccion != -1) {
+            switch (eleccion) {
+                case 1: {
+                    iniciarPartidaNueva();
+                    break;
+                }
+                case 2: {
+                    continuarPartida();
+                    break;
+                }
+                case 3: {
+                    ranking();
+                    break;
+                }
+                case 4: {
+                    consola.mostrarReglas();
+                    break;
+                }
+            }
+            eleccion = consola.menuBienvenida();
+        }
+    }
+
+    private static void iniciarPartidaNueva() {
         Partida partidaNueva = new Partida();
         Consola consola = new Consola();
+        Serializador srl = new Serializador("jugadores.dat");
         // Cliente cli = new Cliente(null, 0, null, 0);
         // try {
         //     cli.iniciar(null);
@@ -25,24 +53,23 @@ public class AppConsola {
         //     // TODO: handle exception
         // } catch (RMIMVCException e) {
         // }
-        String j1 = "Juan";
-        String j2 = "Marcos";
-        int eleccion;
-        boolean corte = false;
-        partidaNueva.agregarJugador(j1);
-        partidaNueva.agregarJugador(j2);
+        ArrayList<String> jugadores = consola.menuAgregarJugador();
+        for (String j : jugadores) {
+            partidaNueva.agregarJugador(j);
+        }
 
         //reparto de cartas
         partidaNueva.crearMazo();
         partidaNueva.repartirCartas();
-        consola.mostrarCartasNombreJugador(j1);
-        consola.mostrarCartasJugador(j1);
-        consola.mostrarCartasNombreJugador(j2);
-        consola.mostrarCartasJugador(j2);
+        //consola.mostrarCartasNombreJugador(j1);
+        //consola.mostrarCartasJugador(j1);
+        //consola.mostrarCartasNombreJugador(j2);
+        //consola.mostrarCartasJugador(j2);
 
         ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
         ArrayList<String> mano;
-
+        int eleccion;
+        boolean corte = false;
         //empiezan las rondas
         while (partidaNueva.getRonda()<=partidaNueva.getTotalRondas()) {
             int i = 0;
@@ -169,4 +196,8 @@ public class AppConsola {
         String ganador = partidaNueva.determinarGanador();
         consola.mostrarGanador(ganador);
     }
+
+    private static void continuarPartida() {}
+
+    private static void ranking() {}
 }
