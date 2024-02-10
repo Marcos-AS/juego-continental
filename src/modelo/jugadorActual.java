@@ -1,5 +1,6 @@
 package src.modelo;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class jugadorActual extends Jugador {
@@ -110,9 +111,9 @@ public class jugadorActual extends Jugador {
 		this.robarDelMazo();
 	}
 
-	public boolean cortar(Partida p) {
+	public boolean cortar(Partida p) throws RemoteException {
 		boolean puedeCortar = false;
-		if(Juego.comprobarPosibleCorte(getPartidaActual().getRonda(), this.triosBajados, this.escalerasBajadas)) {
+		if(ifJuego.comprobarPosibleCorte(getPartidaActual().getRonda(), this.triosBajados, this.escalerasBajadas)) {
 			if (this.getMano().size()==1) {
 				this.tirarAlPozo(0);
 			}
@@ -134,10 +135,10 @@ public class jugadorActual extends Jugador {
 		this.mano.add(c);
 	}
     
-    public boolean bajarJuego(Object[] cartasABajar) {
+    public boolean bajarJuego(Object[] cartasABajar) throws RemoteException {
 		boolean puedeBajar = false;
 		ArrayList<Carta> juego = seleccionarCartasABajar(cartasABajar);
-		int tipoJuego = Juego.comprobarJuego(juego, getPartidaActual().getRonda()); //si tipoJuego es 2, no es juego
+		int tipoJuego = ifJuego.comprobarJuego(juego, getPartidaActual().getRonda()); //si tipoJuego es 2, no es juego
 		if(tipoJuego < 2) {
 			puedeBajar = true;
 			this.juegos.add(juego);
@@ -194,11 +195,11 @@ public class jugadorActual extends Jugador {
 		return faltante;
 	}
 
-	public boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) {
+	public boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException {
 		boolean acomodo = false;
 		ArrayList<Carta> juegoElegido = this.juegos.get(numJuego);
 		juegoElegido.add(mano.get(numCarta));
-		if(Juego.comprobarJuego(juegoElegido, ronda) != 2) {
+		if(ifJuego.comprobarJuego(juegoElegido, ronda) != 2) {
 			acomodo = true;
 			this.juegos.get(numJuego).add(mano.get(numCarta));
 		}

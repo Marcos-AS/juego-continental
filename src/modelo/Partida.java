@@ -4,10 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import rmimvc.src.observer.ObservableRemoto;
-import src.main.Observer;
-
-public class Partida extends ObservableRemoto implements ifPartida {
+public class Partida implements ifPartida {
     private int ronda;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo = new ArrayList<>();
@@ -18,23 +15,8 @@ public class Partida extends ObservableRemoto implements ifPartida {
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private static final int CANT_TOTAL_RONDAS = 1; //prueba
     private boolean enCurso = false;
-    private ArrayList<Observer> observadores = new ArrayList<>();
 
-    //OBSERVER--------------------------------------------------
-//    public void addObserver(Observer o) {
-//        observadores.add(o);
-//    }
-
-//    private void notificarObservadores(int i) {
-//        for (Observer o : observadores) {
-//            o.notificarCambio(i);
-//        }
-//    }
-
-    @Override
-    public void setValorAccion1(Integer valor) {
-
-    }
+    public Partida() {}
 
 //PRIVATE ----------------------------------------------------
 
@@ -96,7 +78,7 @@ public class Partida extends ObservableRemoto implements ifPartida {
 	}
 
     //PUBLIC ----------------------------------------------------
-    public Partida() {}
+
 
     @Override
     public Carta sacarPrimeraDelPozo() {
@@ -115,8 +97,7 @@ public class Partida extends ObservableRemoto implements ifPartida {
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.get(this.jugadoresActuales.size()-1).sumarPartida(this);
-        Juego.agregarJugador(nuevoJugador);
-		notificarObservadores(1);
+        ifJuego.agregarJugador(nuevoJugador);
 	}
 
     @Override
@@ -145,8 +126,8 @@ public class Partida extends ObservableRemoto implements ifPartida {
     }
 
 	@Override
-    public void repartirCartas() {
-		int numCartasARepartir = Juego.cartasPorRonda(this.ronda);
+    public void repartirCartas() throws RemoteException {
+		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
 //		for(jugadorActual j: this.jugadoresActuales) {
 //			for(int i = 0; i < numCartasARepartir; i++) {
 //			    Carta c = this.eliminarDelMazo();
@@ -196,7 +177,7 @@ public class Partida extends ObservableRemoto implements ifPartida {
     }
 
     @Override
-    public void sumarPuntos() {
+    public void sumarPuntos() throws RemoteException {
 		int n = 0;
 		int puntos = 0;
 		while(n < this.jugadoresActuales.size()) {
@@ -206,13 +187,13 @@ public class Partida extends ObservableRemoto implements ifPartida {
                 int num = c.getNumero();
                 switch(num) {
                 case 1:
-                    puntos += Juego.getAs();
+                    puntos += ifJuego.getAs();
                     break;
                 case 11, 12, 13:
-                    puntos += Juego.getFigura();
+                    puntos += ifJuego.getFigura();
                     break;
                 case -1:
-                    puntos += Juego.getPuntosComodin();
+                    puntos += ifJuego.getPuntosComodin();
                     break;
                 case 2,3,4,5,6,7,8,9,10:
                     puntos += num;

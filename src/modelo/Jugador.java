@@ -8,6 +8,7 @@ public class Jugador implements Serializable {
     protected ArrayList<Partida> partidas = new ArrayList<>();
     private int puestoRanking;
     private int puntosTotales;
+    private int puntosAlFinalizar;
 
     public Jugador() {}
 

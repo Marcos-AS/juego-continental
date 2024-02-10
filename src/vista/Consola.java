@@ -1,11 +1,12 @@
 package src.vista;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
 import src.modelo.Partida;
 
-public class Consola {
+public class Consola implements ifVista{
     private Controlador ctrl;
     private Scanner s = new Scanner(System.in);
     private static final int ELECCION_BAJARSE = 1;
@@ -17,6 +18,7 @@ public class Consola {
     private static final int ELECCION_ROBAR_DEL_MAZO = 1;
     private static final int ELECCION_ROBAR_DEL_POZO = 2;
 
+    public Consola(){}
 
     //PRIVATE-------------------------------------------------------
 
@@ -42,11 +44,7 @@ public class Consola {
     }
 
     //PUBLIC-----------------------------------------------------------
-    public Consola(){
-        this.ctrl = new Controlador();
-    }
-
-    public void bajarse(Partida p, String nombreJugador, Object [] cartasABajar) {
+    public void bajarse(Partida p, String nombreJugador, Object [] cartasABajar) throws RemoteException {
         if(!ctrl.bajarJuego(p, nombreJugador, cartasABajar)) {
             mostrarNoPuedeBajarJuego();
         } else {
@@ -288,7 +286,7 @@ public class Consola {
 		System.out.println("Cartas de " + nombreJugador);
 	}
 
-    public void mostrarCartasJugador(String nombreJugador) {
+    public void mostrarCartasJugador(String nombreJugador) throws RemoteException {
         ArrayList<String> mano = getCartasJugador(nombreJugador);
         mostrarCartas(mano);
 	}
@@ -389,7 +387,7 @@ public class Consola {
     }
 
     //GETTERS Y SETTERS---------------------------
-    public ArrayList<String> getCartasJugador(String nombreJugador) {
+    public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
         return ctrl.enviarManoJugador(nombreJugador);
     }
 
@@ -431,5 +429,15 @@ public class Consola {
 
     public int getEleccionAcomodarJuegoAjeno() {
         return ELECCION_ACOMODAR_JUEGO_AJENO;
+    }
+
+    @Override
+    public void actualizar(Object actualizacion, int indice) {
+
+    }
+
+    @Override
+    public void setControlador(Controlador ctrl) {
+
     }
 }

@@ -25,7 +25,6 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     public VentanaInicio() {}
 
-    @Override
     public JPanel crearPanel() {
         JPanel panel = new JPanel();                              
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));    // establecer el layout del panel como BoxLayout en el eje Y
@@ -33,7 +32,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         return panel;
     }
 
-    @Override
     public void agregarAPanelInicio(JPanel panel) {
         panel.add(agregarTitulo());
         
@@ -72,7 +70,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         getContentPane().add(panel, BorderLayout.CENTER);   // agregar el panel a la ventana
     }
 
-    @Override
     public void agregarMenuBarra() {
         JMenuBar menuBarra = new JMenuBar();
 
@@ -97,7 +94,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         setJMenuBar(menuBarra);             // establecer la barra de menú en la ventana
     }
 
-    @Override
     public JLabel agregarTitulo() {
         JLabel labelTitulo = new JLabel("CONTINENTAL");
         labelTitulo.setFont(new Font("Hollywood Hills", Font.BOLD, 100));
@@ -107,7 +103,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         return labelTitulo;
     }
 
-    @Override
     public JLabel crearLabel() {
         JLabel labelNombre = new JLabel("Ingrese su nombre");                   // etiqueta para pedir el nombre del usuario
         labelNombre.setAlignmentX(Component.CENTER_ALIGNMENT);                   // alineacion
@@ -116,8 +111,7 @@ public class VentanaInicio extends JFrame implements ifVista {
         labelNombre.setBorder(new EmptyBorder(40, 0, 10, 0));                   // padding
         return labelNombre;
     }
-   
-    @Override
+
     public JTextField crearInputField() {
         JTextField textFieldNombre = new JTextField();                              // Campo de texto para el nombre del usuario
         textFieldNombre.setAlignmentX(Component.CENTER_ALIGNMENT);                  // alineacion
@@ -132,8 +126,7 @@ public class VentanaInicio extends JFrame implements ifVista {
         textFieldNombre.setBorder(bordePersonalizado1);
         return textFieldNombre;
     }
-   
-    @Override
+
     public JButton crearBoton(String contenido, float alineacion, int ancho, int alto) {
         JButton boton = new JButton(contenido);             
         boton.setAlignmentX(alineacion);                        
@@ -147,7 +140,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         return boton;
     }
 
-    @Override
     public JLabel getLabelImagen(String rutaImagen) {
         JLabel labelImagen = null;
         try {
@@ -165,7 +157,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         return labelImagen;
     }
 
-    @Override
     public JMenuItem crearItemReglas() {
         JMenuItem itemReglas = new JMenuItem("Reglas");
         itemReglas.addActionListener(new ActionListener() {
@@ -178,7 +169,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         return itemReglas;
     }
 
-    @Override
     public JMenuItem crearItemSalir() {
         JMenuItem itemSalir = new JMenuItem("Salir del juego");
         itemSalir.addActionListener (new ActionListener(){        
@@ -190,7 +180,6 @@ public class VentanaInicio extends JFrame implements ifVista {
         return itemSalir;
     }
 
-    @Override
     public JMenuItem crearItemRanking() {
         JMenuItem itemVerRanking = new JMenuItem("Mostrar el ranking");
 
@@ -218,12 +207,10 @@ public class VentanaInicio extends JFrame implements ifVista {
         this.ctrl = ctrl;
     }
 
-    @Override
     public void setVentanaJuego(VentanaJuego ventanaJuego) {
         this.ventanaJuego = ventanaJuego;
     }
 
-    @Override
     public VentanaJuego getVentanaJuego() {
         return this.ventanaJuego;
     }

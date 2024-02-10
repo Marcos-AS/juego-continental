@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface ifPartida {
-    void setValorAccion1(Integer valor);
 
     int determinarNumBarajas();
 
@@ -28,13 +27,13 @@ public interface ifPartida {
 
     void crearMazo();
 
-    void repartirCartas();
+    void repartirCartas() throws RemoteException;
 
     void incrementarRonda();
 
     void resetearJuegosJugadores();
 
-    void sumarPuntos();
+    void sumarPuntos() throws RemoteException;
 
     String determinarGanador();
 

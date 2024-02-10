@@ -10,7 +10,7 @@ import src.vista.ifVista;
 
 
 public class Controlador implements IControladorRemoto {
-    ifPartida partida;
+    ifJuego juego;
     ifVista vista;
     public Controlador(ifVista vista) {
         this.vista = vista;
@@ -62,11 +62,11 @@ public class Controlador implements IControladorRemoto {
     public ArrayList<String> enviarManoJugador(String nombreJugador) throws RemoteException {
         ArrayList<String> manoString = new ArrayList<>();
         try {
-            Jugador j = Juego.getJugador(nombreJugador);
-            Partida p = j.getPartidaActiva();
-            jugadorActual jA = p.getJugador(nombreJugador);
-            ArrayList<Carta> mano = jA.getMano();
-            manoString = cartasToStringArray(mano);
+            //Jugador j = Juego.getJugador(nombreJugador);
+            //Partida p = j.getPartidaActiva();
+            //jugadorActual jA = p.getJugador(nombreJugador);
+            //ArrayList<Carta> mano = jA.getMano();
+            //manoString = cartasToStringArray(mano);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,7 +88,7 @@ public class Controlador implements IControladorRemoto {
         return juegosString;
     }
 
-    public boolean bajarJuego(Partida p, String nombreJugador, Object[] cartasABajar) {
+    public boolean bajarJuego(Partida p, String nombreJugador, Object[] cartasABajar) throws RemoteException {
         jugadorActual j = p.getJugador(nombreJugador);
         boolean puedeBajar = false;
         if (cartasABajar.length >= 6) {
@@ -131,7 +131,7 @@ public class Controlador implements IControladorRemoto {
     public int getValor(int accion) throws RemoteException {
         int valor = 0;
         if (accion == 1) {
-            valor = partida.getRonda();
+            //valor = partida.getRonda();
         }
         return valor;
     }
@@ -139,7 +139,7 @@ public class Controlador implements IControladorRemoto {
     //OBSERVER----------------------------------------------
     @Override
     public <T extends IObservableRemoto> void setModeloRemoto(T modeloRemoto) throws RemoteException {
-        this.partida = (ifPartida) modeloRemoto;
+        this.juego = (ifJuego) modeloRemoto;
     }
 
     @Override
