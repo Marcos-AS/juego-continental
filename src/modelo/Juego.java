@@ -1,6 +1,7 @@
 package src.modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
+import src.serializacion.Serializador;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	protected static final int CANT_CARTAS_INICIAL = 6;
 	private ArrayList<Jugador> jugadores = new ArrayList<>();
 	private static Juego instancia;
+	private Partida partidaActual;
 
 	//singleton
 	public static Juego getInstancia() {
@@ -64,7 +66,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarObservadores(1); //llama al actualizar del ctrl con (this, 1)
 	}
 
-	//GETTERS Y SETTERS
+	//GETTERS Y SETTERS------------------------------------------------------------
 	public Jugador getJugador(String nombreJugador) throws RemoteException {
 		boolean encontrado = false;
 		int i = 0;
@@ -93,5 +95,13 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public int getPuntosComodin() throws RemoteException {
 		return PUNTOS_COMODIN;
+	}
+
+	public Partida getPartidaActual() throws RemoteException {
+		return this.partidaActual;
+	}
+
+	public void setPartidaActual(Partida p) throws RemoteException{
+		this.partidaActual = p;
 	}
 }

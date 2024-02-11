@@ -1,6 +1,7 @@
 package src.modelo;
 
 import rmimvc.src.observer.IObservableRemoto;
+import src.serializacion.Serializador;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -157,4 +158,7 @@ public interface ifJuego extends IObservableRemoto {
     int getAs() throws RemoteException;
 
     int getPuntosComodin() throws RemoteException;
+
+    Partida getPartidaActual() throws RemoteException;
+    void setPartidaActual(Partida p) throws RemoteException;
 }

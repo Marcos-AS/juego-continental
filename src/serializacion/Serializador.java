@@ -11,7 +11,7 @@ public class Serializador {
         this.fileName = fileName;
     }
 
-    public  boolean writeOneObject(Object obj) {
+    public boolean writeOneObject(Object obj) {
         boolean respuesta = false;
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName));
@@ -36,6 +36,22 @@ public class Serializador {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+
+    public Object readFirstObject() {
+        Object respuesta = null;
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
+            respuesta = ois.readObject();
+            ois.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return respuesta;

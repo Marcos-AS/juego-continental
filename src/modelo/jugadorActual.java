@@ -11,7 +11,9 @@ public class jugadorActual extends Jugador {
 	private int escalerasBajadas;
 	private int triosBajados;
 	private boolean puedeBajar = true;
-    
+
+	public jugadorActual() {}
+
     //PRIVATE -------------------------------------------------------------
     private Partida getPartidaActual() {
         Partida partActual = null;
@@ -207,7 +209,6 @@ public class jugadorActual extends Jugador {
 	}
 
     //SETTERS Y GETTERS-----------------------
-    public jugadorActual() {}
 
     public void setNombre(String nombre) {
         this.nombre = nombre;

@@ -2,11 +2,12 @@ package src.modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Partida extends ObservableRemoto implements ifPartida {
+public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     private int ronda;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo = new ArrayList<>();
@@ -17,6 +18,7 @@ public class Partida extends ObservableRemoto implements ifPartida {
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private static final int CANT_TOTAL_RONDAS = 1; //prueba
     private boolean enCurso = false;
+    private static final long serialVersionUID = 1L;
 
     public Partida() {}
 
@@ -94,15 +96,11 @@ public class Partida extends ObservableRemoto implements ifPartida {
     public void agregarJugador(String nombre) throws RemoteException {
 		jugadorActual nuevoJugador = new jugadorActual();
 		nuevoJugador.setNombre(nombre);
+        nuevoJugador.sumarPartida(this);
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
-		this.jugadoresActuales.get(this.jugadoresActuales.size()-1).sumarPartida(this);
-        //ifJuego.agregarJugador(nuevoJugador);
+        notificarObservadores(2);
 	}
-
-    public void agregarJugadores() throws RemoteException {
-
-    }
 
     @Override
     public Carta eliminarDelMazo() {

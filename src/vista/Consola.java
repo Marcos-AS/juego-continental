@@ -274,6 +274,10 @@ public class Consola implements ifVista{
                 "Después de todas las rondas, el jugador con menos puntos es declarado ganador.");
     }
 
+    public void mostrarInicioPartida() {
+        System.out.println("Partida iniciada.");
+    }
+
     public void mostrarCartasNombreJugador(String nombreJugador) {
 		System.out.println("Cartas de " + nombreJugador);
 	}
@@ -387,10 +391,19 @@ public class Consola implements ifVista{
         }
     }
 
-    public void mostrarUltimoJugadorAgregado(Object jugadores) {
-        ArrayList<ifJugador> js = (ArrayList<ifJugador>) jugadores;
-        System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
+    public void mostrarJugador(String nombreJugador, int numJugador) {
+        System.out.println("Jugador " + numJugador + ": " + nombreJugador);
     }
+
+    public void mostrarUltimoJugadorAgregado(Object jugadores, int indice) {
+        ArrayList<ifJugador> js = (ArrayList<ifJugador>) jugadores;
+        if (indice == 1) {
+            System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
+        } else {
+            System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado a una partida.");
+        }
+    }
+
 
     //GETTERS Y SETTERS---------------------------
     public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
@@ -443,7 +456,12 @@ public class Consola implements ifVista{
             case 1: {
                 //System.out.println("Jugadores: ");
                 //mostrarListaJugadores(actualizacion);
-                mostrarUltimoJugadorAgregado(actualizacion);
+                mostrarUltimoJugadorAgregado(actualizacion, 1);
+                break;
+            }
+            case 2: {
+                mostrarUltimoJugadorAgregado(actualizacion,2);
+                break;
             }
         }
 
