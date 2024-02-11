@@ -2,11 +2,17 @@ package src.vista;
 
 import src.controlador.Controlador;
 
-import javax.swing.*;
+import java.rmi.RemoteException;
 
 public interface ifVista {
 
     void actualizar(Object actualizacion, int indice);
 
     void setControlador(Controlador ctrl);
+
+    int menuBienvenida();
+
+    void mostrarReglas();
+
+    void preguntarNombreNuevoJugador() throws RemoteException;
 }

@@ -15,7 +15,7 @@ public class eventHandler extends VentanaInicio implements ActionListener{
             //setVentanaJuego(ventanaJuego);
             //setPartidaIniciada();
             VentanaJuego ventanaJuego = new VentanaJuego();
-            this.app.iniciarPartida(ventanaJuego);
+            //this.app.iniciarPartida(ventanaJuego);
         }
     }
 }

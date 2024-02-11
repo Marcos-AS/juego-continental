@@ -7,6 +7,7 @@ import src.controlador.Controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
 public class VentanaInicio extends JFrame implements ifVista {
     private VentanaJuego ventanaJuego;
@@ -205,6 +206,21 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     public void setControlador(Controlador ctrl) {
         this.ctrl = ctrl;
+    }
+
+    @Override
+    public int menuBienvenida() {
+        return 0;
+    }
+
+    @Override
+    public void mostrarReglas() {
+
+    }
+
+    @Override
+    public void preguntarNombreNuevoJugador() throws RemoteException {
+
     }
 
     public void setVentanaJuego(VentanaJuego ventanaJuego) {

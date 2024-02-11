@@ -16,6 +16,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class AppCliente {
+
     public static void main(String[] args) {
         ArrayList<String> ips = Util.getIpDisponibles();
         String ip = (String) JOptionPane.showInputDialog(
@@ -61,8 +62,9 @@ public class AppCliente {
         vista.setControlador(ctrl);
         Cliente c = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
         try {
+            //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
             c.iniciar(ctrl);
-            bienvenida();
+            bienvenida(vista);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (RMIMVCException e) {
@@ -70,13 +72,13 @@ public class AppCliente {
         }
     }
 
-    private static void bienvenida() throws RemoteException {
-        Consola consola = new Consola();
-        int eleccion = consola.menuBienvenida();
+    private static void bienvenida(ifVista vista) throws RemoteException {
+        vista.preguntarNombreNuevoJugador();
+        int eleccion = vista.menuBienvenida();
         while (eleccion != -1) {
             switch (eleccion) {
                 case 1: {
-                    iniciarPartidaNueva();
+                    iniciarPartidaNueva(vista);
                     break;
                 }
                 case 2: {
@@ -88,37 +90,22 @@ public class AppCliente {
                     break;
                 }
                 case 4: {
-                    consola.mostrarReglas();
+                    vista.mostrarReglas();
                     break;
                 }
             }
-            eleccion = consola.menuBienvenida();
+            eleccion = vista.menuBienvenida();
         }
     }
 
-    private static void iniciarPartidaNueva() throws RemoteException {
+    private static void iniciarPartidaNueva(ifVista vista) throws RemoteException {
         Partida partidaNueva = new Partida();
-        Consola consola = new Consola();
         Serializador srl = new Serializador("jugadores.dat");
-        // Cliente cli = new Cliente(null, 0, null, 0);
-        // try {
-        //     cli.iniciar(null);
-        // } catch (RemoteException e) {
-        //     // TODO: handle exception
-        // } catch (RMIMVCException e) {
-        // }
-        ArrayList<String> jugadores = consola.menuAgregarJugador();
-        for (String j : jugadores) {
-            partidaNueva.agregarJugador(j);
-        }
-
+        partidaNueva.agregarJugadores();
         //reparto de cartas
         partidaNueva.crearMazo();
         partidaNueva.repartirCartas();
-        //consola.mostrarCartasNombreJugador(j1);
-        //consola.mostrarCartasJugador(j1);
-        //consola.mostrarCartasNombreJugador(j2);
-        //consola.mostrarCartasJugador(j2);
+
 
         ArrayList<jugadorActual> jugadoresActuales = partidaNueva.getJugadoresActuales();
         ArrayList<String> mano;

@@ -83,30 +83,7 @@ public interface ifJuego extends IObservableRemoto {
         return esTrio;
     }
 
-    static int cartasPorRonda(int ronda) throws RemoteException {
-        int cantCartas = Juego.CANT_CARTAS_INICIAL;
-        switch (ronda) {
-            case 2:
-                cantCartas = 7;
-                break;
-            case 3:
-                cantCartas = 8;
-                break;
-            case 4:
-                cantCartas = 9;
-                break;
-            case 5:
-                cantCartas = 10;
-                break;
-            case 6:
-                cantCartas = 11;
-                break;
-            case 7:
-                cantCartas = 12;
-                break;
-        }
-        return cantCartas;
-    }
+    int cartasPorRonda(int ronda) throws RemoteException;
 
     static int comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException {
         int esJuego = 2; //si no es juego entonces queda en 2, si es trio queda en 0, si es escalera queda en 1
@@ -168,33 +145,16 @@ public interface ifJuego extends IObservableRemoto {
         return puedeCortar;
     }
 
-    static void agregarJugador(Jugador j) throws RemoteException {
-        Juego.jugadores.add(j);
-    }
+    void agregarJugador(Jugador j) throws RemoteException;
 
     //GETTERS Y SETTERS
-    static Jugador getJugador(String nombreJugador) throws RemoteException {
-        boolean encontrado = false;
-        int i = 0;
-        while (i < Juego.jugadores.size() && !encontrado) {
-            if (Juego.jugadores.get(i).getNombre().equals(nombreJugador)) {
-                encontrado = true;
-            } else {
-                i++;
-            }
-        }
-        return Juego.jugadores.get(i);
-    }
+    Jugador getJugador(String nombreJugador) throws RemoteException;
 
-    static int getFigura() throws RemoteException {
-        return Juego.FIGURA;
-    }
+    public ArrayList<Jugador> getJugadores() throws RemoteException;
 
-    static int getAs() throws RemoteException {
-        return Juego.AS;
-    }
+    int getFigura() throws RemoteException;
 
-    static int getPuntosComodin() throws RemoteException {
-        return Juego.PUNTOS_COMODIN;
-    }
+    int getAs() throws RemoteException;
+
+    int getPuntosComodin() throws RemoteException;
 }

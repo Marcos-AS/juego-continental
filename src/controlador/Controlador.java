@@ -59,6 +59,8 @@ public class Controlador implements IControladorRemoto {
 
     //PUBLIC---------------------------------------------------------------------
 
+    //jugador---------------------------
+
     public ArrayList<String> enviarManoJugador(String nombreJugador) throws RemoteException {
         ArrayList<String> manoString = new ArrayList<>();
         try {
@@ -73,11 +75,6 @@ public class Controlador implements IControladorRemoto {
         return manoString;
     }
 
-    public ArrayList<String> enviarMazo(Partida p) {
-        ArrayList<Carta> mazo = p.getMazo();
-        return cartasToStringArray(mazo);
-    }
- 
     public ArrayList<ArrayList<String>> enviarJuegosJugador(Partida p, String nombreJugador) {
         jugadorActual j = p.getJugador(nombreJugador);
         ArrayList<ArrayList<Carta>> juegos = j.getJuegos();
@@ -86,6 +83,18 @@ public class Controlador implements IControladorRemoto {
             juegosString.add(cartasToStringArray(juego));
         }
         return juegosString;
+    }
+
+    public void agregarNuevoJugador(String nombreJugador) throws RemoteException {
+        this.juego.agregarJugador(new Jugador(nombreJugador));
+    }
+
+
+    //cartas------------------------------
+
+    public ArrayList<String> enviarMazo(Partida p) {
+        ArrayList<Carta> mazo = p.getMazo();
+        return cartasToStringArray(mazo);
     }
 
     public boolean bajarJuego(Partida p, String nombreJugador, Object[] cartasABajar) throws RemoteException {
@@ -128,12 +137,15 @@ public class Controlador implements IControladorRemoto {
         return numCarta;
     } 
 
-    public int getValor(int accion) throws RemoteException {
-        int valor = 0;
-        if (accion == 1) {
-            //valor = partida.getRonda();
+    public Object getValor(int accion) throws RemoteException {
+        Object o = null;
+        switch (accion) {
+            case 1: { //nuevo jugador agregado
+                o = this.juego.getJugadores();
+                break;
+            }
         }
-        return valor;
+        return o;
     }
 
     //OBSERVER----------------------------------------------

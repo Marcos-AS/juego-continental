@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
 import src.modelo.Partida;
+import src.modelo.ifJugador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
@@ -160,6 +161,15 @@ public class Consola implements ifVista{
         return eleccion;
     }
 
+    @Override
+    public void preguntarNombreNuevoJugador() throws RemoteException {
+        int eleccion = 0;
+        System.out.println("Indique su nombre:");
+        String nombreJugador = this.s.next();
+        System.out.println("Jugador agregado.");
+        this.ctrl.agregarNuevoJugador(nombreJugador);
+    }
+
     //MENUS-------------------------------
     public int menuRobar() {
         int eleccion = 0;
@@ -195,24 +205,6 @@ public class Consola implements ifVista{
         eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
-    }
-
-    public ArrayList<String> menuAgregarJugador() {
-        int eleccion = 0;
-        ArrayList<String> jugadores = new ArrayList<>();
-        while (eleccion != 2) {
-            System.out.println("Quiere agregar un nuevo jugador?");
-            System.out.println("1 - Si");
-            System.out.println("2 - No");
-            eleccion = this.s.nextInt();
-            if (eleccion == 1) {
-                System.out.println("Ingrese el nombre del jugador: ");
-                String nombreJugador = this.s.next();
-                jugadores.add(nombreJugador);
-                System.out.println("Jugador agregado.");
-            }
-        }
-        return jugadores;
     }
 
     public int menuBienvenida() {
@@ -386,6 +378,20 @@ public class Consola implements ifVista{
         System.out.println("No puede acomodar porque no tiene juegos bajados.");
     }
 
+    public void mostrarListaJugadores(Object jugadores) {
+        int i = 1;
+        ArrayList<ifJugador> js = (ArrayList<ifJugador>) jugadores;
+        for (ifJugador j : js) {
+            System.out.println("Jugador " + i + ": " +j.getNombre());
+            i++;
+        }
+    }
+
+    public void mostrarUltimoJugadorAgregado(Object jugadores) {
+        ArrayList<ifJugador> js = (ArrayList<ifJugador>) jugadores;
+        System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
+    }
+
     //GETTERS Y SETTERS---------------------------
     public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
         return ctrl.enviarManoJugador(nombreJugador);
@@ -433,11 +439,18 @@ public class Consola implements ifVista{
 
     @Override
     public void actualizar(Object actualizacion, int indice) {
+        switch (indice) {
+            case 1: {
+                //System.out.println("Jugadores: ");
+                //mostrarListaJugadores(actualizacion);
+                mostrarUltimoJugadorAgregado(actualizacion);
+            }
+        }
 
     }
 
     @Override
     public void setControlador(Controlador ctrl) {
-
+        this.ctrl = ctrl;
     }
 }

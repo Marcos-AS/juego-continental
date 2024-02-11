@@ -25,7 +25,7 @@ public interface ifPartida {
 
     void agregarAlPozo(Carta c);
 
-    void crearMazo();
+    void crearMazo() throws RemoteException;
 
     void repartirCartas() throws RemoteException;
 

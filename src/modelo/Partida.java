@@ -1,10 +1,12 @@
 package src.modelo;
 
+import rmimvc.src.observer.ObservableRemoto;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Partida implements ifPartida {
+public class Partida extends ObservableRemoto implements ifPartida {
     private int ronda;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo = new ArrayList<>();
@@ -20,6 +22,7 @@ public class Partida implements ifPartida {
 
 //PRIVATE ----------------------------------------------------
 
+    //PUBLIC ----------------------------------------------------
     @Override
     public int determinarNumBarajas() {
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
@@ -77,9 +80,6 @@ public class Partida implements ifPartida {
 		this.mazo.remove(this.mazo.size()-1);
 	}
 
-    //PUBLIC ----------------------------------------------------
-
-
     @Override
     public Carta sacarPrimeraDelPozo() {
         return this.pozo.get(this.pozo.size()-1);
@@ -97,8 +97,12 @@ public class Partida implements ifPartida {
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.get(this.jugadoresActuales.size()-1).sumarPartida(this);
-        ifJuego.agregarJugador(nuevoJugador);
+        //ifJuego.agregarJugador(nuevoJugador);
 	}
+
+    public void agregarJugadores() throws RemoteException {
+
+    }
 
     @Override
     public Carta eliminarDelMazo() {
@@ -120,14 +124,15 @@ public class Partida implements ifPartida {
 	}
 
     @Override
-    public void crearMazo() {
+    public void crearMazo() throws RemoteException {
         iniciarMazo();
         mezclarCartas();
+        notificarObservadores(2);
     }
 
 	@Override
     public void repartirCartas() throws RemoteException {
-		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
+		//int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
 //		for(jugadorActual j: this.jugadoresActuales) {
 //			for(int i = 0; i < numCartasARepartir; i++) {
 //			    Carta c = this.eliminarDelMazo();
@@ -187,13 +192,13 @@ public class Partida implements ifPartida {
                 int num = c.getNumero();
                 switch(num) {
                 case 1:
-                    puntos += ifJuego.getAs();
+                    //puntos += ifJuego.getAs();
                     break;
                 case 11, 12, 13:
-                    puntos += ifJuego.getFigura();
+                    //puntos += ifJuego.getFigura();
                     break;
                 case -1:
-                    puntos += ifJuego.getPuntosComodin();
+                    //puntos += ifJuego.getPuntosComodin();
                     break;
                 case 2,3,4,5,6,7,8,9,10:
                     puntos += num;
