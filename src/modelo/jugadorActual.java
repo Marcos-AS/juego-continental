@@ -113,13 +113,13 @@ public class jugadorActual extends Jugador {
 		this.robarDelMazo();
 	}
 
-	public boolean cortar(Partida p) throws RemoteException {
+	public boolean cortar() throws RemoteException {
 		boolean puedeCortar = false;
-		if(ifJuego.comprobarPosibleCorte(getPartidaActual().getRonda(), this.triosBajados, this.escalerasBajadas)) {
+		Partida p = getPartidaActual();
+		if(ifJuego.comprobarPosibleCorte(p.getRonda(), this.triosBajados, this.escalerasBajadas)) {
 			if (this.getMano().size()==1) {
 				this.tirarAlPozo(0);
 			}
-			p.incrementarRonda();
 			puedeCortar = true;
 		}
 		return puedeCortar;
@@ -214,7 +214,11 @@ public class jugadorActual extends Jugador {
         this.nombre = nombre;
     }
 
-    public void setNumueroJugador(int num) {
+	public int getNumeroJugador() {
+		return this.numeroJugador;
+	}
+
+    public void setNumeroJugador(int num) {
         this.numeroJugador = num;
     }
     

@@ -31,7 +31,7 @@ public class AppServidor {
                 null,
                 8888
         );
-        Juego modelo = Juego.getInstancia();
+        Juego modelo = Juego.getInstancia(); //crea instancia del juego, sera unica
         Servidor servidor = new Servidor(ip, Integer.parseInt(port));
         try {
             servidor.iniciar(modelo);

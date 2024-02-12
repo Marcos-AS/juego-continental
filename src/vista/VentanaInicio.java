@@ -4,10 +4,12 @@ import java.awt.*;
 import javax.swing.border.*;
 
 import src.controlador.Controlador;
+import src.modelo.ifPartida;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class VentanaInicio extends JFrame implements ifVista {
     private VentanaJuego ventanaJuego;
@@ -230,6 +232,40 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     @Override
     public void mostrarJugador(String nombreJugador, int numJugador) {
+
+    }
+
+    static void mostrarCombinacionRequerida(int ronda) {
+
+    }
+
+    @Override
+    public void mostrarPozo(ifPartida p) {
+
+    }
+
+    @Override
+    public void mostrarTurnoJugador(String nombreJugador) {
+
+    }
+
+    @Override
+    public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public void mostrarCartas(ArrayList<String> cartas) {
+
+    }
+
+    @Override
+    public void mostrarPuntosJugador(String nombre, int punto) {
+
+    }
+
+    @Override
+    public void mostrarGanador(String ganador) {
 
     }
 

@@ -2,3 +2,4 @@
 *.json
 .idea/
 out/
+*.dat

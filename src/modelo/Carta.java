@@ -1,6 +1,8 @@
 package src.modelo;
 
-public class Carta {
+import java.io.Serializable;
+
+public class Carta implements ifCarta, Serializable {
 
     private int numero;  
     private Palo palo;
@@ -13,18 +15,22 @@ public class Carta {
     }
 
     //SETTERS Y GETTERS
+    @Override
     public int getComodin() {
         return COMODIN;
     }
 
+    @Override
     public Palo getPalo() {
         return this.palo;
     }
 
+    @Override
     public int getNumero() {
         return this.numero;
     }
 
+    @Override
     public void setRutaImagen(String rutaImagen) {
         this.rutaImagen = rutaImagen;
     }

@@ -160,5 +160,7 @@ public interface ifJuego extends IObservableRemoto {
     int getPuntosComodin() throws RemoteException;
 
     Partida getPartidaActual() throws RemoteException;
-    void setPartidaActual(Partida p) throws RemoteException;
+    void setPartidaActual(Serializador srl) throws RemoteException;
+
+    void crearPartida() throws RemoteException;
 }

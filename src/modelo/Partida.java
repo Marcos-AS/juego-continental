@@ -2,6 +2,7 @@ package src.modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -9,15 +10,16 @@ import java.util.Random;
 
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     private int ronda;
-    private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
-    private ArrayList<Carta> mazo = new ArrayList<>();
-    private ArrayList<Carta> pozo = new ArrayList<>();
+    private final ArrayList<jugadorActual> jugadoresActuales = new ArrayList<jugadorActual>();
+    private ArrayList<Carta> mazo;
+    private ArrayList<Carta> pozo;
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
     private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private static final int CANT_TOTAL_RONDAS = 1; //prueba
     private boolean enCurso = false;
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public Partida() {}
@@ -38,6 +40,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     @Override
     public void iniciarMazo() {
+        this.mazo = new ArrayList<>();
         int numBarajas = determinarNumBarajas();
         int i = 0;
         while(i < numBarajas) {
@@ -78,6 +81,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     @Override
     public void iniciarPozo() {
+        this.pozo = new ArrayList<Carta>();
 		this.pozo.add(this.sacarPrimeraDelMazo());
 		this.mazo.remove(this.mazo.size()-1);
 	}
@@ -97,9 +101,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 		jugadorActual nuevoJugador = new jugadorActual();
 		nuevoJugador.setNombre(nombre);
         nuevoJugador.sumarPartida(this);
+        nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
-        notificarObservadores(2);
+        notificarObservadores(8);
 	}
 
     @Override
@@ -125,7 +130,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void crearMazo() throws RemoteException {
         iniciarMazo();
         mezclarCartas();
-        notificarObservadores(2);
     }
 
 	@Override
@@ -161,14 +165,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
              this.jugadoresActuales.get(1).agregarCarta(c10);
              this.jugadoresActuales.get(1).agregarCarta(c11);
 //		}
-        this.iniciarPozo();
-        this.ronda = 1;
 	}
-
-    @Override
-    public void incrementarRonda() {
-        this.ronda++;
-    } 
 
     @Override
     public void resetearJuegosJugadores() {
@@ -231,6 +228,14 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return puntos;
     }
 
+    public void avisarTurno(jugadorActual j) throws RemoteException {
+        notificarObservadores(j);
+    }
+
+    public void partidaIniciada() throws RemoteException {
+        notificarObservadores(this);
+    }
+
 //SETTERS Y GETTERS------------
     @Override
     public int getNumJugadores() {
@@ -245,6 +250,14 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public int getRonda() {
         return this.ronda;
+    }
+
+    public void setRonda(int i) {
+        this.ronda = i;
+    }
+
+    public void incrementarRonda() {
+        this.ronda++;
     }
 
     @Override

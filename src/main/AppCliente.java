@@ -4,8 +4,6 @@ import rmimvc.src.RMIMVCException;
 import rmimvc.src.Util;
 import rmimvc.src.cliente.Cliente;
 import src.controlador.Controlador;
-import src.modelo.Partida;
-import src.serializacion.Serializador;
 import src.vista.Consola;
 import src.vista.ifVista;
 
@@ -78,7 +76,7 @@ public class AppCliente {
         while (eleccion != -1) {
             switch (eleccion) {
                 case 1: {
-                    iniciarPartidaNueva(vista, ctrl);
+                    ctrl.crearPartida();
                     break;
                 }
                 case 2: {
@@ -96,17 +94,6 @@ public class AppCliente {
             }
             eleccion = vista.menuBienvenida();
         }
-    }
-
-    private static void iniciarPartidaNueva(ifVista vista, Controlador ctrl) throws RemoteException, InterruptedException {
-        Serializador srl = new Serializador("partidas.dat");
-        Partida partidaActual = ctrl.getPartidaActual();
-        if (partidaActual == null) {
-            partidaActual = new Partida();
-            srl.writeOneObject(partidaActual);
-            ctrl.setPartidaActual(srl); //setea part. actual en clase juego
-        }
-        ctrl.agregarJugadores(); //inicia la partida si hay dos o mas jugadores
     }
 
     private static void continuarPartida() {}

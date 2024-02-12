@@ -53,7 +53,7 @@ public class Cliente extends ServidorRMI {
 		} catch (NotBoundException e) {
 			throw new RMIMVCException("No se encontró el modelo en el registro remoto.");
 		}
-		controlador.setModeloRemoto(modeloRemoto);
+		controlador.setModeloRemoto(modeloRemoto); //setea el modelo como atr. del ctrl.
 		
 		IControladorRemoto controladorRemoto;
 		try {
@@ -61,7 +61,7 @@ public class Cliente extends ServidorRMI {
 		} catch (AlreadyBoundException e) {
 			throw new RMIMVCException("Error al registrar el controlador en el servidor RMI local.");
 		}
-		modeloRemoto.agregarObservador(controladorRemoto);
+		modeloRemoto.agregarObservador(controladorRemoto); //agrega como observer al ctrl
 		return controladorRemoto;
 	}
 }

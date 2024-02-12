@@ -4,8 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
-import src.modelo.Partida;
-import src.modelo.ifJugador;
+import src.modelo.*;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
@@ -18,6 +17,7 @@ public class Consola implements ifVista{
     private static final int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
     private static final int ELECCION_ROBAR_DEL_MAZO = 1;
     private static final int ELECCION_ROBAR_DEL_POZO = 2;
+    private int numVista;
 
     public Consola(){}
 
@@ -45,11 +45,11 @@ public class Consola implements ifVista{
     }
 
     //PUBLIC-----------------------------------------------------------
-    public void bajarse(Partida p, String nombreJugador, Object [] cartasABajar) throws RemoteException {
-        if(!ctrl.bajarJuego(p, nombreJugador, cartasABajar)) {
+    public void bajarse(String nombreJugador, Object [] cartasABajar) throws RemoteException {
+        if(!ctrl.bajarJuego(nombreJugador, cartasABajar)) {
             mostrarNoPuedeBajarJuego();
         } else {
-            ArrayList<ArrayList<String>> juegos = getJuegosJugador(p, nombreJugador);
+            ArrayList<ArrayList<String>> juegos = getJuegosJugador(nombreJugador);
             int numJuego = 1;
             for (ArrayList<String> juego : juegos) {
                 mostrarJuego(numJuego);
@@ -170,6 +170,13 @@ public class Consola implements ifVista{
         this.ctrl.agregarNuevoJugador(nombreJugador);
     }
 
+    /*private void preguntarIniciarPartida(Object actualizacion) throws RemoteException {
+        //String eleccion = this.s.next();
+        //System.out.println();
+        //if (eleccion.equalsIgnoreCase("si") || eleccion.equalsIgnoreCase("sí"))
+            //this.ctrl.iniciarPartida((Partida) actualizacion);
+    }*/
+
     //MENUS-------------------------------
     public int menuRobar() {
         int eleccion = 0;
@@ -275,7 +282,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarInicioPartida() {
-        System.out.println("Partida iniciada.");
+        System.out.println("Se ha iniciado una nueva partida.");
     }
 
     public void mostrarCartasNombreJugador(String nombreJugador) {
@@ -316,8 +323,10 @@ public class Consola implements ifVista{
         System.out.println(carta);
     }
     
-    public void mostrarPozo(Partida p) {
-        String carta = getPrimeraCartaPozo(p);
+    public void mostrarPozo(ifPartida p) {
+        ifCarta c = p.sacarPrimeraDelMazo();
+        String carta = ifVista.transformarNumCarta(c.getNumero()) + " de " + c.getPalo().name();
+        //String carta = this.ctrl.enviarPrimeraCartaPozo();
         System.out.println("Pozo: ");
         mostrarCarta(carta);
     }
@@ -330,31 +339,31 @@ public class Consola implements ifVista{
         System.out.println("Juego N° " + numJuego+":\n");
     }
 
-    public void mostrarCombinacionRequerida(int ronda) {
+    public static void mostrarCombinacionRequerida(int ronda) {
         System.out.print("Para esta ronda deben bajarse: ");
         switch (ronda) {
             case 1:
-                System.out.println("2 tríos");
+                System.out.println("Ronda 1: 2 tríos");
                 break;
             case 2:
-                System.out.println("1 trío y 1 escalera");
+                System.out.println("Ronda 2: 1 trío y 1 escalera");
                 break;
             case 3:
-                System.out.println("2 escaleras");
+                System.out.println("Ronda 3: 2 escaleras");
                 break;
             case 4:
-                System.out.println("3 tríos");
+                System.out.println("Ronda 4: 3 tríos");
                 break;
             case 5:
-                System.out.println("2 tríos y 1 escalera");
+                System.out.println("Ronda 5: 2 tríos y 1 escalera");
                 break;
             case 6:
-                System.out.println("1 tríos y 2 escaleras");
+                System.out.println("Ronda 6: 1 tríos y 2 escaleras");
                 break;
             case 7:
-                System.out.println("3 escaleras");
+                System.out.println("Ronda 7: 3 escaleras");
                 break;
-        
+
         }
     }
 
@@ -404,18 +413,46 @@ public class Consola implements ifVista{
         }
     }
 
+    private int ordenarCartasTurno(ifJugador j) throws RemoteException {
+        int[] ordenar = preguntarParaOrdenarCartas();
+        j.eleccionOrdenar(ordenar);
+        ArrayList<String> mano = getCartasJugador(j.getNombre());
+        mostrarCartas(mano);
+        return menuBajar();
+    }
+
+    private int bajarJuegosTurno(ifJugador j) throws RemoteException {
+        Object [] cartasABajar = preguntarQueBajarParaJuego();
+        bajarse(j.getNombre(), cartasABajar);
+        ArrayList<String> mano = getCartasJugador(j.getNombre());
+        mostrarCartas(mano);
+        return menuBajar();
+    }
+
+    private boolean cortarTurno(ifJugador j) throws RemoteException {
+        boolean corte = j.cortar();
+        if (!corte) {
+            int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar();
+            mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
+        }
+        return corte;
+    }
+
+    private void tirarAlPozoTurno(ifJugador j) throws RemoteException {
+        ArrayList<String> mano = getCartasJugador(j.getNombre());
+        mostrarCartas(mano);
+        int eleccion = preguntarQueBajarParaPozo(mano.size());
+        j.tirarAlPozo(eleccion);
+    }
+
 
     //GETTERS Y SETTERS---------------------------
     public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
         return ctrl.enviarManoJugador(nombreJugador);
     }
 
-    public String getPrimeraCartaPozo(Partida p) {
-        return ctrl.enviarPrimeraCartaPozo(p);
-    }
-
-    public ArrayList<ArrayList<String>> getJuegosJugador(Partida p, String nombreJugador) {
-        return ctrl.enviarJuegosJugador(p, nombreJugador);
+    public ArrayList<ArrayList<String>> getJuegosJugador(String nombreJugador) {
+        return ctrl.enviarJuegosJugador(nombreJugador);
     }
 
     public int getEleccionOrdenarCartas(){
@@ -451,16 +488,71 @@ public class Consola implements ifVista{
     }
 
     @Override
-    public void actualizar(Object actualizacion, int indice) {
-        switch (indice) {
-            case 1: {
+    public void actualizar(Object actualizacion, int indice) throws RemoteException {
+        switch (indice) {//del 0 al 5 porque como maximo 6 jugadores
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5: {
+                if (this.numVista == indice) {
+                    ArrayList<String> mano;
+                    ifJugador j = (ifJugador) actualizacion;
+                    String nombreJugador = j.getNombre();
+                    mostrarTurnoJugador(nombreJugador);
+                    mano = getCartasJugador(nombreJugador);
+                    mostrarCartas(mano);
+                    int eleccion = menuRobar();
+
+                    //aca va robo con castigo!!
+                    //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
+                    if(!j.eleccionMenuRobo(eleccion)) {
+                        mostrarNoPuedeRobarDelPozo();
+                        j.eleccionMenuRobo(getEleccionRobarDelMazo());
+                    }
+                    mano = getCartasJugador(j.getNombre());
+                    mostrarCartas(mano);
+
+                    eleccion = menuBajar();
+                    boolean corte = false;
+
+                    //ordenar cartas en la mano
+                    while (eleccion == getEleccionOrdenarCartas())
+                        eleccion = ordenarCartasTurno(j);
+
+                    //aca va acomodar en juego!
+
+                    //bajarse
+                    while (eleccion == getEleccionBajarse())
+                        eleccion = bajarJuegosTurno(j);
+
+                    //si quiere cortar, comprobar si puede
+                    if (eleccion == getEleccionCortar())
+                        corte = cortarTurno(j);
+
+                    //tirar
+                    if (!corte)
+                        tirarAlPozoTurno(j);
+                }
+            }
+            case 6: {
+                mostrarInicioPartida();
+                break;
+            }
+            case 7: {
                 //System.out.println("Jugadores: ");
                 //mostrarListaJugadores(actualizacion);
                 mostrarUltimoJugadorAgregado(actualizacion, 1);
                 break;
             }
-            case 2: {
+            case 8: {
                 mostrarUltimoJugadorAgregado(actualizacion,2);
+                break;
+            }
+            case 9: {
+                mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
+                mostrarPozo((ifPartida)actualizacion);
                 break;
             }
         }

@@ -1,6 +1,7 @@
 package src.modelo;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class Jugador implements Serializable, ifJugador {
@@ -21,6 +22,11 @@ public class Jugador implements Serializable, ifJugador {
 		this.partidas.add(p);
 	}
 
+    @Override
+    public boolean eleccionMenuRobo(int eleccion) {
+        return false;
+    }
+
     //SETTERS Y GETTERS----------------
     @Override
     public String getNombre() {
@@ -39,5 +45,25 @@ public class Jugador implements Serializable, ifJugador {
             }
         }
         return this.partidas.get(i);
+    }
+
+    @Override
+    public void eleccionOrdenar(int[] ordenar) {
+
+    }
+
+    @Override
+    public boolean cortar() throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public int[] comprobarQueFaltaParaCortar() {
+        return new int[0];
+    }
+
+    @Override
+    public void tirarAlPozo(int eleccion) {
+
     }
 }

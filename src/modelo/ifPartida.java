@@ -29,13 +29,13 @@ public interface ifPartida {
 
     void repartirCartas() throws RemoteException;
 
-    void incrementarRonda();
-
     void resetearJuegosJugadores();
 
     void sumarPuntos() throws RemoteException;
 
     String determinarGanador();
+
+    void avisarTurno(jugadorActual j) throws RemoteException;
 
     int[] getPuntosJugadores();
 
@@ -57,4 +57,6 @@ public interface ifPartida {
     boolean getEstadoPartida();
 
     void setEstadoPartida();
+
+    void partidaIniciada() throws RemoteException;
 }
