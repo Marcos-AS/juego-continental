@@ -1,12 +1,12 @@
 package src.modelo;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface ifJugador {
     void sumarPartida(Partida p);
 
-    boolean eleccionMenuRobo(int eleccion);
-
+    void addCarta(Carta c);
     //SETTERS Y GETTERS----------------
     String getNombre();
 
@@ -19,4 +19,8 @@ public interface ifJugador {
     int[] comprobarQueFaltaParaCortar();
 
     void tirarAlPozo(int eleccion);
+
+    ArrayList<ArrayList<Carta>> getJuegos();
+
+    ArrayList<Carta> getMano();
 }

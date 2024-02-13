@@ -250,11 +250,6 @@ public class VentanaInicio extends JFrame implements ifVista {
     }
 
     @Override
-    public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
-        return null;
-    }
-
-    @Override
     public void mostrarCartas(ArrayList<String> cartas) {
 
     }
@@ -266,6 +261,11 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     @Override
     public void mostrarGanador(String ganador) {
+
+    }
+
+    @Override
+    public void setNumVista(int i) {
 
     }
 

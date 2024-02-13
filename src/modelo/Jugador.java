@@ -23,8 +23,8 @@ public class Jugador implements Serializable, ifJugador {
 	}
 
     @Override
-    public boolean eleccionMenuRobo(int eleccion) {
-        return false;
+    public void addCarta(Carta c) {
+
     }
 
     //SETTERS Y GETTERS----------------
@@ -65,5 +65,15 @@ public class Jugador implements Serializable, ifJugador {
     @Override
     public void tirarAlPozo(int eleccion) {
 
+    }
+
+    @Override
+    public ArrayList<ArrayList<Carta>> getJuegos() {
+        return null;
+    }
+
+    @Override
+    public ArrayList<Carta> getMano() {
+        return null;
     }
 }

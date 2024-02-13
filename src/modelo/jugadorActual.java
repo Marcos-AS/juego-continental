@@ -208,6 +208,10 @@ public class jugadorActual extends Jugador {
 		return acomodo;
 	}
 
+	public void addCarta(Carta c) {
+		this.mano.add(c);
+	}
+
     //SETTERS Y GETTERS-----------------------
 
     public void setNombre(String nombre) {

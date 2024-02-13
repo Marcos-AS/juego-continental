@@ -24,7 +24,7 @@ public class Consola implements ifVista{
     //PRIVATE-------------------------------------------------------
 
     private int preguntarCantParaBajar() {
-        int numCartas = 0;
+        int numCartas;
 		System.out.println("Cuantas cartas quiere bajar para el juego?");
         numCartas = this.s.nextInt();
         this.s.nextLine();
@@ -37,7 +37,7 @@ public class Consola implements ifVista{
 	}
 
     private boolean paloEsCorrecto(String palo) {
-        boolean paloCorrecto = false;
+        boolean paloCorrecto;
         palo = palo.toUpperCase();
         paloCorrecto = palo.equals("PICAS") || palo.equals("DIAMANTES") || 
         palo.equals("TREBOL") || palo.equals("CORAZONES");
@@ -49,13 +49,13 @@ public class Consola implements ifVista{
         if(!ctrl.bajarJuego(nombreJugador, cartasABajar)) {
             mostrarNoPuedeBajarJuego();
         } else {
-            ArrayList<ArrayList<String>> juegos = getJuegosJugador(nombreJugador);
+            //ArrayList<ArrayList<String>> juegos = this.ctrl.enviarJuegosJugador(nombreJugador);
             int numJuego = 1;
-            for (ArrayList<String> juego : juegos) {
+            /*for (ArrayList<String> juego : juegos) {
                 mostrarJuego(numJuego);
                 mostrarCartas(juego);
                 numJuego++;
-            }
+            }*/
         }
     }
 	
@@ -125,7 +125,7 @@ public class Consola implements ifVista{
     }
 
     public int preguntarSiDeseaContinuar() {
-        int eleccion = 0;
+        int eleccion;
         System.out.println("Desea continuar?");
         System.out.println("1 - Si");
         System.out.println("2 - No");
@@ -135,7 +135,7 @@ public class Consola implements ifVista{
     }
 
     public int preguntarQueBajarParaPozo(int cantCartas) {
-        int eleccion = 0;
+        int eleccion;
         System.out.println("Indique el indice de carta para tirar al pozo: ");
         eleccion = this.s.nextInt();
         System.out.println();
@@ -179,7 +179,7 @@ public class Consola implements ifVista{
 
     //MENUS-------------------------------
     public int menuRobar() {
-        int eleccion = 0;
+        int eleccion;
 		System.out.println("----------------------------------------");
 		System.out.println("Quiere robar del pozo o robar del mazo?");
 		System.out.println("1 - Robar del mazo");
@@ -191,7 +191,7 @@ public class Consola implements ifVista{
 	}
 	
     public int menuBajar() {
-        int eleccion = 0;
+        int eleccion;
         System.out.println("Elija una opcion: ");
         System.out.println("1 - Bajar algún juego");
    		System.out.println("2 - Ir a tirar");
@@ -205,7 +205,7 @@ public class Consola implements ifVista{
     }
 
     public int menuRobarDelPozo() {
-        int eleccion = 0;
+        int eleccion;
 		System.out.println("Quiere robar del pozo?");
         System.out.println("1 - No");
         System.out.println("2 - Si");
@@ -230,68 +230,63 @@ public class Consola implements ifVista{
 
     //MOSTRAR---------------------------------------------------------
     public void mostrarReglas() {
-        System.out.println("OBJETIVO\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "El objetivo del juego es formar las combinaciones requeridas en cada una de las 7 rondas, procurando acumular la menor cantidad posible de puntos. \r\n" +
-                "Al final de todas las rondas, el jugador con menos puntos es el ganador.\r\n" +
-                "\r\n" +
-
-                "RONDAS\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "Se juegan 7 rondas, cada una con requisitos específicos:\r\n" +
-                "- Ronda 1: Dos tríos\r\n" +
-                "- Ronda 2: Un trío y una escalera\r\n" +
-                "- Ronda 3: Dos escaleras\r\n" +
-                "- Ronda 4: Tres tríos\r\n" +
-                "- Ronda 5: Dos tríos y una escalera\r\n" +
-                "- Ronda 6: Un trío y dos escaleras\r\n" +
-                "- Ronda 7: Tres escaleras\r\n" + "\r\n" +
-
-                "DEFINICIONES\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "Trío: 3 cartas con el mismo número, sin importar el palo.\r\n" +
-                "Escalera: 4 o más cartas consecutivas del mismo palo. Puede comenzar con cualquier carta, y el as puede ser la carta intermedia entre la K y el 2. \r\n" +
-                "Comodín: Se puede tener un trío de comodines, pero no se pueden colocar dos comodines JUNTOS en una escalera.\r\n" + "\r\n" +
-
-                "ROBO\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "En cada turno, el jugador debe robar una carta y descartar otra. Si no roba del pozo, los siguientes jugadores pueden optar por robar del pozo, pero si lo hacen,\r\n " +
-                "también deben robar otra del mazo (robo con \"castigo\"). Este proceso sigue en orden hacia la derecha. En caso de que ningún jugador desee robar del pozo,\r\n" +
-                " cada jugador debe robar una carta en su turno, ya sea del mazo o del pozo.\r\n" +
-                "\r\n" +
-
-                "BAJAR JUEGOS Y CORTAR\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "Para cortar, el jugador debe tener completa la combinación requerida para la ronda.\r\n" +
-                "Se puede cortar con la carta que sobra, o elegir no cortar si no hay cartas sobrantes. En estos casos, el jugador gana la ronda. \r\n" +
-                "Además, el jugador puede bajar sus juegos una vez durante la ronda, con las siguientes restricciones:\r\n" +
-                "- No puede robar con \"castigo\".\r\n" +
-                "- No puede bajar de nuevo.\r\n" +
-                "- Las cartas sobrantes se pueden colocar en los juegos bajados por otros jugadores.\r\n" +
-                "\r\n" +
-
-                "FIN DE LA RONDA\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "Al finalizar cada ronda, se suman los puntos de las cartas que los jugadores tienen en la mano. El ganador de la ronda no suma puntos. \r\n" +
-                "Las cartas tienen valores específicos: los números valen su denominación, las figuras valen 10, el as vale 20 y el comodín 50.\r\n" +
-                "\r\n" +
-
-                "FIN DEL JUEGO\r\n" +
-                "------------------------------------------------------------------------------------------------------------------------------------------------------------ \r\n" +
-                "Después de todas las rondas, el jugador con menos puntos es declarado ganador.");
+        System.out.println("""
+                OBJETIVO\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                El objetivo del juego es formar las combinaciones requeridas en cada una de las 7 rondas, procurando acumular la menor cantidad posible de puntos. \r
+                Al final de todas las rondas, el jugador con menos puntos es el ganador.\r
+                \r
+                RONDAS\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                Se juegan 7 rondas, cada una con requisitos específicos:\r
+                - Ronda 1: Dos tríos\r
+                - Ronda 2: Un trío y una escalera\r
+                - Ronda 3: Dos escaleras\r
+                - Ronda 4: Tres tríos\r
+                - Ronda 5: Dos tríos y una escalera\r
+                - Ronda 6: Un trío y dos escaleras\r
+                - Ronda 7: Tres escaleras\r
+                \r
+                DEFINICIONES\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                Trío: 3 cartas con el mismo número, sin importar el palo.\r
+                Escalera: 4 o más cartas consecutivas del mismo palo. Puede comenzar con cualquier carta, y el as puede ser la carta intermedia entre la K y el 2. \r
+                Comodín: Se puede tener un trío de comodines, pero no se pueden colocar dos comodines JUNTOS en una escalera.\r
+                \r
+                ROBO\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                En cada turno, el jugador debe robar una carta y descartar otra. Si no roba del pozo, los siguientes jugadores pueden optar por robar del pozo, pero si lo hacen,\r
+                 también deben robar otra del mazo (robo con "castigo"). Este proceso sigue en orden hacia la derecha. En caso de que ningún jugador desee robar del pozo,\r
+                 cada jugador debe robar una carta en su turno, ya sea del mazo o del pozo.\r
+                \r
+                BAJAR JUEGOS Y CORTAR\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                Para cortar, el jugador debe tener completa la combinación requerida para la ronda.\r
+                Se puede cortar con la carta que sobra, o elegir no cortar si no hay cartas sobrantes. En estos casos, el jugador gana la ronda. \r
+                Además, el jugador puede bajar sus juegos una vez durante la ronda, con las siguientes restricciones:\r
+                - No puede robar con "castigo".\r
+                - No puede bajar de nuevo.\r
+                - Las cartas sobrantes se pueden colocar en los juegos bajados por otros jugadores.\r
+                \r
+                FIN DE LA RONDA\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                Al finalizar cada ronda, se suman los puntos de las cartas que los jugadores tienen en la mano. El ganador de la ronda no suma puntos. \r
+                Las cartas tienen valores específicos: los números valen su denominación, las figuras valen 10, el as vale 20 y el comodín 50.\r
+                \r
+                FIN DEL JUEGO\r
+                ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
+                Después de todas las rondas, el jugador con menos puntos es declarado ganador.""");
     }
 
     public void mostrarInicioPartida() {
+        System.out.println();
+        //this.s.close();
+        //this.s = new Scanner(System.in);
         System.out.println("Se ha iniciado una nueva partida.");
     }
 
     public void mostrarCartasNombreJugador(String nombreJugador) {
 		System.out.println("Cartas de " + nombreJugador);
-	}
-
-    public void mostrarCartasJugador(String nombreJugador) throws RemoteException {
-        ArrayList<String> mano = getCartasJugador(nombreJugador);
-        mostrarCartas(mano);
 	}
 
     public void mostrarCartas(ArrayList<String> cartas) {
@@ -416,7 +411,7 @@ public class Consola implements ifVista{
     private int ordenarCartasTurno(ifJugador j) throws RemoteException {
         int[] ordenar = preguntarParaOrdenarCartas();
         j.eleccionOrdenar(ordenar);
-        ArrayList<String> mano = getCartasJugador(j.getNombre());
+        ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
         mostrarCartas(mano);
         return menuBajar();
     }
@@ -424,7 +419,7 @@ public class Consola implements ifVista{
     private int bajarJuegosTurno(ifJugador j) throws RemoteException {
         Object [] cartasABajar = preguntarQueBajarParaJuego();
         bajarse(j.getNombre(), cartasABajar);
-        ArrayList<String> mano = getCartasJugador(j.getNombre());
+        ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
         mostrarCartas(mano);
         return menuBajar();
     }
@@ -439,7 +434,7 @@ public class Consola implements ifVista{
     }
 
     private void tirarAlPozoTurno(ifJugador j) throws RemoteException {
-        ArrayList<String> mano = getCartasJugador(j.getNombre());
+        ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
         mostrarCartas(mano);
         int eleccion = preguntarQueBajarParaPozo(mano.size());
         j.tirarAlPozo(eleccion);
@@ -447,12 +442,9 @@ public class Consola implements ifVista{
 
 
     //GETTERS Y SETTERS---------------------------
-    public ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException {
-        return ctrl.enviarManoJugador(nombreJugador);
-    }
 
-    public ArrayList<ArrayList<String>> getJuegosJugador(String nombreJugador) {
-        return ctrl.enviarJuegosJugador(nombreJugador);
+    public void setNumVista(int i) {
+        this.numVista = i;
     }
 
     public int getEleccionOrdenarCartas(){
@@ -496,22 +488,23 @@ public class Consola implements ifVista{
             case 3:
             case 4:
             case 5: {
+                ifJugador j = (ifJugador) actualizacion;
+                String nombreJugador = j.getNombre();
+                mostrarTurnoJugador(nombreJugador);
                 if (this.numVista == indice) {
                     ArrayList<String> mano;
-                    ifJugador j = (ifJugador) actualizacion;
-                    String nombreJugador = j.getNombre();
-                    mostrarTurnoJugador(nombreJugador);
-                    mano = getCartasJugador(nombreJugador);
+                    mano = this.ctrl.enviarManoJugador(j);
                     mostrarCartas(mano);
                     int eleccion = menuRobar();
 
                     //aca va robo con castigo!!
                     //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
-                    if(!j.eleccionMenuRobo(eleccion)) {
-                        mostrarNoPuedeRobarDelPozo();
-                        j.eleccionMenuRobo(getEleccionRobarDelMazo());
+                    if(eleccion == ELECCION_ROBAR_DEL_MAZO) {
+                        //mostrarNoPuedeRobarDelPozo();
+                        this.ctrl.robarDelMazo(j);
                     }
-                    mano = getCartasJugador(j.getNombre());
+
+                    mano = this.ctrl.enviarManoJugador(j);
                     mostrarCartas(mano);
 
                     eleccion = menuBajar();

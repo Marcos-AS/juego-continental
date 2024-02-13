@@ -97,11 +97,11 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public void agregarJugador(String nombre) throws RemoteException {
+    public void agregarJugador(String nombre, int numJugador) throws RemoteException {
 		jugadorActual nuevoJugador = new jugadorActual();
 		nuevoJugador.setNombre(nombre);
         nuevoJugador.sumarPartida(this);
-        nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
+        nuevoJugador.setNumeroJugador(numJugador);
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
         notificarObservadores(8);
@@ -226,10 +226,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
             i++;
         }
         return puntos;
-    }
-
-    public void avisarTurno(jugadorActual j) throws RemoteException {
-        notificarObservadores(j);
     }
 
     public void partidaIniciada() throws RemoteException {

@@ -17,7 +17,7 @@ public interface ifPartida {
 
     Carta sacarPrimeraDelMazo();
 
-    void agregarJugador(String nombre) throws RemoteException;
+    void agregarJugador(String nombre, int numJugador) throws RemoteException;
 
     Carta eliminarDelMazo();
 
@@ -34,8 +34,6 @@ public interface ifPartida {
     void sumarPuntos() throws RemoteException;
 
     String determinarGanador();
-
-    void avisarTurno(jugadorActual j) throws RemoteException;
 
     int[] getPuntosJugadores();
 

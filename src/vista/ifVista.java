@@ -1,10 +1,7 @@
 package src.vista;
 
 import src.controlador.Controlador;
-import src.modelo.Carta;
-import src.modelo.Palo;
-import src.modelo.Partida;
-import src.modelo.ifPartida;
+import src.modelo.*;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -73,11 +70,11 @@ public interface ifVista {
 
     void mostrarTurnoJugador(String nombreJugador);
 
-    ArrayList<String> getCartasJugador(String nombreJugador) throws RemoteException;
-
     void mostrarCartas(ArrayList<String> cartas);
 
     void mostrarPuntosJugador(String nombre, int punto);
 
     void mostrarGanador(String ganador);
+
+    void setNumVista(int i);
 }

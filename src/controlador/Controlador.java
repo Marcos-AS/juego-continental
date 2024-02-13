@@ -25,10 +25,9 @@ public class Controlador implements IControladorRemoto {
 
     //jugador---------------------------
 
-    public ArrayList<String> enviarManoJugador(String nombreJugador) throws RemoteException {
+    public ArrayList<String> enviarManoJugador(ifJugador jA) throws RemoteException {
         ArrayList<String> manoString = new ArrayList<>();
         try {
-            jugadorActual jA = this.partidaActual.getJugador(nombreJugador);
             ArrayList<Carta> mano = jA.getMano();
             manoString = ifVista.cartasToStringArray(mano);
         } catch (Exception e) {
@@ -37,8 +36,7 @@ public class Controlador implements IControladorRemoto {
         return manoString;
     }
 
-    public ArrayList<ArrayList<String>> enviarJuegosJugador(String nombreJugador) {
-        jugadorActual j = this.partidaActual.getJugador(nombreJugador);
+    public ArrayList<ArrayList<String>> enviarJuegosJugador(ifJugador j) {
         ArrayList<ArrayList<Carta>> juegos = j.getJuegos();
         ArrayList<ArrayList<String>> juegosString = new ArrayList<>();
         for (ArrayList<Carta> juego : juegos) {
@@ -51,17 +49,6 @@ public class Controlador implements IControladorRemoto {
         this.juego.agregarJugador(new Jugador(nombreJugador));
     }
 
-    public void agregarJugadores() throws RemoteException {
-
-        /*synchronized (p) {
-            ArrayList<jugadorActual> js = p.getJugadoresActuales();
-            if(js.size() >= 2) { //esto me tira 0
-                p.partidaIniciada();
-                this.partidaActual = p; //para no tener que pedirla a modelo mas de 1 vez
-                iniciarPartida(p);
-            }
-        }*/
-    }
     //cartas------------------------------
 
     public ArrayList<String> enviarMazo(Partida p) {
@@ -79,6 +66,10 @@ public class Controlador implements IControladorRemoto {
             }
         }
         return puedeBajar;
+    }
+
+    public void robarDelMazo(ifJugador j) {
+        j.addCarta(this.partidaActual.sacarPrimeraDelMazo());
     }
 
     /*public String enviarPrimeraCartaPozo() {
@@ -157,6 +148,7 @@ public class Controlador implements IControladorRemoto {
             int indice = (Integer) cambio;
             vista.actualizar(getValor(indice), indice);
         } else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
+            this.vista.setNumVista(((jugadorActual) cambio).getNumeroJugador());
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
         } else if (cambio instanceof Partida) { //cuando se inicia la partida
             vista.actualizar(cambio,6);

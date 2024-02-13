@@ -69,8 +69,11 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void crearPartida() throws RemoteException{
 		this.partidaActual = new Partida();
-		for (Jugador j : this.jugadores)
-			this.partidaActual.agregarJugador(j.getNombre());
+		int i = 0;
+		for (Jugador j : this.jugadores) {
+			this.partidaActual.agregarJugador(j.getNombre(), i);
+			i++;
+		}
 		//Serializador srl = new Serializador("partidas.dat");
 		this.srl.writeOneObject(this.partidaActual);
 		notificarObservadores(this.srl);
@@ -102,7 +105,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			int i = 0;
 			while (!corte) {
 				jugadorActual j = jugadoresActuales.get(i);
-				this.partidaActual.avisarTurno(j);
+				notificarObservadores(j);
 				//desarrolloTurno(j, i);
 
 				//si no roba del pozo, los demas pueden hacerlo, con "castigo"
