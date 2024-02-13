@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
 import src.modelo.*;
+import src.serializacion.Serializador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
@@ -125,11 +126,10 @@ public class Consola implements ifVista{
     }
 
     public int preguntarSiDeseaContinuar() {
-        int eleccion;
         System.out.println("Desea continuar?");
         System.out.println("1 - Si");
         System.out.println("2 - No");
-        eleccion = this.s.nextInt();
+        int eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
     }
@@ -163,7 +163,6 @@ public class Consola implements ifVista{
 
     @Override
     public void preguntarNombreNuevoJugador() throws RemoteException {
-        int eleccion = 0;
         System.out.println("Indique su nombre:");
         String nombreJugador = this.s.next();
         System.out.println("Jugador agregado.");
@@ -179,19 +178,17 @@ public class Consola implements ifVista{
 
     //MENUS-------------------------------
     public int menuRobar() {
-        int eleccion;
 		System.out.println("----------------------------------------");
 		System.out.println("Quiere robar del pozo o robar del mazo?");
 		System.out.println("1 - Robar del mazo");
 		System.out.println("2 - Robar del pozo");
 		System.out.println("Elija una opcion: ");
-		eleccion = this.s.nextInt();
+		int eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
 	}
 	
     public int menuBajar() {
-        int eleccion;
         System.out.println("Elija una opcion: ");
         System.out.println("1 - Bajar algún juego");
    		System.out.println("2 - Ir a tirar");
@@ -199,17 +196,16 @@ public class Consola implements ifVista{
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         System.out.println("5 - Acomodar en un juego bajado propio");
         System.out.println("6 - Acomodar en un juego bajado ajeno");
-        eleccion = this.s.nextInt();
+        int eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
     }
 
     public int menuRobarDelPozo() {
-        int eleccion;
 		System.out.println("Quiere robar del pozo?");
         System.out.println("1 - No");
         System.out.println("2 - Si");
-        eleccion = this.s.nextInt();
+        int eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
     }
@@ -279,7 +275,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarInicioPartida() {
-        System.out.println();
+        //System.out.println();
         //this.s.close();
         //this.s = new Scanner(System.in);
         System.out.println("Se ha iniciado una nueva partida.");
@@ -488,6 +484,7 @@ public class Consola implements ifVista{
             case 3:
             case 4:
             case 5: {
+                System.out.println();
                 ifJugador j = (ifJugador) actualizacion;
                 String nombreJugador = j.getNombre();
                 mostrarTurnoJugador(nombreJugador);
@@ -527,7 +524,9 @@ public class Consola implements ifVista{
                     //tirar
                     if (!corte)
                         tirarAlPozoTurno(j);
+                    this.ctrl.finalizoTurno(j.getNumeroJugador(), corte);
                 }
+                break;
             }
             case 6: {
                 mostrarInicioPartida();

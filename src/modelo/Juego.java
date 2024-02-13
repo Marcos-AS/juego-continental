@@ -83,101 +83,104 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private void iniciarPartida(Partida p) throws RemoteException {
 		try {
 			p.setRonda(1);
-			desarrolloPartida(p);
+			int rondaActual = p.getRonda();
+
+			ArrayList<jugadorActual> jugadoresActuales = p.getJugadoresActuales();
+
+			//empiezan las rondas
+			while (rondaActual <= p.getTotalRondas()) {
+				p.crearMazo();
+				p.repartirCartas();
+				p.iniciarPozo();
+				this.srl.writeOneObject(this.partidaActual);
+				notificarObservadores(this.srl); //muestra combinacion requerida y pozo
+				boolean corte = false;
+				int i = 0;
+				desarrolloTurno(p, i, corte); //supongo que tiene que mantenerse en esta funcion y desp volver
+				p.incrementarRonda();
+				p.resetearJuegosJugadores();
+				p.sumarPuntos();
+				int[] puntos = p.getPuntosJugadores();
+				int m = 0;
+				for (jugadorActual j : jugadoresActuales) {
+					//vista.mostrarPuntosJugador(j.getNombre(), puntos[m]);
+					m++;
+				}
+			}
+			//String ganador = p.determinarGanador();
+			//vista.mostrarGanador(ganador);
 		} catch(RemoteException e){
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void desarrolloPartida(Partida p) throws RemoteException {
-		int rondaActual = p.getRonda();
-		boolean corte = false;
-		int eleccion;
-		ArrayList<jugadorActual> jugadoresActuales = p.getJugadoresActuales();
+	private void desarrolloTurno(Partida p, int i, boolean corte) throws RemoteException {
+		if (!corte) {
+			if (i > p.getJugadoresActuales().size() - 1) i = 0;
+			jugadorActual j = p.getJugadoresActuales().get(i);
+			j.setTurno();
+			notificarObservadores(j);
+			//desarrolloTurno(j, i);
 
-		//empiezan las rondas
-		while (rondaActual <= p.getTotalRondas()) {
-			p.crearMazo();
-			p.repartirCartas();
-			p.iniciarPozo();
-			this.srl.writeOneObject(this.partidaActual);
-			notificarObservadores(this.srl); //muestra combinacion requerida y pozo
-			int i = 0;
-			while (!corte) {
-				jugadorActual j = jugadoresActuales.get(i);
-				notificarObservadores(j);
-				//desarrolloTurno(j, i);
-
-				//si no roba del pozo, los demas pueden hacerlo, con "castigo"
-                    /*if (eleccion != consola.getEleccionRobarDelPozo()) {
-                        ArrayList<jugadorActual> jugadoresRoboCastigo = new ArrayList<>();
-                        jugadoresRoboCastigo.addAll(jugadoresActuales);
-                        jugadoresRoboCastigo.remove(i);
-                        jugadorActual jugadorR = null;
-                        int k;
-                        int l = 0;
-                        int eleccionR = eleccion;
-                        while (eleccionR != consola.getEleccionRobarDelPozo() && l < jugadoresRoboCastigo.size()) {
-                            k = i+1;
-                            if (k > jugadoresRoboCastigo.size()-1) k = 0;
-                            jugadorR = jugadoresRoboCastigo.get(k);
-                            consola.jugadorPuedeRobarConCastigo(jugadorR.getNombre());
-                            eleccionR = consola.menuRobarDelPozo();
-                            l++;
-                        }
-                        if (eleccionR == consola.getEleccionRobarDelPozo()) {
-                            jugadorActual jugador = partidaNueva.getJugador(jugadorR.getNombre());
-                            jugador.robarConCastigo();
-                            mano = consola.getCartasJugador(jugador.getNombre());
-                            consola.mostrarCartas(mano);
-                        }
-                        consola.mostrarContinuaTurno(j.getNombre());
-                    }*/
-				//todo lo de robo con castigo me falta pasarlo
+			//si no roba del pozo, los demas pueden hacerlo, con "castigo"
+						/*if (eleccion != consola.getEleccionRobarDelPozo()) {
+							ArrayList<jugadorActual> jugadoresRoboCastigo = new ArrayList<>();
+							jugadoresRoboCastigo.addAll(jugadoresActuales);
+							jugadoresRoboCastigo.remove(i);
+							jugadorActual jugadorR = null;
+							int k;
+							int l = 0;
+							int eleccionR = eleccion;
+							while (eleccionR != consola.getEleccionRobarDelPozo() && l < jugadoresRoboCastigo.size()) {
+								k = i+1;
+								if (k > jugadoresRoboCastigo.size()-1) k = 0;
+								jugadorR = jugadoresRoboCastigo.get(k);
+								consola.jugadorPuedeRobarConCastigo(jugadorR.getNombre());
+								eleccionR = consola.menuRobarDelPozo();
+								l++;
+							}
+							if (eleccionR == consola.getEleccionRobarDelPozo()) {
+								jugadorActual jugador = partidaNueva.getJugador(jugadorR.getNombre());
+								jugador.robarConCastigo();
+								mano = consola.getCartasJugador(jugador.getNombre());
+								consola.mostrarCartas(mano);
+							}
+							consola.mostrarContinuaTurno(j.getNombre());
+						}*/
+			//todo lo de robo con castigo me falta pasarlo
 
 
-				//lo de acomodar me falta pasarlo
-				//acomodar en un juego
-                    /*while (eleccion == consola.getEleccionAcomodarJuegoPropio()) {
-                        int iCarta = consola.preguntarCartaParaAcomodar();
-                        ArrayList<ArrayList<String>> juegos = consola.getJuegosJugador(partidaNueva, j.getNombre());
-                        if (!juegos.isEmpty()) {
-                            int numJuego = 1;
-                            for (ArrayList<String> juego : juegos) {
-                                consola.mostrarJuego(numJuego);
-                                consola.mostrarCartas(juego);
-                                numJuego++;
-                            }
-                            int e = consola.preguntarEnQueJuegoQuiereAcomodar();
-                            if(j.acomodarCartaJuegoPropio(iCarta, e, partidaNueva.getRonda())) {
-                                juegos = consola.getJuegosJugador(partidaNueva,j.getNombre());
-                                ArrayList<String> juego = juegos.get(e);
-                                consola.mostrarCartas(juego);
-                            }
-                        } else {
-                            consola.mostrarNoPuedeAcomodarJuegoPropio();
-                        }
-                        mano = consola.getCartasJugador(j.getNombre());
-                        consola.mostrarCartas(mano);
-                        eleccion = consola.menuBajar();
-                    }*/
+			//lo de acomodar me falta pasarlo
+			//acomodar en un juego
+						/*while (eleccion == consola.getEleccionAcomodarJuegoPropio()) {
+							int iCarta = consola.preguntarCartaParaAcomodar();
+							ArrayList<ArrayList<String>> juegos = consola.getJuegosJugador(partidaNueva, j.getNombre());
+							if (!juegos.isEmpty()) {
+								int numJuego = 1;
+								for (ArrayList<String> juego : juegos) {
+									consola.mostrarJuego(numJuego);
+									consola.mostrarCartas(juego);
+									numJuego++;
+								}
+								int e = consola.preguntarEnQueJuegoQuiereAcomodar();
+								if(j.acomodarCartaJuegoPropio(iCarta, e, partidaNueva.getRonda())) {
+									juegos = consola.getJuegosJugador(partidaNueva,j.getNombre());
+									ArrayList<String> juego = juegos.get(e);
+									consola.mostrarCartas(juego);
+								}
+							} else {
+								consola.mostrarNoPuedeAcomodarJuegoPropio();
+							}
+							mano = consola.getCartasJugador(j.getNombre());
+							consola.mostrarCartas(mano);
+							eleccion = consola.menuBajar();
+						}*/
+		}
+	}
 
-
-				i++;
-				if (i>jugadoresActuales.size()-1) i = 0;
-			}//while ronda
-			p.incrementarRonda();
-			p.resetearJuegosJugadores();
-			p.sumarPuntos();
-			int[] puntos = p.getPuntosJugadores();
-			int m = 0;
-			for (jugadorActual j : jugadoresActuales) {
-				//vista.mostrarPuntosJugador(j.getNombre(), puntos[m]);
-				m++;
-			}
-		}//while partida
-		String ganador = p.determinarGanador();
-		//vista.mostrarGanador(ganador);
+	public void finalizoTurno(Serializador srl, int numJugador, boolean corte) throws RemoteException {
+		Partida p = (Partida) srl.readFirstObject();
+		desarrolloTurno(p,numJugador+1, corte);
 	}
 
 	//GETTERS Y SETTERS------------------------------------------------------------
@@ -216,7 +219,6 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	public void setPartidaActual(Serializador srl) throws RemoteException{
-		Partida p = (Partida) srl.readFirstObject();
-		this.partidaActual = p;
+		this.partidaActual = (Partida) srl.readFirstObject();
 	}
 }

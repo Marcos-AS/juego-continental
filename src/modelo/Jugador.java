@@ -76,4 +76,9 @@ public class Jugador implements Serializable, ifJugador {
     public ArrayList<Carta> getMano() {
         return null;
     }
+
+    @Override
+    public int getNumeroJugador() {
+        return 0;
+    }
 }

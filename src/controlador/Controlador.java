@@ -104,18 +104,14 @@ public class Controlador implements IControladorRemoto {
 
     //crea la partida y la inicia si hay al menos 2 jugadores
     public void crearPartida() throws RemoteException {
-        //Serializador srl = new Serializador("partidas.dat");
         this.juego.crearPartida();
-        //srl.writeOneObject(p);
-        //this.juego.setPartidaActual(srl); //setea part. actual en clase juego
-        //p = this.juego.getPartidaActual();
     }
 
-//    public void desarrolloTurno(jugadorActual j, int indVista) throws RemoteException {
-//
-//        this.partidaActual.avisarTurno(j);
-//    }
-
+    public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
+        Serializador srl = new Serializador("partidas.dat");
+        srl.writeOneObject(this.partidaActual);
+        this.juego.finalizoTurno(srl, numJugador, corte);
+    }
 
     //OBSERVER-----------------------------------------------------
     public Object getValor(int accion) throws RemoteException {
@@ -154,7 +150,7 @@ public class Controlador implements IControladorRemoto {
             vista.actualizar(cambio,6);
         } else if (cambio instanceof Serializador) {
             this.partidaActual = (Partida)((Serializador) cambio).readFirstObject();
-            if (this.partidaActual.getPozo() == null) {
+            if (this.partidaActual.getPozo() == null) { // cuando recien se inicia la partida
                 vista.actualizar(this.partidaActual, 6);
             } else {
                 vista.actualizar(this.partidaActual, 9);

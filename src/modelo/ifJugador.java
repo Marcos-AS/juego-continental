@@ -23,4 +23,6 @@ public interface ifJugador {
     ArrayList<ArrayList<Carta>> getJuegos();
 
     ArrayList<Carta> getMano();
+
+    int getNumeroJugador();
 }

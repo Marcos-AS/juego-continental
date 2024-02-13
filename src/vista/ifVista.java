@@ -37,7 +37,7 @@ public interface ifVista {
         for (Carta c : mano) {
             String numString = transformarNumCarta(c.getNumero());
             Palo palo = c.getPalo();
-            String carta = "";
+            String carta;
             if (palo == Palo.COMODIN) {
                 carta = "COMODIN";
             } else {
@@ -64,7 +64,7 @@ public interface ifVista {
 
     static void mostrarCombinacionRequerida(int ronda) {
 
-    };
+    }
 
     void mostrarPozo(ifPartida p);
 

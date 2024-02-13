@@ -11,6 +11,7 @@ public class jugadorActual extends Jugador {
 	private int escalerasBajadas;
 	private int triosBajados;
 	private boolean puedeBajar = true;
+	private boolean turno = false;
 
 	public jugadorActual() {}
 
@@ -25,12 +26,10 @@ public class jugadorActual extends Jugador {
 
 	private ArrayList<Carta> seleccionarCartasABajar(Object[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
-		int numCarta = 0;
-		String paloCarta = "";
 		int j = 0;
 		for(int i = 0; i < cartasABajar.length/2; i++) {
-			numCarta = (int)cartasABajar[j];
-			paloCarta = cartasABajar[j+1].toString().toUpperCase();
+			int numCarta = (int)cartasABajar[j];
+			String paloCarta = cartasABajar[j+1].toString().toUpperCase();
 			juego.add(getCartaDeLaMano(this.mano, numCarta, paloCarta));
 			j += 2;
 		}
@@ -83,7 +82,7 @@ public class jugadorActual extends Jugador {
 			this.robarDelMazo();
 			break;
 		case 2:
-			if (getPartidaActual().getPozo().size() == 0){
+			if (getPartidaActual().getPozo().isEmpty()){
 				puedeRobar = false;
 			} else {
 				this.robarDelPozo();
@@ -252,5 +251,13 @@ public class jugadorActual extends Jugador {
 
 	public int getPuntos() {
 		return this.puntosPartida;
+	}
+
+	public boolean getTurno() {
+		return this.turno;
+	}
+
+	public void setTurno() {
+		this.turno = !this.turno;
 	}
 }

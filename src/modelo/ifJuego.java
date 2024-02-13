@@ -151,7 +151,7 @@ public interface ifJuego extends IObservableRemoto {
     //GETTERS Y SETTERS
     Jugador getJugador(String nombreJugador) throws RemoteException;
 
-    public ArrayList<Jugador> getJugadores() throws RemoteException;
+    ArrayList<Jugador> getJugadores() throws RemoteException;
 
     int getFigura() throws RemoteException;
 
@@ -163,4 +163,6 @@ public interface ifJuego extends IObservableRemoto {
     void setPartidaActual(Serializador srl) throws RemoteException;
 
     void crearPartida() throws RemoteException;
+
+    void finalizoTurno(Serializador srl, int numJugador, boolean corte) throws RemoteException;
 }
