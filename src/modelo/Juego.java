@@ -74,7 +74,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			this.partidaActual = new Partida();
 			this.partidaActual.agregarJugador(nombreVista);
 			this.srl.writeOneObject(this.partidaActual);
-			notificarObservadores(this.srl);
+			notificarSrl(this.srl, false);
 			notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
 			//iniciarPartida(partidaActual);
 		}
@@ -98,7 +98,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 				this.partidaActual.repartirCartas();
 				this.partidaActual.iniciarPozo();
 				this.srl.writeOneObject(this.partidaActual);
-				notificarObservadores(this.srl); //muestra combinacion requerida y pozo
+				notificarSrl(this.srl, false); //muestra combinacion requerida y pozo
 				boolean corte = false;
 				int i = 0;
 				desarrolloTurno(this.partidaActual, i, corte); //supongo que tiene que mantenerse en esta funcion y desp volver
@@ -125,12 +125,6 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			jugadorActual j = p.getJugadoresActuales().get(i);
 			j.setTurno();
 			notificarObservadores(j);
-			//desarrolloTurno(j, i);
-
-			//si no roba del pozo, los demas pueden hacerlo, con "castigo"
-						/**/
-			//todo lo de robo con castigo me falta pasarlo
-
 
 			//lo de acomodar me falta pasarlo
 			//acomodar en un juego
@@ -161,31 +155,62 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	public void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException {
-		//Partida p = (Partida) srl.readFirstObject();
-		//notificarObservadores(srl);
 		this.srl.writeOneObject(p);
-		notificarObservadores(srl);
+		notificarSrl(srl, false);
 		desarrolloTurno(p,numJugador+1, corte);
 	}
 
 	public void roboConCastigo(String nombreJugador) throws RemoteException{
-		int eleccion = 0;
-		int n = this.partidaActual.getJugador(nombreJugador).getNumeroJugador();
+		int numJNoPuedeRobar = this.partidaActual.getJugador(nombreJugador).getNumeroJugador();
 		int i = 0;
-		while (i < this.partidaActual.getJugadoresActuales().size()) {
-			if (i == n) {
+		desarrolloRoboConCastigo(i, numJNoPuedeRobar, false);
+	}
+
+	public void desarrolloRoboConCastigo(int i, int numJNoPuedeRobar, boolean robo) throws RemoteException {
+		if (i < this.partidaActual.getJugadoresActuales().size()) {
+			if (i == numJNoPuedeRobar) {
 				i++;
 			}
 			if (i < this.partidaActual.getJugadoresActuales().size()) {
-				int[] cambio = new int[2];
+				int[] cambio = new int[3];
 				cambio[0] = i;
 				cambio[1] = 11;
-				notificarObservadores(cambio);
+				cambio[2] = numJNoPuedeRobar;
+				this.srl.writeOneObject(this.partidaActual);
+				notificarSrl(this.srl, true);
+				notificarObservadores(cambio); //notifica a la vista que i que puede robar con castigo
 			}
-			i++;
 		}
+		if (!robo) {
+			int[] cambio = new int[2];
+			cambio[0] = numJNoPuedeRobar;
+			cambio[1] = 13;
+			notificarObservadores(cambio); //notifica que la vista n puede continuar con su turno
+		}
+	}
 
-		mostrarContinuaTurno(j.getNombre());
+	public void haRobadoConCastigo(int numJ, int numJNoPuedoRobar, boolean robo, Partida p) throws RemoteException {
+		if (!robo) {
+			desarrolloRoboConCastigo(numJ+1, numJNoPuedoRobar, robo);
+		} else {
+			this.srl.writeOneObject(p);
+			notificarSrl(this.srl, true);
+			int[] cambio = new int[2];
+			cambio[0] = numJ;
+			cambio[1] = 12;
+			notificarObservadores(cambio); //notifica que la vista i robo con castigo
+		}
+	}
+
+	private void notificarSrl(Serializador srl, boolean especial) throws RemoteException {
+		Object[] cambio = new Object[2];
+		cambio[0] = srl;
+		if (!especial) {
+			cambio[1] = null;
+		} else {
+			cambio[1] = 1;
+		}
+		notificarObservadores(cambio);
 	}
 
 	//GETTERS Y SETTERS------------------------------------------------------------

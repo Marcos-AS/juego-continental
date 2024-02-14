@@ -363,6 +363,10 @@ public class Consola implements ifVista{
         System.out.println("El jugador " + nombreJugador + " puede robar con castigo.");
     }
 
+    public void jugadorHaRobadoConCastigo(String nombreJugador) {
+        System.out.println("El jugador "+ nombreJugador + " ha robado con castigo.");
+    }
+
     public void mostrarContinuaTurno(String nombreJugador) {
         System.out.println("Continua el turno del jugador " + nombreJugador);
     }
@@ -513,10 +517,15 @@ public class Consola implements ifVista{
                     mostrarCartas(mano);
                     int eleccion = menuRobar();
 
-                    //robo con castigo!!
+                    //si no roba del pozo, los demas pueden hacerlo, con "castigo"
                     if (eleccion != ELECCION_ROBAR_DEL_POZO) {
                         roboConCastigo(this.nombreVista);
                     }
+
+                    if (eleccion == ELECCION_ROBAR_DEL_POZO) {
+                        this.ctrl.robarDelPozo(j);
+                    }
+
                     //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
                     if(eleccion == ELECCION_ROBAR_DEL_MAZO) {
                         //mostrarNoPuedeRobarDelPozo();
@@ -556,8 +565,6 @@ public class Consola implements ifVista{
                 break;
             }
             case 7: {
-                //System.out.println("Jugadores: ");
-                //mostrarListaJugadores(actualizacion);
                 mostrarUltimoJugadorAgregado(actualizacion, 1);
                 break;
             }
@@ -575,13 +582,33 @@ public class Consola implements ifVista{
                 if (!s.equalsIgnoreCase(this.nombreVista)) {
                     System.out.println("El jugador " + s + " ha iniciado una partida nueva");
                 }
+                break;
             }
-            case 11: {
-                ifJugador j = this.ctrl.getJugadorPartida((int)actualizacion);
-                jugadorPuedeRobarConCastigo(j.getNombre());
-                if (menuRobarDelPozo() == ELECCION_ROBAR_DEL_POZO) {
-                    jugador.robarConCastigo();
+            case 11: { //un jugador puede robar con castigo
+                int[] a = (int[]) actualizacion;
+                ifJugador j = this.ctrl.getJugadorPartida(a[0]);
+                if (this.nombreVista.equals(j.getNombre())) {
+                    ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
+                    mostrarCartas(mano);
+                    jugadorPuedeRobarConCastigo(j.getNombre());
+                    if (menuRobarDelPozo() == ELECCION_ROBAR_DEL_POZO) {
+                        this.ctrl.robarConCastigo(j);
+                        this.ctrl.haRobadoConCastigo(j.getNumeroJugador(), a[2], true);
+                    } else {
+                        this.ctrl.haRobadoConCastigo(j.getNumeroJugador(),a[2],false);
+                    }
                 }
+                break;
+            }
+            case 12:
+            case 13: {
+                String nombreJugador = this.ctrl.getJugadorPartida((int)actualizacion).getNombre();
+                if (indice == 12) {
+                    jugadorHaRobadoConCastigo(nombreJugador);
+                } else {
+                    mostrarContinuaTurno(nombreJugador);
+                }
+                break;
             }
         }
 

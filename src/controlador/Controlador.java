@@ -81,6 +81,15 @@ public class Controlador implements IControladorRemoto {
         j.addCarta(this.partidaActual.eliminarDelMazo());
     }
 
+    public void robarDelPozo(ifJugador j) {
+        j.addCarta(this.partidaActual.eliminarDelPozo());
+    }
+
+    public void robarConCastigo(ifJugador j) {
+        robarDelPozo(j);
+        robarDelMazo(j);
+    }
+
     /*public String enviarPrimeraCartaPozo() {
         Carta c = this.partidaActual.sacarPrimeraDelPozo();
 
@@ -154,6 +163,10 @@ public class Controlador implements IControladorRemoto {
         this.juego.roboConCastigo(nombreJugador);
     }
 
+    public void haRobadoConCastigo(int numJugador, int numJNoPuedeRobar, boolean robo) throws RemoteException {
+        this.juego.haRobadoConCastigo(numJugador, numJNoPuedeRobar, robo, (Partida) this.partidaActual);
+    }
+
     public ifJugador getJugadorPartida(int numJugadorPartida) {
         return this.partidaActual.getJugadoresActuales().get(numJugadorPartida);
     }
@@ -167,8 +180,8 @@ public class Controlador implements IControladorRemoto {
                 break;
             }
             case 8: { //jugador ingreso a partida
-               o = this.partidaActual.getJugadoresActuales();
-               break;
+                o = this.partidaActual.getJugadoresActuales();
+                break;
             }
             case 9: {
                 o = this.partidaActual.getRonda();
@@ -191,18 +204,24 @@ public class Controlador implements IControladorRemoto {
         } else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
         } else if (cambio instanceof Partida) { //cuando se inicia la partida
-            vista.actualizar(cambio,6);
-        } else if (cambio instanceof Serializador) {
-            this.partidaActual = (Partida)((Serializador) cambio).readFirstObject(); //setea partida actual
-            if (this.partidaActual.getPozo() == null) { // cuando recien se inicia la partida
-                vista.actualizar(this.partidaActual, 6);
-            } else {
-                vista.actualizar(this.partidaActual, 9);
+            vista.actualizar(cambio, 6);
+        } else if (cambio instanceof Object[] c) {
+            this.partidaActual = (Partida) ((Serializador) c[0]).readFirstObject(); //setea partida actual
+            if (c[1] == null) {
+                if (this.partidaActual.getPozo() == null) { // cuando recien se inicia la partida
+                    vista.actualizar(this.partidaActual, 6);
+                } else {
+                    vista.actualizar(this.partidaActual, 9);
+                }
             }
         } else if (cambio instanceof String) {
             vista.actualizar(cambio, 10);
-        } else if (cambio instanceof int[] cambioA) {
-            vista.actualizar(cambioA[0], cambioA[1]);
+        } else if (cambio instanceof int[] cambioA) { //robo con castigo
+            if (cambioA[1] == 11) {
+                vista.actualizar(cambioA, cambioA[1]);
+            } else if (cambioA[1] == 12 || cambioA[1] == 13) {
+                vista.actualizar(cambioA[0], cambioA[1]);
+            }
         }
     }
 }

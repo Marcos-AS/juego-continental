@@ -81,4 +81,9 @@ public class Jugador implements Serializable, ifJugador {
     public int getNumeroJugador() {
         return 0;
     }
+
+    @Override
+    public void robarConCastigo() {
+
+    }
 }

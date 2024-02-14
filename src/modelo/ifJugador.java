@@ -25,4 +25,6 @@ public interface ifJugador {
     ArrayList<Carta> getMano();
 
     int getNumeroJugador();
+
+    void robarConCastigo();
 }
