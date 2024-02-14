@@ -150,6 +150,14 @@ public class Controlador implements IControladorRemoto {
         return encontrado;
     }
 
+    public void roboConCastigo(String nombreJugador) throws RemoteException {
+        this.juego.roboConCastigo(nombreJugador);
+    }
+
+    public ifJugador getJugadorPartida(int numJugadorPartida) {
+        return this.partidaActual.getJugadoresActuales().get(numJugadorPartida);
+    }
+
     //OBSERVER-----------------------------------------------------
     public Object getValor(int accion) throws RemoteException {
         Object o = null;
@@ -193,6 +201,8 @@ public class Controlador implements IControladorRemoto {
             }
         } else if (cambio instanceof String) {
             vista.actualizar(cambio, 10);
+        } else if (cambio instanceof int[] cambioA) {
+            vista.actualizar(cambioA[0], cambioA[1]);
         }
     }
 }

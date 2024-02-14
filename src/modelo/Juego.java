@@ -128,30 +128,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			//desarrolloTurno(j, i);
 
 			//si no roba del pozo, los demas pueden hacerlo, con "castigo"
-						/*if (eleccion != consola.getEleccionRobarDelPozo()) {
-							ArrayList<jugadorActual> jugadoresRoboCastigo = new ArrayList<>();
-							jugadoresRoboCastigo.addAll(jugadoresActuales);
-							jugadoresRoboCastigo.remove(i);
-							jugadorActual jugadorR = null;
-							int k;
-							int l = 0;
-							int eleccionR = eleccion;
-							while (eleccionR != consola.getEleccionRobarDelPozo() && l < jugadoresRoboCastigo.size()) {
-								k = i+1;
-								if (k > jugadoresRoboCastigo.size()-1) k = 0;
-								jugadorR = jugadoresRoboCastigo.get(k);
-								consola.jugadorPuedeRobarConCastigo(jugadorR.getNombre());
-								eleccionR = consola.menuRobarDelPozo();
-								l++;
-							}
-							if (eleccionR == consola.getEleccionRobarDelPozo()) {
-								jugadorActual jugador = partidaNueva.getJugador(jugadorR.getNombre());
-								jugador.robarConCastigo();
-								mano = consola.getCartasJugador(jugador.getNombre());
-								consola.mostrarCartas(mano);
-							}
-							consola.mostrarContinuaTurno(j.getNombre());
-						}*/
+						/**/
 			//todo lo de robo con castigo me falta pasarlo
 
 
@@ -189,6 +166,26 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		this.srl.writeOneObject(p);
 		notificarObservadores(srl);
 		desarrolloTurno(p,numJugador+1, corte);
+	}
+
+	public void roboConCastigo(String nombreJugador) throws RemoteException{
+		int eleccion = 0;
+		int n = this.partidaActual.getJugador(nombreJugador).getNumeroJugador();
+		int i = 0;
+		while (i < this.partidaActual.getJugadoresActuales().size()) {
+			if (i == n) {
+				i++;
+			}
+			if (i < this.partidaActual.getJugadoresActuales().size()) {
+				int[] cambio = new int[2];
+				cambio[0] = i;
+				cambio[1] = 11;
+				notificarObservadores(cambio);
+			}
+			i++;
+		}
+
+		mostrarContinuaTurno(j.getNombre());
 	}
 
 	//GETTERS Y SETTERS------------------------------------------------------------

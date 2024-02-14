@@ -12,6 +12,7 @@ public class jugadorActual extends Jugador implements Serializable {
 	private int escalerasBajadas;
 	private int triosBajados;
 	private boolean puedeBajar = true;
+	private boolean puedeRobarConCastigo = true;
 	private boolean turno = false;
 
 	public jugadorActual() {}
@@ -108,7 +109,6 @@ public class jugadorActual extends Jugador implements Serializable {
 	}
 
 	public void robarConCastigo() {
-		//notificarRoboConCastigo();
 		this.robarDelPozo();
 		this.robarDelMazo();
 	}

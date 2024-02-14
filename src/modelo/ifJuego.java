@@ -150,6 +150,8 @@ public interface ifJuego extends IObservableRemoto {
 
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
+    void roboConCastigo(String nombreJugador) throws RemoteException;
+
     //GETTERS Y SETTERS
     Jugador getJugador(String nombreJugador) throws RemoteException;
 

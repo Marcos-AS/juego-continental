@@ -448,6 +448,10 @@ public class Consola implements ifVista{
         }
     }
 
+    public void roboConCastigo(String nombreJugador) throws RemoteException {
+        this.ctrl.roboConCastigo(nombreJugador);
+    }
+
     //GETTERS Y SETTERS---------------------------
 
     public String getNombreVista() {
@@ -509,7 +513,10 @@ public class Consola implements ifVista{
                     mostrarCartas(mano);
                     int eleccion = menuRobar();
 
-                    //aca va robo con castigo!!
+                    //robo con castigo!!
+                    if (eleccion != ELECCION_ROBAR_DEL_POZO) {
+                        roboConCastigo(this.nombreVista);
+                    }
                     //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
                     if(eleccion == ELECCION_ROBAR_DEL_MAZO) {
                         //mostrarNoPuedeRobarDelPozo();
@@ -567,6 +574,13 @@ public class Consola implements ifVista{
                 String s = (String) actualizacion;
                 if (!s.equalsIgnoreCase(this.nombreVista)) {
                     System.out.println("El jugador " + s + " ha iniciado una partida nueva");
+                }
+            }
+            case 11: {
+                ifJugador j = this.ctrl.getJugadorPartida((int)actualizacion);
+                jugadorPuedeRobarConCastigo(j.getNombre());
+                if (menuRobarDelPozo() == ELECCION_ROBAR_DEL_POZO) {
+                    jugador.robarConCastigo();
                 }
             }
         }
