@@ -18,7 +18,7 @@ public interface ifJugador {
 
     int[] comprobarQueFaltaParaCortar();
 
-    void tirarAlPozo(int eleccion);
+    Carta getCartaParaTirarAlPozo(int eleccion);
 
     ArrayList<ArrayList<Carta>> getJuegos();
 

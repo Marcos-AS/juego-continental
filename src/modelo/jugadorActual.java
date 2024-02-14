@@ -1,9 +1,10 @@
 package src.modelo;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class jugadorActual extends Jugador {
+public class jugadorActual extends Jugador implements Serializable {
 	private int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
@@ -117,7 +118,7 @@ public class jugadorActual extends Jugador {
 		Partida p = getPartidaActual();
 		if(ifJuego.comprobarPosibleCorte(p.getRonda(), this.triosBajados, this.escalerasBajadas)) {
 			if (this.getMano().size()==1) {
-				this.tirarAlPozo(0);
+				Carta c = this.getCartaParaTirarAlPozo(0);
 			}
 			puedeCortar = true;
 		}
@@ -126,10 +127,10 @@ public class jugadorActual extends Jugador {
 
 
 
-    public void tirarAlPozo(int indiceCarta) {
+    public Carta getCartaParaTirarAlPozo(int indiceCarta) {
 		Carta cartaATirar = this.mano.get(indiceCarta); 
 		this.mano.remove(indiceCarta);
-		getPartidaActual().agregarAlPozo(cartaATirar);
+		return cartaATirar;
 	}
 
     public void agregarCarta(Carta c) {

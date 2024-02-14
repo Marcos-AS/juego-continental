@@ -4,8 +4,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
-import src.modelo.*;
-import src.serializacion.Serializador;
+import src.modelo.ifCarta;
+import src.modelo.ifPartida;
+import src.modelo.ifJugador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
@@ -18,7 +19,7 @@ public class Consola implements ifVista{
     private static final int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
     private static final int ELECCION_ROBAR_DEL_MAZO = 1;
     private static final int ELECCION_ROBAR_DEL_POZO = 2;
-    private int numVista;
+    private String nombreVista;
 
     public Consola(){}
 
@@ -164,7 +165,7 @@ public class Consola implements ifVista{
     @Override
     public void preguntarNombreNuevoJugador() throws RemoteException {
         System.out.println("Indique su nombre:");
-        String nombreJugador = this.s.next();
+        String nombreJugador = this.s.nextLine();
         System.out.println("Jugador agregado.");
         this.ctrl.agregarNuevoJugador(nombreJugador);
     }
@@ -178,6 +179,7 @@ public class Consola implements ifVista{
 
     //MENUS-------------------------------
     public int menuRobar() {
+        //Scanner sc = new Scanner(System.in);
 		System.out.println("----------------------------------------");
 		System.out.println("Quiere robar del pozo o robar del mazo?");
 		System.out.println("1 - Robar del mazo");
@@ -187,8 +189,9 @@ public class Consola implements ifVista{
         System.out.println();
         return eleccion;
 	}
-	
+
     public int menuBajar() {
+        //Scanner sc = new Scanner(System.in);
         System.out.println("Elija una opcion: ");
         System.out.println("1 - Bajar algún juego");
    		System.out.println("2 - Ir a tirar");
@@ -211,12 +214,14 @@ public class Consola implements ifVista{
     }
 
     public int menuBienvenida() {
+        //Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido al juego Continental.");
         System.out.println("Elija una opcion: ");
         System.out.println("1 - Iniciar partida nueva");
         System.out.println("2 - Continuar una partida");
         System.out.println("3 - Ver ranking de partidas");
         System.out.println("4 - Ver reglas de juego");
+        System.out.println("5 - Jugar partida recién iniciada");
         System.out.println("-1 - Salir del juego");
         int eleccion = this.s.nextInt();
         System.out.println();
@@ -275,9 +280,6 @@ public class Consola implements ifVista{
     }
 
     public void mostrarInicioPartida() {
-        //System.out.println();
-        //this.s.close();
-        //this.s = new Scanner(System.in);
         System.out.println("Se ha iniciado una nueva partida.");
     }
 
@@ -315,9 +317,8 @@ public class Consola implements ifVista{
     }
     
     public void mostrarPozo(ifPartida p) {
-        ifCarta c = p.sacarPrimeraDelMazo();
+        ifCarta c = p.sacarPrimeraDelPozo();
         String carta = ifVista.transformarNumCarta(c.getNumero()) + " de " + c.getPalo().name();
-        //String carta = this.ctrl.enviarPrimeraCartaPozo();
         System.out.println("Pozo: ");
         mostrarCarta(carta);
     }
@@ -433,14 +434,28 @@ public class Consola implements ifVista{
         ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
         mostrarCartas(mano);
         int eleccion = preguntarQueBajarParaPozo(mano.size());
-        j.tirarAlPozo(eleccion);
+        ifCarta c = j.getCartaParaTirarAlPozo(eleccion);
+        this.ctrl.tirarAlPozo(c);
     }
 
+    public void noSePuedeIniciarPartida(int i) {
+        if (i == 1) {
+            System.out.println("No se puede iniciar la partida porque solo hay 1 jugador conectado.");
+        } else if (i == 2) {
+            System.out.println("La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva' ");
+        } else if (i == 3) {
+            System.out.println("No se puede iniciar la partida porque faltan jugadores (minimo 2)");
+        }
+    }
 
     //GETTERS Y SETTERS---------------------------
 
-    public void setNumVista(int i) {
-        this.numVista = i;
+    public String getNombreVista() {
+        return this.nombreVista;
+    }
+
+    public void setNombreVista(String i) {
+        this.nombreVista = i;
     }
 
     public int getEleccionOrdenarCartas(){
@@ -484,11 +499,11 @@ public class Consola implements ifVista{
             case 3:
             case 4:
             case 5: {
-                System.out.println();
                 ifJugador j = (ifJugador) actualizacion;
                 String nombreJugador = j.getNombre();
                 mostrarTurnoJugador(nombreJugador);
-                if (this.numVista == indice) {
+                if (this.nombreVista.equals(nombreJugador)) {
+                    System.out.println("Nombre de la vista: " + this.nombreVista);
                     ArrayList<String> mano;
                     mano = this.ctrl.enviarManoJugador(j);
                     mostrarCartas(mano);
@@ -524,6 +539,7 @@ public class Consola implements ifVista{
                     //tirar
                     if (!corte)
                         tirarAlPozoTurno(j);
+                    System.out.println("Finalizo su turno");
                     this.ctrl.finalizoTurno(j.getNumeroJugador(), corte);
                 }
                 break;
@@ -546,6 +562,12 @@ public class Consola implements ifVista{
                 mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
                 mostrarPozo((ifPartida)actualizacion);
                 break;
+            }
+            case 10: {
+                String s = (String) actualizacion;
+                if (!s.equalsIgnoreCase(this.nombreVista)) {
+                    System.out.println("El jugador " + s + " ha iniciado una partida nueva");
+                }
             }
         }
 

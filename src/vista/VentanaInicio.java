@@ -265,7 +265,17 @@ public class VentanaInicio extends JFrame implements ifVista {
     }
 
     @Override
-    public void setNumVista(int i) {
+    public String getNombreVista() {
+        return null;
+    }
+
+    @Override
+    public void setNombreVista(String i) {
+
+    }
+
+    @Override
+    public void noSePuedeIniciarPartida(int i) {
 
     }
 

@@ -1,7 +1,8 @@
 package src.vista;
 
 import src.controlador.Controlador;
-import src.modelo.*;
+import src.modelo.ifCarta;
+import src.modelo.ifPartida;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,16 +33,15 @@ public interface ifVista {
         return num;
     }
 
-    static ArrayList<String> cartasToStringArray(ArrayList<Carta> mano) {
+    static ArrayList<String> cartasToStringArray(ArrayList<ifCarta> mano) {
         ArrayList<String> manoString = new ArrayList<>();
-        for (Carta c : mano) {
+        for (ifCarta c : mano) {
             String numString = transformarNumCarta(c.getNumero());
-            Palo palo = c.getPalo();
             String carta;
-            if (palo == Palo.COMODIN) {
+            if (c.getPalo().toString().equals("COMODIN")) {
                 carta = "COMODIN";
             } else {
-                carta = numString + " de " + palo;
+                carta = numString + " de " + c.getPalo().toString();
             }
             manoString.add(carta);
         }
@@ -76,5 +76,9 @@ public interface ifVista {
 
     void mostrarGanador(String ganador);
 
-    void setNumVista(int i);
+    String getNombreVista();
+
+    void setNombreVista(String i);
+
+    void noSePuedeIniciarPartida(int i);
 }

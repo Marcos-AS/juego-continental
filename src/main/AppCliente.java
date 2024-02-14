@@ -71,12 +71,16 @@ public class AppCliente {
     }
 
     private static void bienvenida(ifVista vista, Controlador ctrl) throws RemoteException, InterruptedException {
-        vista.preguntarNombreNuevoJugador(); //agrega jugador a juego
-        int eleccion = vista.menuBienvenida();
-        while (eleccion != -1) {
+        vista.preguntarNombreNuevoJugador(); //agrega jugador a juego y setea nombreVista
+        int eleccion = 0;
+        boolean partidaIniciada = false;
+        while (eleccion != -1 && !partidaIniciada) {
+            eleccion = vista.menuBienvenida();
             switch (eleccion) {
                 case 1: {
-                    ctrl.crearPartida();
+                    if (!ctrl.crearPartida(vista)) { //crea partida y agrega al jugador, setea part. actual en ctrl
+                        vista.noSePuedeIniciarPartida(1);
+                    }
                     break;
                 }
                 case 2: {
@@ -91,8 +95,16 @@ public class AppCliente {
                     vista.mostrarReglas();
                     break;
                 }
+                case 5: {
+                    if(!ctrl.jugarPartidaRecienIniciada(vista.getNombreVista())) {
+                        vista.noSePuedeIniciarPartida(2);
+                    } else {
+                        vista.noSePuedeIniciarPartida(3);
+                        partidaIniciada = true;
+                    }
+                    break;
+                }
             }
-            eleccion = vista.menuBienvenida();
         }
     }
 

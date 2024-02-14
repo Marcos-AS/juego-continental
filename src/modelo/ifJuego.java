@@ -148,6 +148,8 @@ public interface ifJuego extends IObservableRemoto {
 
     void agregarJugador(Jugador j) throws RemoteException;
 
+    void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
+
     //GETTERS Y SETTERS
     Jugador getJugador(String nombreJugador) throws RemoteException;
 
@@ -162,7 +164,9 @@ public interface ifJuego extends IObservableRemoto {
     Partida getPartidaActual() throws RemoteException;
     void setPartidaActual(Serializador srl) throws RemoteException;
 
-    void crearPartida() throws RemoteException;
+    boolean crearPartida(String nombreVista) throws RemoteException;
 
-    void finalizoTurno(Serializador srl, int numJugador, boolean corte) throws RemoteException;
+    void iniciarPartida() throws RemoteException;
+
+    void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException;
 }

@@ -25,11 +25,19 @@ public class Controlador implements IControladorRemoto {
 
     //jugador---------------------------
 
+    private ArrayList<ifCarta> cartasToIfCarta(ArrayList<Carta> cartas) {
+        ArrayList<ifCarta> cs = new ArrayList<ifCarta>();
+        for (Carta c : cartas) {
+            cs.add((ifCarta) c);
+        }
+        return cs;
+    }
+
     public ArrayList<String> enviarManoJugador(ifJugador jA) throws RemoteException {
         ArrayList<String> manoString = new ArrayList<>();
         try {
             ArrayList<Carta> mano = jA.getMano();
-            manoString = ifVista.cartasToStringArray(mano);
+            manoString = ifVista.cartasToStringArray(cartasToIfCarta(mano));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,12 +48,13 @@ public class Controlador implements IControladorRemoto {
         ArrayList<ArrayList<Carta>> juegos = j.getJuegos();
         ArrayList<ArrayList<String>> juegosString = new ArrayList<>();
         for (ArrayList<Carta> juego : juegos) {
-            juegosString.add(ifVista.cartasToStringArray(juego));
+            juegosString.add(ifVista.cartasToStringArray(cartasToIfCarta(juego)));
         }
         return juegosString;
     }
 
     public void agregarNuevoJugador(String nombreJugador) throws RemoteException {
+        this.vista.setNombreVista(nombreJugador);
         this.juego.agregarJugador(new Jugador(nombreJugador));
     }
 
@@ -53,7 +62,7 @@ public class Controlador implements IControladorRemoto {
 
     public ArrayList<String> enviarMazo(Partida p) {
         ArrayList<Carta> mazo = p.getMazo();
-        return ifVista.cartasToStringArray(mazo);
+        return ifVista.cartasToStringArray(cartasToIfCarta(mazo));
     }
 
     public boolean bajarJuego(String nombreJugador, Object[] cartasABajar) throws RemoteException {
@@ -69,7 +78,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void robarDelMazo(ifJugador j) {
-        j.addCarta(this.partidaActual.sacarPrimeraDelMazo());
+        j.addCarta(this.partidaActual.eliminarDelMazo());
     }
 
     /*public String enviarPrimeraCartaPozo() {
@@ -103,14 +112,42 @@ public class Controlador implements IControladorRemoto {
     //partida------------------
 
     //crea la partida y la inicia si hay al menos 2 jugadores
-    public void crearPartida() throws RemoteException {
-        this.juego.crearPartida();
+    public boolean crearPartida(ifVista vista) throws RemoteException {
+        return this.juego.crearPartida(vista.getNombreVista());
+    }
+
+    public void iniciarPartida() throws RemoteException {
+        this.juego.iniciarPartida();
     }
 
     public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
-        Serializador srl = new Serializador("partidas.dat");
-        srl.writeOneObject(this.partidaActual);
-        this.juego.finalizoTurno(srl, numJugador, corte);
+        //Serializador srl = new Serializador("partidas.dat");
+        //srl.writeOneObject(this.partidaActual);
+        //this.juego.finalizoTurno(srl, numJugador, corte);
+        this.juego.finalizoTurno((Partida) this.partidaActual, numJugador, corte);
+    }
+
+    public void tirarAlPozo(ifCarta c) {
+        this.partidaActual.agregarAlPozo((Carta) c);
+    }
+
+    public boolean jugarPartidaRecienIniciada(String nombreVista) throws RemoteException {
+        int i = 0;
+        boolean encontrado = false;
+        if (this.partidaActual != null) {
+            while (i < this.partidaActual.getJugadoresActuales().size() && !encontrado) {
+                if (this.partidaActual.getJugadoresActuales().get(i).getNombre().equals(nombreVista)) {
+                    encontrado = true;
+                }
+                i++;
+            }
+            if (!encontrado) {
+                this.juego.agregarJugadorAPartidaActual(nombreVista);
+                this.vista.mostrarInicioPartida();
+                this.juego.iniciarPartida();
+            }
+        }
+        return encontrado;
     }
 
     //OBSERVER-----------------------------------------------------
@@ -144,17 +181,18 @@ public class Controlador implements IControladorRemoto {
             int indice = (Integer) cambio;
             vista.actualizar(getValor(indice), indice);
         } else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
-            this.vista.setNumVista(((jugadorActual) cambio).getNumeroJugador());
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
         } else if (cambio instanceof Partida) { //cuando se inicia la partida
             vista.actualizar(cambio,6);
         } else if (cambio instanceof Serializador) {
-            this.partidaActual = (Partida)((Serializador) cambio).readFirstObject();
+            this.partidaActual = (Partida)((Serializador) cambio).readFirstObject(); //setea partida actual
             if (this.partidaActual.getPozo() == null) { // cuando recien se inicia la partida
                 vista.actualizar(this.partidaActual, 6);
             } else {
                 vista.actualizar(this.partidaActual, 9);
             }
+        } else if (cambio instanceof String) {
+            vista.actualizar(cambio, 10);
         }
     }
 }

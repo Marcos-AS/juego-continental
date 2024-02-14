@@ -63,8 +63,8 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public void tirarAlPozo(int eleccion) {
-
+    public Carta getCartaParaTirarAlPozo(int eleccion) {
+    return null;
     }
 
     @Override

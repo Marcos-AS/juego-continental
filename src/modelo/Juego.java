@@ -67,40 +67,45 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarObservadores(7); //llama al actualizar del ctrl con (this, 1)
 	}
 
-	public void crearPartida() throws RemoteException{
-		this.partidaActual = new Partida();
-		int i = 0;
-		for (Jugador j : this.jugadores) {
-			this.partidaActual.agregarJugador(j.getNombre(), i);
-			i++;
+	public boolean crearPartida(String nombreVista) throws RemoteException{
+		boolean creada = false;
+		if (this.jugadores.size()>=2) {
+			creada = true;
+			this.partidaActual = new Partida();
+			this.partidaActual.agregarJugador(nombreVista);
+			this.srl.writeOneObject(this.partidaActual);
+			notificarObservadores(this.srl);
+			notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
+			//iniciarPartida(partidaActual);
 		}
-		//Serializador srl = new Serializador("partidas.dat");
-		this.srl.writeOneObject(this.partidaActual);
-		notificarObservadores(this.srl);
-		iniciarPartida(partidaActual);
+		return creada;
 	}
 
-	private void iniciarPartida(Partida p) throws RemoteException {
-		try {
-			p.setRonda(1);
-			int rondaActual = p.getRonda();
+	public void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException {
+		this.partidaActual.agregarJugador(nombreJugador);
+	}
 
-			ArrayList<jugadorActual> jugadoresActuales = p.getJugadoresActuales();
+	public void iniciarPartida() throws RemoteException {
+		try {
+			this.partidaActual.setRonda(1);
+			int rondaActual = this.partidaActual.getRonda();
+
+			ArrayList<jugadorActual> jugadoresActuales = this.partidaActual.getJugadoresActuales();
 
 			//empiezan las rondas
-			while (rondaActual <= p.getTotalRondas()) {
-				p.crearMazo();
-				p.repartirCartas();
-				p.iniciarPozo();
+			while (rondaActual <= this.partidaActual.getTotalRondas()) {
+				this.partidaActual.crearMazo();
+				this.partidaActual.repartirCartas();
+				this.partidaActual.iniciarPozo();
 				this.srl.writeOneObject(this.partidaActual);
 				notificarObservadores(this.srl); //muestra combinacion requerida y pozo
 				boolean corte = false;
 				int i = 0;
-				desarrolloTurno(p, i, corte); //supongo que tiene que mantenerse en esta funcion y desp volver
-				p.incrementarRonda();
-				p.resetearJuegosJugadores();
-				p.sumarPuntos();
-				int[] puntos = p.getPuntosJugadores();
+				desarrolloTurno(this.partidaActual, i, corte); //supongo que tiene que mantenerse en esta funcion y desp volver
+				this.partidaActual.incrementarRonda();
+				this.partidaActual.resetearJuegosJugadores();
+				this.partidaActual.sumarPuntos();
+				int[] puntos = this.partidaActual.getPuntosJugadores();
 				int m = 0;
 				for (jugadorActual j : jugadoresActuales) {
 					//vista.mostrarPuntosJugador(j.getNombre(), puntos[m]);
@@ -178,8 +183,11 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		}
 	}
 
-	public void finalizoTurno(Serializador srl, int numJugador, boolean corte) throws RemoteException {
-		Partida p = (Partida) srl.readFirstObject();
+	public void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException {
+		//Partida p = (Partida) srl.readFirstObject();
+		//notificarObservadores(srl);
+		this.srl.writeOneObject(p);
+		notificarObservadores(srl);
 		desarrolloTurno(p,numJugador+1, corte);
 	}
 

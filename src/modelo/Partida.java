@@ -91,17 +91,16 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return this.pozo.get(this.pozo.size()-1);
     }
 
-    @Override
-    public Carta sacarPrimeraDelMazo() {
+    private Carta sacarPrimeraDelMazo() {
         return this.mazo.get(this.mazo.size()-1);
     }
 
     @Override
-    public void agregarJugador(String nombre, int numJugador) throws RemoteException {
+    public void agregarJugador(String nombre) throws RemoteException {
 		jugadorActual nuevoJugador = new jugadorActual();
 		nuevoJugador.setNombre(nombre);
         nuevoJugador.sumarPartida(this);
-        nuevoJugador.setNumeroJugador(numJugador);
+        nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.add(nuevoJugador);
 		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
         notificarObservadores(8);

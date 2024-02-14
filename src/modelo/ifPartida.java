@@ -15,9 +15,7 @@ public interface ifPartida {
 
     Carta sacarPrimeraDelPozo();
 
-    Carta sacarPrimeraDelMazo();
-
-    void agregarJugador(String nombre, int numJugador) throws RemoteException;
+    void agregarJugador(String nombre) throws RemoteException;
 
     Carta eliminarDelMazo();
 
