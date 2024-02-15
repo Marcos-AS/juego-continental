@@ -276,6 +276,17 @@ public class Controlador implements IControladorRemoto {
         return inicio;
     }
 
+    public void desarrolloRoboConCastigo(ArrayList<String> mano, ifJugador j, int numJNoPuedeRobar) throws RemoteException {
+        vista.mostrarCartas(mano);
+        vista.jugadorPuedeRobarConCastigo(j.getNombre());
+        if (vista.menuRobarDelPozo() == ifVista.getEleccionRobarDelPozo()) {
+            robarConCastigo(j);
+            haRobadoConCastigo(j.getNumeroJugador(), numJNoPuedeRobar, true);
+        } else {
+            haRobadoConCastigo(j.getNumeroJugador(),numJNoPuedeRobar,false);
+        }
+    }
+
     public void roboConCastigo(String nombreJugador) throws RemoteException {
         this.juego.roboConCastigo(nombreJugador);
     }

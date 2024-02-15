@@ -277,29 +277,91 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 }
                 break;
             }
+            case 6: {
+                mostrarInicioPartida();
+                break;
+            }
+            case 7:
+            case 8: {
+                ArrayList<ifJugador> js = (ArrayList<ifJugador>) actualizacion;
+                if (indice == 7) {
+                    mostrarUltimoJugadorAgregado(js, 1);
+                } else {
+                    mostrarUltimoJugadorAgregado(js,2);
+                }
+                break;
+            }
+            case 9: {
+                mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
+                mostrarPozo((ifPartida)actualizacion);
+                break;
+            }
             case 10: {
                 String s = (String) actualizacion;
                 if (!this.ctrl.getEstadoPartida()) {
                     mostrarGanador(s);
                 } else if (!s.equalsIgnoreCase(this.nombreVista)) {
-                    JOptionPane.showMessageDialog(null, "El jugador \" + s + \" ha iniciado una partida nueva.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("El jugador " + s + " ha iniciado una partida nueva");
                 }
+                break;
+            }
+            case 11: { //un jugador puede robar con castigo
+                int[] a = (int[]) actualizacion;
+                ifJugador j = this.ctrl.getJugadorPartida(a[0]);
+                if (this.nombreVista.equals(j.getNombre())) {
+                    ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
+                }
+                break;
+            }
+            case 12: {
+                String nombreJugador = this.ctrl.getJugadorPartida((int)actualizacion).getNombre();
+                jugadorHaRobadoConCastigo(nombreJugador);
+                break;
+            }
+            case 14: {
+                System.out.println("Esta ronda ha finalizado.");
+                System.out.println("--------------------------");
+                break;
+            }
+            case 15: {
+                int[] puntos = (int[]) actualizacion;
+                mostrarPuntosRonda(puntos);
+                break;
             }
         }
 
     }
 
-    private int preguntarEnQueJuegoQuiereAcomodar() {
+    private void jugadorHaRobadoConCastigo(String nombreJugador) {
+    }
+
+    private void mostrarPuntosRonda(int[] puntos) {
+    }
+
+    private void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js, int i) {
+    }
+
+    public int preguntarEnQueJuegoQuiereAcomodar() {
         return 0;
     }
 
-    private int preguntarCartaParaAcomodar() {
+    public int preguntarCartaParaAcomodar() {
         return 0;
     }
 
 
-    private Object[] preguntarQueBajarParaJuego() {
+    public Object[] preguntarQueBajarParaJuego() {
         return null;
+    }
+
+    @Override
+    public void jugadorPuedeRobarConCastigo(String nombreJugador) {
+
+    }
+
+    @Override
+    public int menuRobarDelPozo() {
+        return 0;
     }
 
     public int menuBajar() {
@@ -311,9 +373,9 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         return 0;
     }
 
-    private void mostrarNoPuedeRobarDelPozo() { }
+    public void mostrarNoPuedeRobarDelPozo() { }
 
-    private int menuRobar() {
+    public int menuRobar() {
     return 0;
     }
 

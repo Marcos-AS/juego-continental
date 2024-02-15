@@ -512,26 +512,13 @@ public class Consola implements ifVista{
                 int[] a = (int[]) actualizacion;
                 ifJugador j = this.ctrl.getJugadorPartida(a[0]);
                 if (this.nombreVista.equals(j.getNombre())) {
-                    ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
-                    mostrarCartas(mano);
-                    jugadorPuedeRobarConCastigo(j.getNombre());
-                    if (menuRobarDelPozo() == ELECCION_ROBAR_DEL_POZO) {
-                        this.ctrl.robarConCastigo(j);
-                        this.ctrl.haRobadoConCastigo(j.getNumeroJugador(), a[2], true);
-                    } else {
-                        this.ctrl.haRobadoConCastigo(j.getNumeroJugador(),a[2],false);
-                    }
+                    ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
                 }
                 break;
             }
-            case 12:
-            case 13: {
+            case 12: {
                 String nombreJugador = this.ctrl.getJugadorPartida((int)actualizacion).getNombre();
-                if (indice == 12) {
-                    jugadorHaRobadoConCastigo(nombreJugador);
-                } else {
-                    //mostrarContinuaTurno(nombreJugador);
-                }
+                jugadorHaRobadoConCastigo(nombreJugador);
                 break;
             }
             case 14: {

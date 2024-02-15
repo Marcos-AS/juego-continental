@@ -122,4 +122,6 @@ public interface ifVista {
     int preguntarCartaParaAcomodar();
     int preguntarEnQueJuegoQuiereAcomodar();
     Object[] preguntarQueBajarParaJuego();
+    void jugadorPuedeRobarConCastigo(String nombreJugador);
+    int menuRobarDelPozo();
 }
