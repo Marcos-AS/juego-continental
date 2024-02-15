@@ -26,16 +26,6 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private Juego() {
 	}
 
-
-	//OBSERVER--------------------------------------------------
-//	public void setValorAccion1(Integer valor) {
-//
-//	}
-
-	//PRIVATE----------------------------------------------------
-
-	//PUBLIC----------------------------------------------------------------------
-
 	public void agregarJugador(Jugador j) throws RemoteException {
 		this.jugadores.add(j);
 		notificarObservadores(7); //llama al actualizar del ctrl con (this, 1)
@@ -181,24 +171,13 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		return this.jugadores;
 	}
 
-
-	public int getFigura() throws RemoteException {
-		return FIGURA;
-	}
-
-	public int getAs() throws RemoteException {
-		return AS;
-	}
-
-	public int getPuntosComodin() throws RemoteException {
-		return PUNTOS_COMODIN;
-	}
-
 	public Partida getPartidaActual() throws RemoteException {
 		return this.partidaActual;
 	}
 
-	public void setPartidaActual(Serializador srl) throws RemoteException{
-		this.partidaActual = (Partida) srl.readFirstObject();
+	@Override
+	public void setPartidaActual(Serializador srl) throws RemoteException {
+
 	}
+
 }

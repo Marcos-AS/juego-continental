@@ -378,7 +378,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarNoPuedeRobarDelPozo() {
-        System.out.println("No puede robar del pozo porque no hay cartas en el pozo");
+        System.out.println("No puede robar del pozo porque no tiene cartas");
     }
 
 	public void mostrarGanador(String nombre) {
@@ -569,12 +569,13 @@ public class Consola implements ifVista{
                     }
 
                     if (eleccion == ELECCION_ROBAR_DEL_POZO) {
-                        this.ctrl.robarDelPozo(j);
+                        if(!this.ctrl.robarDelPozo(j)) {
+                            mostrarNoPuedeRobarDelPozo();
+                        }
                     }
 
                     //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
                     if(eleccion == ELECCION_ROBAR_DEL_MAZO) {
-                        //mostrarNoPuedeRobarDelPozo();
                         this.ctrl.robarDelMazo(j);
                     }
 

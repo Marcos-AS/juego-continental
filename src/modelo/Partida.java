@@ -73,7 +73,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void mezclarCartas() {
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
-        while(this.mazo.size() > 0) {
+        while(!this.mazo.isEmpty()) {
             Carta c = this.mazo.remove(random.nextInt(mazo.size()));
             mazoMezclado.add(c);
         }
@@ -115,6 +115,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     @Override
     public Carta eliminarDelPozo() {
+
 		Carta c = sacarPrimeraDelPozo();
 		this.pozo.remove(this.pozo.size()-1);
 		return c;
@@ -229,9 +230,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return puntos;
     }
 
-    public void partidaIniciada() throws RemoteException {
-        notificarObservadores(this);
-    }
+//    public void partidaIniciada() throws RemoteException {
+//        notificarObservadores(this);
+//    }
 
 //SETTERS Y GETTERS------------
     @Override

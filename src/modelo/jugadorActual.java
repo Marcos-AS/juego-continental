@@ -62,11 +62,6 @@ public class jugadorActual extends Jugador implements Serializable {
 	 		this.mano.remove(getCartaDeLaMano(this.mano, numCarta, paloCarta));
 	 	}
 	 }
-
-	private void eliminarDeLaMano(ArrayList<Carta> cartas) {
-		for (Carta c : cartas)
-			this.mano.remove(c);
-	}
 	
 
     private void moverCartaEnMano(int indCarta, int destino) {
@@ -76,23 +71,6 @@ public class jugadorActual extends Jugador implements Serializable {
 	}
 
 	//PUBLIC-----------------------------------------------------------------
-
-	public boolean eleccionMenuRobo(int eleccion) {
-		boolean puedeRobar = true;
-		switch(eleccion) {
-		case 1:
-			this.robarDelMazo();
-			break;
-		case 2:
-			if (getPartidaActual().getPozo().isEmpty()){
-				puedeRobar = false;
-			} else {
-				this.robarDelPozo();
-			}
-			break;
-		}
-		return puedeRobar;
-	}
 
 	public void eleccionOrdenar(int[] elecciones) {
 		this.moverCartaEnMano(elecciones[0], elecciones[1]);
@@ -108,11 +86,6 @@ public class jugadorActual extends Jugador implements Serializable {
 		this.mano.add(c);
 	}
 
-	public void robarConCastigo() {
-		this.robarDelPozo();
-		this.robarDelMazo();
-	}
-
 	public boolean cortar(int ronda) throws RemoteException {
 		boolean puedeCortar = false;
 		if(ifJuego.comprobarPosibleCorte(ronda, this.triosBajados, this.escalerasBajadas)) {
@@ -123,8 +96,6 @@ public class jugadorActual extends Jugador implements Serializable {
 		}
 		return puedeCortar;
 	}
-
-
 
     public Carta getCartaParaTirarAlPozo(int indiceCarta) {
 		Carta cartaATirar = this.mano.get(indiceCarta); 

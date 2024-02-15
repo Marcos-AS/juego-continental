@@ -89,8 +89,14 @@ public class Controlador implements IControladorRemoto {
         j.addCarta(this.partidaActual.eliminarDelMazo());
     }
 
-    public void robarDelPozo(ifJugador j) {
-        j.addCarta(this.partidaActual.eliminarDelPozo());
+    public boolean robarDelPozo(ifJugador j) {
+        boolean pozoVacio = false;
+        if (!this.partidaActual.getPozo().isEmpty()) {
+            j.addCarta(this.partidaActual.eliminarDelPozo());
+        } else {
+            pozoVacio = true;
+        }
+        return pozoVacio;
     }
 
     public void robarConCastigo(ifJugador j) {
