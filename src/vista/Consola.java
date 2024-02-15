@@ -11,14 +11,6 @@ import src.modelo.ifJugador;
 public class Consola implements ifVista{
     private Controlador ctrl;
     private Scanner s = new Scanner(System.in);
-    protected static final int ELECCION_BAJARSE = 1;
-    protected static final int ELECCION_NO_BAJARSE = 2;
-    protected static final int ELECCION_ORDENAR_CARTAS = 3;
-    protected static final int ELECCION_CORTAR = 4;
-    protected static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
-    protected static final int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
-    protected static final int ELECCION_ROBAR_DEL_MAZO = 1;
-    protected static final int ELECCION_ROBAR_DEL_POZO = 2;
     private String nombreVista;
 
     public Consola(){}
@@ -47,18 +39,13 @@ public class Consola implements ifVista{
     }
 
     //PUBLIC-----------------------------------------------------------
-    public void bajarse(int numJugador, Object [] cartasABajar) throws RemoteException {
-        ifJugador j = this.ctrl.getJugadorPartida(numJugador);
-        if(!this.ctrl.bajarJuego(j, cartasABajar)) {
-            mostrarNoPuedeBajarJuego();
-        } else {//muestra los juegos
-            ArrayList<ArrayList<String>> juegos = this.ctrl.enviarJuegosJugador(j);
-            int numJuego = 1;
-            for (ArrayList<String> juego : juegos) {
-                mostrarJuego(numJuego);
-                mostrarCartas(juego);
-                numJuego++;
-            }
+
+    public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
+        int numJuego = 1;
+        for (ArrayList<String> juego : juegos) {
+            mostrarJuego(numJuego);
+            mostrarCartas(juego);
+            numJuego++;
         }
     }
 	
@@ -170,13 +157,6 @@ public class Consola implements ifVista{
         System.out.println("Jugador agregado.");
         return nombreJugador;
     }
-
-    /*private void preguntarIniciarPartida(Object actualizacion) throws RemoteException {
-        //String eleccion = this.s.next();
-        //System.out.println();
-        //if (eleccion.equalsIgnoreCase("si") || eleccion.equalsIgnoreCase("sí"))
-            //this.ctrl.iniciarPartida((Partida) actualizacion);
-    }*/
 
     //MENUS-------------------------------
     public int menuRobar() {
@@ -413,39 +393,6 @@ public class Consola implements ifVista{
         }
     }
 
-    private int ordenarCartasTurno(int numJugador) throws RemoteException {
-        int[] ordenar = preguntarParaOrdenarCartas();
-        ifJugador j = this.ctrl.getJugadorPartida(numJugador);
-        this.ctrl.ordenarCartasEnMano(j, ordenar);
-        ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
-        mostrarCartas(mano);
-        return menuBajar();
-    }
-
-    private void bajarJuegosTurno(int numJugador) throws RemoteException {
-        Object [] cartasABajar = preguntarQueBajarParaJuego();
-        bajarse(numJugador, cartasABajar);
-        ArrayList<String> mano = this.ctrl.enviarManoJugador(this.ctrl.getJugadorPartida(numJugador));
-        mostrarCartas(mano);
-    }
-
-    private boolean cortarTurno(ifJugador j, int ronda) throws RemoteException {
-        boolean corte = j.cortar(ronda);
-        if (!corte) {
-            int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar(ronda);
-            mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
-        }
-        return corte;
-    }
-
-    private void tirarAlPozoTurno(ifJugador j) throws RemoteException {
-        ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
-        mostrarCartas(mano);
-        int eleccion = preguntarQueBajarParaPozo(mano.size());
-        ifCarta c = j.getCartaParaTirarAlPozo(eleccion);
-        this.ctrl.tirarAlPozo(c);
-    }
-
     public void noSePuedeIniciarPartida(int i) {
         if (i == 1) {
             System.out.println("No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.");
@@ -453,32 +400,6 @@ public class Consola implements ifVista{
             System.out.println("La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva' ");
         } else if (i == 3) {
             System.out.println("No se puede iniciar la partida porque faltan jugadores (minimo 2)");
-        }
-    }
-
-    public void roboConCastigo(String nombreJugador) throws RemoteException {
-        this.ctrl.roboConCastigo(nombreJugador);
-    }
-
-    private void acomodarEnJuegoPropio(ifJugador j) throws RemoteException {
-        int iCarta = preguntarCartaParaAcomodar();
-        ArrayList<ArrayList<String>> juegos = this.ctrl.enviarJuegosJugador(j);
-        if (!juegos.isEmpty()) {
-            int numJuego = 1;
-            for (ArrayList<String> juego : juegos) {
-                mostrarJuego(numJuego);
-                mostrarCartas(juego);
-                numJuego++;
-            }
-            int e = preguntarEnQueJuegoQuiereAcomodar();
-
-            if(j.acomodarCartaJuegoPropio(iCarta, e, this.ctrl.getRonda())) {
-                juegos = this.ctrl.enviarJuegosJugador(j);
-                ArrayList<String> juego = juegos.get(e);
-                mostrarCartas(juego);
-            }
-        } else {
-            mostrarNoPuedeAcomodarJuegoPropio();
         }
     }
 
@@ -510,7 +431,7 @@ public class Consola implements ifVista{
         this.nombreVista = i;
     }
 
-    public int getEleccionOrdenarCartas(){
+    public static int getEleccionOrdenarCartas(){
         return ELECCION_ORDENAR_CARTAS;
     }
 
@@ -538,9 +459,9 @@ public class Consola implements ifVista{
         return ELECCION_ACOMODAR_JUEGO_PROPIO;
     }
 
-    public int getEleccionAcomodarJuegoAjeno() {
-        return ELECCION_ACOMODAR_JUEGO_AJENO;
-    }
+    //public int getEleccionAcomodarJuegoAjeno() {
+        //return ELECCION_ACOMODAR_JUEGO_AJENO;
+    //}
 
     @Override
     public void actualizar(Object actualizacion, int indice) throws RemoteException {
@@ -555,71 +476,7 @@ public class Consola implements ifVista{
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (this.nombreVista.equals(nombreJugador)) {
-                    ifJugador j = this.ctrl.getJugadorPartida(jA.getNumeroJugador()); //con esto obtengo el objeto jugador que mantiene actualizado al ctrl
-                    System.out.println("Nombre de la vista: " + this.nombreVista);
-                    ArrayList<String> mano;
-                    mano = this.ctrl.enviarManoJugador(j);
-                    mostrarCartas(mano);
-                    int eleccion = menuRobar();
-
-                    //si no roba del pozo, los demas pueden hacerlo, con "castigo"
-                    if (eleccion != ELECCION_ROBAR_DEL_POZO) {
-                        roboConCastigo(this.nombreVista);
-                    }
-
-                    if (eleccion == ELECCION_ROBAR_DEL_POZO) {
-                        if(!this.ctrl.robarDelPozo(j)) {
-                            mostrarNoPuedeRobarDelPozo();
-                        }
-                    }
-
-                    //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
-                    if(eleccion == ELECCION_ROBAR_DEL_MAZO) {
-                        this.ctrl.robarDelMazo(j);
-                    }
-
-                    mano = this.ctrl.enviarManoJugador(j);
-                    mostrarCartas(mano);
-
-                    eleccion = menuBajar();
-                    boolean corte = false;
-
-                    //ordenar cartas en la mano
-                    while (eleccion == getEleccionOrdenarCartas())
-                        eleccion = ordenarCartasTurno(j.getNumeroJugador());
-
-                    //acomodar en un juego
-                    while (eleccion == ELECCION_ACOMODAR_JUEGO_PROPIO) {
-                        acomodarEnJuegoPropio(j);
-                        mano = this.ctrl.enviarManoJugador(j);
-                        mostrarCartas(mano);
-                        eleccion = menuBajar();
-                    }
-
-                    //bajarse
-                    boolean bajo = false;
-                    while (eleccion == ELECCION_BAJARSE) {
-                        if (j.getPuedeBajar()) {
-                            bajo = true;
-                            bajarJuegosTurno(j.getNumeroJugador());
-                            eleccion = menuBajar();
-                        } else {
-                            mostrarNoPuedeBajarJuego();
-                        }
-
-                    }
-                    if (bajo)
-                        j.setPuedeBajar();
-
-                    //si quiere cortar, comprobar si puede
-                    if (eleccion == ELECCION_CORTAR)
-                        corte = cortarTurno(j, ctrl.getRonda());
-
-                    //tirar
-                    if (!corte)
-                        tirarAlPozoTurno(j);
-                    System.out.println("Finalizo su turno");
-                    this.ctrl.finalizoTurno(j.getNumeroJugador(), corte);
+                    ctrl.desarrolloTurno(jA);
                 }
                 break;
             }

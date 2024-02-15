@@ -8,6 +8,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface ifVista {
+    int ELECCION_BAJARSE = 1;
+    int ELECCION_NO_BAJARSE = 2;
+    int ELECCION_ORDENAR_CARTAS = 3;
+    int ELECCION_CORTAR = 4;
+    int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
+    int ELECCION_ROBAR_DEL_MAZO = 1;
+    int ELECCION_ROBAR_DEL_POZO = 2;
 
     static String transformarNumCarta(int numCarta) {
         String num = ((Integer) numCarta).toString();
@@ -83,4 +90,36 @@ public interface ifVista {
     void noSePuedeIniciarPartida(int i);
     void mostrarFinalizoPartida();
     int preguntarCantJugadores();
+    void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
+    void mostrarNoPuedeBajarJuego();
+    void mostrarNoPuedeAcomodarJuegoPropio();
+    void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar);
+    int menuBajar();
+    int preguntarQueBajarParaPozo(int cantCartas);
+    static int getEleccionBajarse() {
+        return ELECCION_BAJARSE;
+    }
+    static int getEleccionOrdenarCartas() {
+        return ELECCION_ORDENAR_CARTAS;
+    }
+    static int getEleccionNoBajarse() {
+        return ELECCION_NO_BAJARSE;
+    }
+    static int getEleccionCortar() {
+        return ELECCION_CORTAR;
+    }
+    static int getEleccionAcomodarJuegoPropio() {
+        return ELECCION_ACOMODAR_JUEGO_PROPIO;
+    }
+    static int getEleccionRobarDelMazo() {
+        return ELECCION_ROBAR_DEL_MAZO;
+    }
+    static int getEleccionRobarDelPozo() {
+        return ELECCION_ROBAR_DEL_POZO;
+    }
+    void mostrarNoPuedeRobarDelPozo();
+    int menuRobar();
+    int preguntarCartaParaAcomodar();
+    int preguntarEnQueJuegoQuiereAcomodar();
+    Object[] preguntarQueBajarParaJuego();
 }

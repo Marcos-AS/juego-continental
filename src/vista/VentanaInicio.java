@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.border.*;
 
 import src.controlador.Controlador;
+import src.modelo.ifJugador;
 import src.modelo.ifPartida;
 
 import java.awt.event.ActionEvent;
@@ -13,9 +14,10 @@ import java.util.ArrayList;
 
 public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     private VentanaJuego ventanaJuego;
-    protected Controlador ctrl;
+    private Controlador ctrl;
     private String nombreVista;
     private int numJugadores;
+    private JPanel panel;
 
     //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto) {
@@ -23,6 +25,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cerrar ventana cuando se selecciona la X
         setLocationRelativeTo(null);           // centrar la ventana 
         JPanel panel = crearPanel();
+        this.panel = panel;
         agregarAPanelInicio(panel);  
         agregarMenuBarra();
         setVisible(true); 
@@ -32,7 +35,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     public JPanel crearPanel() { //lo que se ve en la pantalla inicial
         JPanel panel = new JPanel();                              
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));    // establecer el layout del panel como BoxLayout en el eje Y
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(56, 102, 65));            
         return panel;
     }
@@ -82,7 +85,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         botonIniciar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                accionarBotonInicioPartida(e);
+                accionarBotonCrearPartida(e);
             }
         });
 
@@ -217,24 +220,102 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         return itemVerRanking;
     }
 
-    public void accionarBotonInicioPartida(ActionEvent e) {
+    public void accionarBotonCrearPartida(ActionEvent e) {
         if(e.getActionCommand().equals("Iniciar")) {
             String input = JOptionPane.showInputDialog(null, "¿Cuántos jugadores quieres para la partida?", "Número de jugadores", JOptionPane.QUESTION_MESSAGE);
             numJugadores = Integer.parseInt(input);
             try {
                 if (!this.ctrl.crearPartida(this, numJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
                     noSePuedeIniciarPartida(1);
+                } else {
+                    JButton botonIniciar = crearBoton("Iniciar partida", Component.RIGHT_ALIGNMENT, 100, 50, 25);
+                    this.panel.add(botonIniciar);
+                    botonIniciar.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                accionarBotonIniciarPartida();
+                            } catch (RemoteException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    });
                 }
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
-            VentanaJuego ventanaJuego = new VentanaJuego();
-            setVentanaJuego(ventanaJuego);
+
             //setPartidaIniciada();
-            //this.app.iniciarPartida(ventanaJuego);
         }
     }
 
+    public void accionarBotonIniciarPartida() throws RemoteException {
+        int inicioPartida = ctrl.jugarPartidaRecienIniciada(nombreVista);
+        if(inicioPartida == 0) {
+            noSePuedeIniciarPartida(2);
+        } else if (inicioPartida == 1){
+            noSePuedeIniciarPartida(3);
+        } else if (inicioPartida == 2) {
+            mostrarFinalizoPartida();
+        }
+    }
+
+    @Override
+    public void actualizar(Object actualizacion, int indice) throws RemoteException {
+        switch (indice) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5: {
+                ifJugador jA = (ifJugador) actualizacion;
+                String nombreJugador = jA.getNombre();
+                mostrarTurnoJugador(nombreJugador);
+                if (this.nombreVista.equals(nombreJugador)) {
+                    ctrl.desarrolloTurno(jA);
+                }
+                break;
+            }
+            case 10: {
+                String s = (String) actualizacion;
+                if (!this.ctrl.getEstadoPartida()) {
+                    mostrarGanador(s);
+                } else if (!s.equalsIgnoreCase(this.nombreVista)) {
+                    JOptionPane.showMessageDialog(null, "El jugador \" + s + \" ha iniciado una partida nueva.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+
+    }
+
+    private int preguntarEnQueJuegoQuiereAcomodar() {
+        return 0;
+    }
+
+    private int preguntarCartaParaAcomodar() {
+        return 0;
+    }
+
+
+    private Object[] preguntarQueBajarParaJuego() {
+        return null;
+    }
+
+    public int menuBajar() {
+        return 0;
+    }
+
+    @Override
+    public int preguntarQueBajarParaPozo(int cantCartas) {
+        return 0;
+    }
+
+    private void mostrarNoPuedeRobarDelPozo() { }
+
+    private int menuRobar() {
+    return 0;
+    }
 
     //GETTERS Y SETTERS, OBSERVER-----------------
     // public void setPartidaIniciada() {
@@ -316,7 +397,13 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void noSePuedeIniciarPartida(int i) {
-        JOptionPane.showMessageDialog(null, "No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        if (i == 1) {
+            JOptionPane.showMessageDialog(null, "No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        } else if (i == 2) {
+            JOptionPane.showMessageDialog(null, "La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva'", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        } else if (i == 3) {
+            JOptionPane.showMessageDialog(null, "No se puede iniciar la partida porque faltan jugadores (minimo 2)", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     @Override
@@ -329,19 +416,32 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         return 0;
     }
 
+    @Override
+    public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
+
+    }
+
+    @Override
+    public void mostrarNoPuedeBajarJuego() {
+
+    }
+
+    @Override
+    public void mostrarNoPuedeAcomodarJuegoPropio() {
+
+    }
+
+    @Override
+    public void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar) {
+
+    }
+
     public void setVentanaJuego(VentanaJuego ventanaJuego) {
         this.ventanaJuego = ventanaJuego;
     }
 
     public VentanaJuego getVentanaJuego() {
         return this.ventanaJuego;
-    }
-
-    @Override
-    public void actualizar(Object actualizacion, int indice) {
-    switch (indice) {
-        case 1:
-    }
     }
 
     @Override
