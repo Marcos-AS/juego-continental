@@ -28,7 +28,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void agregarJugador(Jugador j) throws RemoteException {
 		this.jugadores.add(j);
-		notificarObservadores(7); //llama al actualizar del ctrl con (this, 1)
+		notificarObservadores(7);
 	}
 
 	public boolean crearPartida(String nombreVista, int cantJugadores) throws RemoteException{

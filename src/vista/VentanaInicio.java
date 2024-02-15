@@ -11,9 +11,11 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class VentanaInicio extends JFrame implements ifVista {
+public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     private VentanaJuego ventanaJuego;
-    private Controlador ctrl;
+    protected Controlador ctrl;
+    private String nombreVista;
+    private int numJugadores;
 
     //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto) {
@@ -28,7 +30,7 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     public VentanaInicio() {}
 
-    public JPanel crearPanel() {
+    public JPanel crearPanel() { //lo que se ve en la pantalla inicial
         JPanel panel = new JPanel();                              
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));    // establecer el layout del panel como BoxLayout en el eje Y
         panel.setBackground(new Color(56, 102, 65));            
@@ -36,18 +38,32 @@ public class VentanaInicio extends JFrame implements ifVista {
     }
 
     public void agregarAPanelInicio(JPanel panel) {
-        panel.add(agregarTitulo());
+        panel.add(agregarTitulo()); //continental en grande
         
         // LABEL -------------------------------------------------
         panel.add(crearLabel());
         panel.add(Box.createRigidArea(new Dimension(0, 0))); // Espacio entre la etiqueta y el campo
 
         // FIELD -------------------------------------------------
-        panel.add(crearInputField());
+        JTextField campoNombre = crearInputField();
+        panel.add(campoNombre);
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Espacio entre el icono y el campo
+        // BOTON ingresar texto
+        JButton botonIngresarTexto = crearBoton("Ingresar texto", Component.CENTER_ALIGNMENT, 100, 30, 10);
+        panel.add(botonIngresarTexto);
+
+        botonIngresarTexto.addActionListener(e -> {
+            String nombreJugador = campoNombre.getText();
+            try {
+                this.ctrl.agregarNuevoJugador(nombreJugador); //setea nombre vista en ctrl y agrega jugador a juego
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
 
         // BOTON -------------------------------------------------------------------------------------
-        JButton botonIniciar = crearBoton("Iniciar juego", Component.CENTER_ALIGNMENT, 200, 40);
+        JButton botonIniciar = crearBoton("Iniciar juego", Component.CENTER_ALIGNMENT, 200, 40, 25);
         panel.add(botonIniciar);
 
         // Eventos del boton
@@ -61,9 +77,14 @@ public class VentanaInicio extends JFrame implements ifVista {
             }
         });
 
+        //esto tengo que hacer
         botonIniciar.setActionCommand("Iniciar");
-        eventHandler eventHandler = new eventHandler();
-        botonIniciar.addActionListener(eventHandler);
+        botonIniciar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                accionarBotonInicioPartida(e);
+            }
+        });
 
         panel.add(Box.createVerticalGlue());          // agregar espacio vertical antes del botón
         panel.add(botonIniciar);                           
@@ -130,12 +151,12 @@ public class VentanaInicio extends JFrame implements ifVista {
         return textFieldNombre;
     }
 
-    public JButton crearBoton(String contenido, float alineacion, int ancho, int alto) {
+    public JButton crearBoton(String contenido, float alineacion, int ancho, int alto, int fontSize) {
         JButton boton = new JButton(contenido);             
         boton.setAlignmentX(alineacion);                        
         boton.setMaximumSize(new Dimension(ancho, alto));                           
         boton.setPreferredSize(new Dimension(ancho, alto));                       
-        boton.setFont(new Font("Josefin Sans Medium", Font.PLAIN, 25));         
+        boton.setFont(new Font("Josefin Sans Medium", Font.PLAIN, fontSize));
         boton.setForeground(Color.BLACK);                                       
         boton.setBackground(new Color(167, 201, 87));                           
         LineBorder bordePersonalizado2 = new LineBorder(Color.darkGray, 1);   
@@ -196,6 +217,25 @@ public class VentanaInicio extends JFrame implements ifVista {
         return itemVerRanking;
     }
 
+    public void accionarBotonInicioPartida(ActionEvent e) {
+        if(e.getActionCommand().equals("Iniciar")) {
+            String input = JOptionPane.showInputDialog(null, "¿Cuántos jugadores quieres para la partida?", "Número de jugadores", JOptionPane.QUESTION_MESSAGE);
+            numJugadores = Integer.parseInt(input);
+            try {
+                if (!this.ctrl.crearPartida(this, numJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
+                    noSePuedeIniciarPartida(1);
+                }
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            VentanaJuego ventanaJuego = new VentanaJuego();
+            setVentanaJuego(ventanaJuego);
+            //setPartidaIniciada();
+            //this.app.iniciarPartida(ventanaJuego);
+        }
+    }
+
+
     //GETTERS Y SETTERS, OBSERVER-----------------
     // public void setPartidaIniciada() {
     //     this.partidaIniciada = !partidaIniciada;
@@ -221,8 +261,8 @@ public class VentanaInicio extends JFrame implements ifVista {
     }
 
     @Override
-    public void preguntarNombreNuevoJugador() throws RemoteException {
-
+    public String preguntarNombreNuevoJugador() throws RemoteException {
+        return null;
     }
 
     @Override
@@ -276,7 +316,7 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     @Override
     public void noSePuedeIniciarPartida(int i) {
-
+        JOptionPane.showMessageDialog(null, "No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
@@ -302,5 +342,10 @@ public class VentanaInicio extends JFrame implements ifVista {
     switch (indice) {
         case 1:
     }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
     }
 }

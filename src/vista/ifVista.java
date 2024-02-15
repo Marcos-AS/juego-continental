@@ -56,7 +56,7 @@ public interface ifVista {
 
     void mostrarReglas();
 
-    void preguntarNombreNuevoJugador() throws RemoteException;
+    String preguntarNombreNuevoJugador() throws RemoteException;
 
     void mostrarInicioPartida();
 

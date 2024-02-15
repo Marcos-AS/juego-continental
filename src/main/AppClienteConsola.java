@@ -5,13 +5,14 @@ import rmimvc.src.Util;
 import rmimvc.src.cliente.Cliente;
 import src.controlador.Controlador;
 import src.vista.Consola;
+
 import src.vista.ifVista;
 
 import javax.swing.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class AppCliente {
+public class AppClienteConsola {
 
     public static void main(String[] args) {
         ArrayList<String> ips = Util.getIpDisponibles();
@@ -52,7 +53,6 @@ public class AppCliente {
                 8888
         );
 
-        //ifVista vista = new VentanaInicio(500, 700);
         ifVista vista = new Consola();
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);
@@ -71,7 +71,7 @@ public class AppCliente {
     }
 
     private static void bienvenida(ifVista vista, Controlador ctrl) throws RemoteException, InterruptedException {
-        vista.preguntarNombreNuevoJugador(); //agrega jugador a juego y setea nombreVista
+        ctrl.agregarNuevoJugador(vista.preguntarNombreNuevoJugador()); //agrega jugador a juego y setea nombreVista
         int eleccion = 0;
         int cantJugadores = 2; //minimo
         boolean partidaIniciada = false;

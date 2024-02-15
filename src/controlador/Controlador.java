@@ -61,11 +61,6 @@ public class Controlador implements IControladorRemoto {
 
     //cartas------------------------------
 
-    public ArrayList<String> enviarMazo(Partida p) {
-        ArrayList<Carta> mazo = p.getMazo();
-        return ifVista.cartasToStringArray(cartasToIfCarta(mazo));
-    }
-
     public boolean bajarJuego(ifJugador j, Object[] cartasABajar) throws RemoteException {
         boolean puedeBajar = false;
         if (cartasABajar.length >= 6) {
@@ -104,12 +99,6 @@ public class Controlador implements IControladorRemoto {
         robarDelMazo(j);
     }
 
-    /*public String enviarPrimeraCartaPozo() {
-        Carta c = this.partidaActual.sacarPrimeraDelPozo();
-
-        return carta;
-    }*/
-
     public int transformarLetraCarta(String letraCarta) {
         int numCarta = 0;
         switch (letraCarta) {
@@ -137,10 +126,6 @@ public class Controlador implements IControladorRemoto {
     //crea la partida y la inicia si hay al menos 2 jugadores
     public boolean crearPartida(ifVista vista, int cantJugadores) throws RemoteException {
         return this.juego.crearPartida(vista.getNombreVista(), cantJugadores);
-    }
-
-    public void iniciarPartida() throws RemoteException {
-        this.juego.iniciarPartida();
     }
 
     public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {

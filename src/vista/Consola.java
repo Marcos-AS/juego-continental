@@ -11,14 +11,14 @@ import src.modelo.ifJugador;
 public class Consola implements ifVista{
     private Controlador ctrl;
     private Scanner s = new Scanner(System.in);
-    private static final int ELECCION_BAJARSE = 1;
-    private static final int ELECCION_NO_BAJARSE = 2;
-    private static final int ELECCION_ORDENAR_CARTAS = 3;
-    private static final int ELECCION_CORTAR = 4;
-    private static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
-    private static final int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
-    private static final int ELECCION_ROBAR_DEL_MAZO = 1;
-    private static final int ELECCION_ROBAR_DEL_POZO = 2;
+    protected static final int ELECCION_BAJARSE = 1;
+    protected static final int ELECCION_NO_BAJARSE = 2;
+    protected static final int ELECCION_ORDENAR_CARTAS = 3;
+    protected static final int ELECCION_CORTAR = 4;
+    protected static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
+    protected static final int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
+    protected static final int ELECCION_ROBAR_DEL_MAZO = 1;
+    protected static final int ELECCION_ROBAR_DEL_POZO = 2;
     private String nombreVista;
 
     public Consola(){}
@@ -164,11 +164,11 @@ public class Consola implements ifVista{
     }
 
     @Override
-    public void preguntarNombreNuevoJugador() throws RemoteException {
+    public String preguntarNombreNuevoJugador() throws RemoteException {
         System.out.println("Indique su nombre:");
         String nombreJugador = this.s.nextLine();
         System.out.println("Jugador agregado.");
-        this.ctrl.agregarNuevoJugador(nombreJugador);
+        return nombreJugador;
     }
 
     /*private void preguntarIniciarPartida(Object actualizacion) throws RemoteException {
@@ -405,8 +405,7 @@ public class Consola implements ifVista{
         System.out.println("Jugador " + numJugador + ": " + nombreJugador);
     }
 
-    public void mostrarUltimoJugadorAgregado(Object jugadores, int indice) {
-        ArrayList<ifJugador> js = (ArrayList<ifJugador>) jugadores;
+    public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js, int indice) {
         if (indice == 1) {
             System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
         } else {
@@ -628,12 +627,14 @@ public class Consola implements ifVista{
                 mostrarInicioPartida();
                 break;
             }
-            case 7: {
-                mostrarUltimoJugadorAgregado(actualizacion, 1);
-                break;
-            }
+            case 7:
             case 8: {
-                mostrarUltimoJugadorAgregado(actualizacion,2);
+                ArrayList<ifJugador> js = (ArrayList<ifJugador>) actualizacion;
+                if (indice == 7) {
+                    mostrarUltimoJugadorAgregado(js, 1);
+                } else {
+                    mostrarUltimoJugadorAgregado(js,2);
+                }
                 break;
             }
             case 9: {
