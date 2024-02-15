@@ -253,4 +253,8 @@ public class Controlador implements IControladorRemoto {
             }
         }
     }
+
+    public void ordenarCartasEnMano(ifJugador j, int[] ordenar) {
+        j.moverCartaEnMano(ordenar[0], ordenar[1]);
+    }
 }

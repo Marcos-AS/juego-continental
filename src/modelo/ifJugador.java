@@ -12,8 +12,6 @@ public interface ifJugador {
 
     Partida getPartidaActiva();
 
-    void eleccionOrdenar(int[] ordenar);
-
     boolean cortar(int ronda) throws RemoteException;
 
     int[] comprobarQueFaltaParaCortar(int ronda);
@@ -37,4 +35,5 @@ public interface ifJugador {
     boolean getPuedeBajar();
     void incrementarEscalerasBajadas();
     void incrementarTriosBajados();
+    void moverCartaEnMano(int indCarta, int destino);
 }

@@ -199,7 +199,6 @@ public class Consola implements ifVista{
   		System.out.println("3 - Ordenar cartas");
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         System.out.println("5 - Acomodar en un juego bajado propio");
-        System.out.println("6 - Acomodar en un juego bajado ajeno");
         int eleccion = this.s.nextInt();
         System.out.println();
         return eleccion;
@@ -415,9 +414,10 @@ public class Consola implements ifVista{
         }
     }
 
-    private int ordenarCartasTurno(ifJugador j) throws RemoteException {
+    private int ordenarCartasTurno(int numJugador) throws RemoteException {
         int[] ordenar = preguntarParaOrdenarCartas();
-        j.eleccionOrdenar(ordenar);
+        ifJugador j = this.ctrl.getJugadorPartida(numJugador);
+        this.ctrl.ordenarCartasEnMano(j, ordenar);
         ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
         mostrarCartas(mano);
         return menuBajar();
@@ -587,7 +587,7 @@ public class Consola implements ifVista{
 
                     //ordenar cartas en la mano
                     while (eleccion == getEleccionOrdenarCartas())
-                        eleccion = ordenarCartasTurno(j);
+                        eleccion = ordenarCartasTurno(j.getNumeroJugador());
 
                     //acomodar en un juego
                     while (eleccion == ELECCION_ACOMODAR_JUEGO_PROPIO) {

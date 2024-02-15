@@ -64,17 +64,13 @@ public class jugadorActual extends Jugador implements Serializable {
 	 }
 	
 
-    private void moverCartaEnMano(int indCarta, int destino) {
+    public void moverCartaEnMano(int indCarta, int destino) {
 		Carta c = this.mano.get(indCarta);
 		this.mano.remove(indCarta);
 		this.mano.add(destino, c);
 	}
 
 	//PUBLIC-----------------------------------------------------------------
-
-	public void eleccionOrdenar(int[] elecciones) {
-		this.moverCartaEnMano(elecciones[0], elecciones[1]);
-	}
 
     public void robarDelMazo() {
 		Carta c = getPartidaActual().eliminarDelMazo();

@@ -48,11 +48,6 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public void eleccionOrdenar(int[] ordenar) {
-
-    }
-
-    @Override
     public boolean cortar(int ronda) throws RemoteException {
         return false;
     }
@@ -130,6 +125,11 @@ public class Jugador implements Serializable, ifJugador {
 
     @Override
     public void incrementarTriosBajados() {
+
+    }
+
+    @Override
+    public void moverCartaEnMano(int indCarta, int destino) {
 
     }
 }
