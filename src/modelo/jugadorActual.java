@@ -53,15 +53,15 @@ public class jugadorActual extends Jugador implements Serializable {
 		return cI;
 	}
 
-	// private void eliminarDeLaMano(Object[] cartasABajar) {
-	// 	int numCarta;
-	// 	String paloCarta;
-	// 	for(int i = 0; i < cartasABajar.length; i+=2) {
-	// 		numCarta = (int)cartasABajar[i];
-	// 		paloCarta = cartasABajar[i+1].toString();
-	// 		this.mano.remove(getCartaDeLaMano(this.mano, numCarta, paloCarta));
-	// 	}
-	// }
+	public void eliminarDeLaMano(Object[] cartasABajar) {
+	 	int numCarta;
+	 	String paloCarta;
+		 for(int i = 0; i < cartasABajar.length; i+=2) {
+	 		numCarta = (int)cartasABajar[i];
+	 		paloCarta = cartasABajar[i+1].toString();
+	 		this.mano.remove(getCartaDeLaMano(this.mano, numCarta, paloCarta));
+	 	}
+	 }
 
 	private void eliminarDeLaMano(ArrayList<Carta> cartas) {
 		for (Carta c : cartas)
@@ -102,7 +102,7 @@ public class jugadorActual extends Jugador implements Serializable {
 		Carta c = getPartidaActual().eliminarDelMazo();
 		this.mano.add(c);
 	}
-	
+
 	public void robarDelPozo() {
 		Carta c = getPartidaActual().eliminarDelPozo();
 		this.mano.add(c);
@@ -113,10 +113,9 @@ public class jugadorActual extends Jugador implements Serializable {
 		this.robarDelMazo();
 	}
 
-	public boolean cortar() throws RemoteException {
+	public boolean cortar(int ronda) throws RemoteException {
 		boolean puedeCortar = false;
-		Partida p = getPartidaActual();
-		if(ifJuego.comprobarPosibleCorte(p.getRonda(), this.triosBajados, this.escalerasBajadas)) {
+		if(ifJuego.comprobarPosibleCorte(ronda, this.triosBajados, this.escalerasBajadas)) {
 			if (this.getMano().size()==1) {
 				Carta c = this.getCartaParaTirarAlPozo(0);
 			}
@@ -137,36 +136,31 @@ public class jugadorActual extends Jugador implements Serializable {
 		this.mano.add(c);
 	}
     
-    public boolean bajarJuego(Object[] cartasABajar) throws RemoteException {
-		boolean puedeBajar = false;
-		ArrayList<Carta> juego = seleccionarCartasABajar(cartasABajar);
-		int tipoJuego = ifJuego.comprobarJuego(juego, getPartidaActual().getRonda()); //si tipoJuego es 2, no es juego
-		if(tipoJuego < 2) {
-			puedeBajar = true;
-			this.juegos.add(juego);
-			this.eliminarDeLaMano(juego);
-			if (tipoJuego == 0) {
-				this.triosBajados++;
-			} else if(tipoJuego == 1) {
-				this.escalerasBajadas++;
-			}
-		}
-		return puedeBajar;
+    public int bajarJuego(ArrayList<Carta> juego) throws RemoteException {
+		return ifJuego.comprobarJuego(juego, getPartidaActual().getRonda()); //si tipoJuego es 2, no es juego
+	}
+
+	public ArrayList<Carta> getJuego(Object[] cartasABajar) {
+		return seleccionarCartasABajar(cartasABajar);
+	}
+
+	public void addJuego(ArrayList<Carta> juego) {
+		this.juegos.add(juego);
 	}
 
 	public void incrementarEscalerasBajadas() {
 		this.escalerasBajadas++;
 	}
 
-	public void incrementarTriosBajadas() {
+	public void incrementarTriosBajados() {
 		this.triosBajados++;
 	}
 
-	public int[] comprobarQueFaltaParaCortar() {
+	public int[] comprobarQueFaltaParaCortar(int ronda) {
 		int trios = 0;
 		int escaleras = 0;
 		int[] faltante = new int[2];
-		switch (getPartidaActual().getRonda()) {
+		switch (ronda) {
 			case 1:
 				trios = 2 - this.triosBajados;
 				break;
@@ -237,6 +231,7 @@ public class jugadorActual extends Jugador implements Serializable {
 	public void setPuedeBajar() {
 		this.puedeBajar = !this.puedeBajar;
 	}
+	public boolean getPuedeBajar() { return this.puedeBajar;}
 
 	public void setTriosBajados(int trios) {
 		this.triosBajados = trios;

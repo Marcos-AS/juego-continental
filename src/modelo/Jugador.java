@@ -53,12 +53,13 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public boolean cortar() throws RemoteException {
+    public boolean cortar(int ronda) throws RemoteException {
         return false;
     }
 
     @Override
-    public int[] comprobarQueFaltaParaCortar() {
+
+    public int[] comprobarQueFaltaParaCortar(int ronda) {
         return new int[0];
     }
 
@@ -84,6 +85,51 @@ public class Jugador implements Serializable, ifJugador {
 
     @Override
     public void robarConCastigo() {
+
+    }
+
+    @Override
+    public boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public int bajarJuego(ArrayList<Carta> juego) throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public ArrayList<Carta> getJuego(Object[] cartasABajar) {
+        return null;
+    }
+
+    @Override
+    public void addJuego(ArrayList<Carta> juego) {
+
+    }
+
+    @Override
+    public void eliminarDeLaMano(Object[] cartasABajar) {
+
+    }
+
+    @Override
+    public void setPuedeBajar() {
+
+    }
+
+    @Override
+    public boolean getPuedeBajar() {
+        return false;
+    }
+
+    @Override
+    public void incrementarEscalerasBajadas() {
+
+    }
+
+    @Override
+    public void incrementarTriosBajados() {
 
     }
 }

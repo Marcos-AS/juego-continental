@@ -14,9 +14,9 @@ public interface ifJugador {
 
     void eleccionOrdenar(int[] ordenar);
 
-    boolean cortar() throws RemoteException;
+    boolean cortar(int ronda) throws RemoteException;
 
-    int[] comprobarQueFaltaParaCortar();
+    int[] comprobarQueFaltaParaCortar(int ronda);
 
     Carta getCartaParaTirarAlPozo(int eleccion);
 
@@ -27,4 +27,14 @@ public interface ifJugador {
     int getNumeroJugador();
 
     void robarConCastigo();
+
+    boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException;
+    int bajarJuego(ArrayList<Carta> juego) throws RemoteException;
+    ArrayList<Carta> getJuego(Object[] cartasABajar);
+    void addJuego(ArrayList<Carta> juego);
+    void eliminarDeLaMano(Object[] cartasABajar);
+    void setPuedeBajar();
+    boolean getPuedeBajar();
+    void incrementarEscalerasBajadas();
+    void incrementarTriosBajados();
 }

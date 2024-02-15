@@ -279,6 +279,16 @@ public class VentanaInicio extends JFrame implements ifVista {
 
     }
 
+    @Override
+    public void mostrarFinalizoPartida() {
+
+    }
+
+    @Override
+    public int preguntarCantJugadores() {
+        return 0;
+    }
+
     public void setVentanaJuego(VentanaJuego ventanaJuego) {
         this.ventanaJuego = ventanaJuego;
     }

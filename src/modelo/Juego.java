@@ -36,47 +36,22 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	//PUBLIC----------------------------------------------------------------------
 
-
-	public int cartasPorRonda(int ronda) throws RemoteException {
-		int cantCartas = Juego.CANT_CARTAS_INICIAL;
-		switch (ronda) {
-			case 2:
-				cantCartas = 7;
-				break;
-			case 3:
-				cantCartas = 8;
-				break;
-			case 4:
-				cantCartas = 9;
-				break;
-			case 5:
-				cantCartas = 10;
-				break;
-			case 6:
-				cantCartas = 11;
-				break;
-			case 7:
-				cantCartas = 12;
-				break;
-		}
-		return cantCartas;
-	}
-
 	public void agregarJugador(Jugador j) throws RemoteException {
 		this.jugadores.add(j);
 		notificarObservadores(7); //llama al actualizar del ctrl con (this, 1)
 	}
 
-	public boolean crearPartida(String nombreVista) throws RemoteException{
+	public boolean crearPartida(String nombreVista, int cantJugadores) throws RemoteException{
 		boolean creada = false;
-		if (this.jugadores.size()>=2) {
+		if (this.jugadores.size()>=cantJugadores) {
 			creada = true;
-			this.partidaActual = new Partida();
+			this.partidaActual = new Partida(); //creacion de partida
 			this.partidaActual.agregarJugador(nombreVista);
+			this.partidaActual.setEstadoPartida();
+			this.partidaActual.setCantJugadoresDeseada(cantJugadores);
 			this.srl.writeOneObject(this.partidaActual);
 			notificarSrl(this.srl, false);
 			notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
-			//iniciarPartida(partidaActual);
 		}
 		return creada;
 	}
@@ -88,76 +63,47 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	public void iniciarPartida() throws RemoteException {
 		try {
 			this.partidaActual.setRonda(1);
-			int rondaActual = this.partidaActual.getRonda();
-
-			ArrayList<jugadorActual> jugadoresActuales = this.partidaActual.getJugadoresActuales();
 
 			//empiezan las rondas
-			while (rondaActual <= this.partidaActual.getTotalRondas()) {
+			while (this.partidaActual.getRonda() <= this.partidaActual.getTotalRondas()) {
 				this.partidaActual.crearMazo();
 				this.partidaActual.repartirCartas();
 				this.partidaActual.iniciarPozo();
 				this.srl.writeOneObject(this.partidaActual);
 				notificarSrl(this.srl, false); //muestra combinacion requerida y pozo
-				boolean corte = false;
 				int i = 0;
-				desarrolloTurno(this.partidaActual, i, corte); //supongo que tiene que mantenerse en esta funcion y desp volver
+				desarrolloTurno(this.partidaActual, i); //supongo que tiene que mantenerse en esta funcion y desp volver
+				notificarObservadores(14);
 				this.partidaActual.incrementarRonda();
 				this.partidaActual.resetearJuegosJugadores();
 				this.partidaActual.sumarPuntos();
 				int[] puntos = this.partidaActual.getPuntosJugadores();
-				int m = 0;
-				for (jugadorActual j : jugadoresActuales) {
-					//vista.mostrarPuntosJugador(j.getNombre(), puntos[m]);
-					m++;
-				}
+				notificarObservadores(puntos);
 			}
-			//String ganador = p.determinarGanador();
-			//vista.mostrarGanador(ganador);
+			String ganador = this.partidaActual.determinarGanador();
+			notificarObservadores(ganador);
 		} catch(RemoteException e){
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void desarrolloTurno(Partida p, int i, boolean corte) throws RemoteException {
-		if (!corte) {
-			if (i > p.getJugadoresActuales().size() - 1) i = 0;
-			jugadorActual j = p.getJugadoresActuales().get(i);
-			j.setTurno();
-			notificarObservadores(j);
-
-			//lo de acomodar me falta pasarlo
-			//acomodar en un juego
-						/*while (eleccion == consola.getEleccionAcomodarJuegoPropio()) {
-							int iCarta = consola.preguntarCartaParaAcomodar();
-							ArrayList<ArrayList<String>> juegos = consola.getJuegosJugador(partidaNueva, j.getNombre());
-							if (!juegos.isEmpty()) {
-								int numJuego = 1;
-								for (ArrayList<String> juego : juegos) {
-									consola.mostrarJuego(numJuego);
-									consola.mostrarCartas(juego);
-									numJuego++;
-								}
-								int e = consola.preguntarEnQueJuegoQuiereAcomodar();
-								if(j.acomodarCartaJuegoPropio(iCarta, e, partidaNueva.getRonda())) {
-									juegos = consola.getJuegosJugador(partidaNueva,j.getNombre());
-									ArrayList<String> juego = juegos.get(e);
-									consola.mostrarCartas(juego);
-								}
-							} else {
-								consola.mostrarNoPuedeAcomodarJuegoPropio();
-							}
-							mano = consola.getCartasJugador(j.getNombre());
-							consola.mostrarCartas(mano);
-							eleccion = consola.menuBajar();
-						}*/
-		}
+	private void desarrolloTurno(Partida p, int i) throws RemoteException {
+		if (i > p.getJugadoresActuales().size() - 1) i = 0;
+		jugadorActual j = p.getJugadoresActuales().get(i);
+		j.setTurno();
+		notificarObservadores(j);
 	}
 
 	public void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException {
+		this.partidaActual = p;
+		if (corte) p.setEstadoPartida();
 		this.srl.writeOneObject(p);
-		notificarSrl(srl, false);
-		desarrolloTurno(p,numJugador+1, corte);
+		if (!corte) {
+			notificarSrl(srl, false);
+			desarrolloTurno(p,numJugador+1);
+		} else {
+			notificarSrl(srl, true);
+		}
 	}
 
 	public void roboConCastigo(String nombreJugador) throws RemoteException{
@@ -176,8 +122,6 @@ public class Juego extends ObservableRemoto implements ifJuego {
 				cambio[0] = i;
 				cambio[1] = 11;
 				cambio[2] = numJNoPuedeRobar;
-				this.srl.writeOneObject(this.partidaActual);
-				notificarSrl(this.srl, true);
 				notificarObservadores(cambio); //notifica a la vista que i que puede robar con castigo
 			}
 		}
@@ -211,6 +155,12 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			cambio[1] = 1;
 		}
 		notificarObservadores(cambio);
+	}
+
+	public void cambioPartida(Partida p) throws RemoteException {
+		this.partidaActual = p;
+		this.srl.writeOneObject(p);
+		notificarSrl(srl, true);
 	}
 
 	//GETTERS Y SETTERS------------------------------------------------------------

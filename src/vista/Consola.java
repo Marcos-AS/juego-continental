@@ -47,17 +47,18 @@ public class Consola implements ifVista{
     }
 
     //PUBLIC-----------------------------------------------------------
-    public void bajarse(String nombreJugador, Object [] cartasABajar) throws RemoteException {
-        if(!ctrl.bajarJuego(nombreJugador, cartasABajar)) {
+    public void bajarse(int numJugador, Object [] cartasABajar) throws RemoteException {
+        ifJugador j = this.ctrl.getJugadorPartida(numJugador);
+        if(!this.ctrl.bajarJuego(j, cartasABajar)) {
             mostrarNoPuedeBajarJuego();
-        } else {
-            //ArrayList<ArrayList<String>> juegos = this.ctrl.enviarJuegosJugador(nombreJugador);
+        } else {//muestra los juegos
+            ArrayList<ArrayList<String>> juegos = this.ctrl.enviarJuegosJugador(j);
             int numJuego = 1;
-            /*for (ArrayList<String> juego : juegos) {
+            for (ArrayList<String> juego : juegos) {
                 mostrarJuego(numJuego);
                 mostrarCartas(juego);
                 numJuego++;
-            }*/
+            }
         }
     }
 	
@@ -281,6 +282,7 @@ public class Consola implements ifVista{
 
     public void mostrarInicioPartida() {
         System.out.println("Se ha iniciado una nueva partida.");
+        System.out.println("Para ingresar vaya a la opcion 5: Jugar partida recien iniciada.");
     }
 
     public void mostrarCartasNombreJugador(String nombreJugador) {
@@ -325,6 +327,10 @@ public class Consola implements ifVista{
 
     public void mostrarNoPuedeBajarJuego() {
         System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
+    }
+
+    public void mostrarYaNoPuedeBajar() {
+        System.out.println("No puede volver a bajar juegos en esta ronda.");
     }
 
     public void mostrarJuego(int numJuego) {
@@ -417,18 +423,17 @@ public class Consola implements ifVista{
         return menuBajar();
     }
 
-    private int bajarJuegosTurno(ifJugador j) throws RemoteException {
+    private void bajarJuegosTurno(int numJugador) throws RemoteException {
         Object [] cartasABajar = preguntarQueBajarParaJuego();
-        bajarse(j.getNombre(), cartasABajar);
-        ArrayList<String> mano = this.ctrl.enviarManoJugador(j);
+        bajarse(numJugador, cartasABajar);
+        ArrayList<String> mano = this.ctrl.enviarManoJugador(this.ctrl.getJugadorPartida(numJugador));
         mostrarCartas(mano);
-        return menuBajar();
     }
 
-    private boolean cortarTurno(ifJugador j) throws RemoteException {
-        boolean corte = j.cortar();
+    private boolean cortarTurno(ifJugador j, int ronda) throws RemoteException {
+        boolean corte = j.cortar(ronda);
         if (!corte) {
-            int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar();
+            int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar(ronda);
             mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
         }
         return corte;
@@ -444,7 +449,7 @@ public class Consola implements ifVista{
 
     public void noSePuedeIniciarPartida(int i) {
         if (i == 1) {
-            System.out.println("No se puede iniciar la partida porque solo hay 1 jugador conectado.");
+            System.out.println("No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.");
         } else if (i == 2) {
             System.out.println("La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva' ");
         } else if (i == 3) {
@@ -454,6 +459,46 @@ public class Consola implements ifVista{
 
     public void roboConCastigo(String nombreJugador) throws RemoteException {
         this.ctrl.roboConCastigo(nombreJugador);
+    }
+
+    private void acomodarEnJuegoPropio(ifJugador j) throws RemoteException {
+        int iCarta = preguntarCartaParaAcomodar();
+        ArrayList<ArrayList<String>> juegos = this.ctrl.enviarJuegosJugador(j);
+        if (!juegos.isEmpty()) {
+            int numJuego = 1;
+            for (ArrayList<String> juego : juegos) {
+                mostrarJuego(numJuego);
+                mostrarCartas(juego);
+                numJuego++;
+            }
+            int e = preguntarEnQueJuegoQuiereAcomodar();
+
+            if(j.acomodarCartaJuegoPropio(iCarta, e, this.ctrl.getRonda())) {
+                juegos = this.ctrl.enviarJuegosJugador(j);
+                ArrayList<String> juego = juegos.get(e);
+                mostrarCartas(juego);
+            }
+        } else {
+            mostrarNoPuedeAcomodarJuegoPropio();
+        }
+    }
+
+    public void mostrarPuntosRonda(int[] puntos) {
+        System.out.println("Puntuacion en la partida: ");
+        for (int i = 1; i < puntos.length; i++) {
+            mostrarPuntosJugador(this.ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
+        }
+    }
+
+    public void mostrarFinalizoPartida() {
+        System.out.println("La partida ha finalizado.");
+    }
+
+    public int preguntarCantJugadores() {
+        System.out.println("Cuantos jugadores desea para la nueva partida?");
+        int cantJugadores = this.s.nextInt();
+        System.out.println();
+        return cantJugadores;
     }
 
     //GETTERS Y SETTERS---------------------------
@@ -507,10 +552,11 @@ public class Consola implements ifVista{
             case 3:
             case 4:
             case 5: {
-                ifJugador j = (ifJugador) actualizacion;
-                String nombreJugador = j.getNombre();
+                ifJugador jA = (ifJugador) actualizacion;
+                String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (this.nombreVista.equals(nombreJugador)) {
+                    ifJugador j = this.ctrl.getJugadorPartida(jA.getNumeroJugador()); //con esto obtengo el objeto jugador que mantiene actualizado al ctrl
                     System.out.println("Nombre de la vista: " + this.nombreVista);
                     ArrayList<String> mano;
                     mano = this.ctrl.enviarManoJugador(j);
@@ -542,15 +588,32 @@ public class Consola implements ifVista{
                     while (eleccion == getEleccionOrdenarCartas())
                         eleccion = ordenarCartasTurno(j);
 
-                    //aca va acomodar en juego!
+                    //acomodar en un juego
+                    while (eleccion == ELECCION_ACOMODAR_JUEGO_PROPIO) {
+                        acomodarEnJuegoPropio(j);
+                        mano = this.ctrl.enviarManoJugador(j);
+                        mostrarCartas(mano);
+                        eleccion = menuBajar();
+                    }
 
                     //bajarse
-                    while (eleccion == getEleccionBajarse())
-                        eleccion = bajarJuegosTurno(j);
+                    boolean bajo = false;
+                    while (eleccion == ELECCION_BAJARSE) {
+                        if (j.getPuedeBajar()) {
+                            bajo = true;
+                            bajarJuegosTurno(j.getNumeroJugador());
+                            eleccion = menuBajar();
+                        } else {
+                            mostrarNoPuedeBajarJuego();
+                        }
+
+                    }
+                    if (bajo)
+                        j.setPuedeBajar();
 
                     //si quiere cortar, comprobar si puede
-                    if (eleccion == getEleccionCortar())
-                        corte = cortarTurno(j);
+                    if (eleccion == ELECCION_CORTAR)
+                        corte = cortarTurno(j, ctrl.getRonda());
 
                     //tirar
                     if (!corte)
@@ -579,7 +642,9 @@ public class Consola implements ifVista{
             }
             case 10: {
                 String s = (String) actualizacion;
-                if (!s.equalsIgnoreCase(this.nombreVista)) {
+                if (!this.ctrl.getEstadoPartida()) {
+                    mostrarGanador(s);
+                } else if (!s.equalsIgnoreCase(this.nombreVista)) {
                     System.out.println("El jugador " + s + " ha iniciado una partida nueva");
                 }
                 break;
@@ -606,8 +671,18 @@ public class Consola implements ifVista{
                 if (indice == 12) {
                     jugadorHaRobadoConCastigo(nombreJugador);
                 } else {
-                    mostrarContinuaTurno(nombreJugador);
+                    //mostrarContinuaTurno(nombreJugador);
                 }
+                break;
+            }
+            case 14: {
+                System.out.println("Esta ronda ha finalizado.");
+                System.out.println("--------------------------");
+                break;
+            }
+            case 15: {
+                int[] puntos = (int[]) actualizacion;
+                mostrarPuntosRonda(puntos);
                 break;
             }
         }

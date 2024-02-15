@@ -38,7 +38,7 @@ public interface ifVista {
         for (ifCarta c : mano) {
             String numString = transformarNumCarta(c.getNumero());
             String carta;
-            if (c.getPalo().toString().equals("COMODIN")) {
+            if (c.getPalo().toString().equalsIgnoreCase("COMODIN")) {
                 carta = "COMODIN";
             } else {
                 carta = numString + " de " + c.getPalo().toString();
@@ -81,4 +81,6 @@ public interface ifVista {
     void setNombreVista(String i);
 
     void noSePuedeIniciarPartida(int i);
+    void mostrarFinalizoPartida();
+    int preguntarCantJugadores();
 }

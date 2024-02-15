@@ -55,4 +55,6 @@ public interface ifPartida {
     void setEstadoPartida();
 
     void partidaIniciada() throws RemoteException;
+
+    int getCantJugadoresDeseada();
 }

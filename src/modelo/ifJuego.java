@@ -84,7 +84,30 @@ public interface ifJuego extends IObservableRemoto {
         return esTrio;
     }
 
-    int cartasPorRonda(int ronda) throws RemoteException;
+    static int cartasPorRonda(int ronda) throws RemoteException {
+        int cantCartas = Juego.CANT_CARTAS_INICIAL;
+        switch (ronda) {
+            case 2:
+                cantCartas = 7;
+                break;
+            case 3:
+                cantCartas = 8;
+                break;
+            case 4:
+                cantCartas = 9;
+                break;
+            case 5:
+                cantCartas = 10;
+                break;
+            case 6:
+                cantCartas = 11;
+                break;
+            case 7:
+                cantCartas = 12;
+                break;
+        }
+        return cantCartas;
+    };
 
     static int comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException {
         int esJuego = 2; //si no es juego entonces queda en 2, si es trio queda en 0, si es escalera queda en 1
@@ -158,18 +181,20 @@ public interface ifJuego extends IObservableRemoto {
 
     ArrayList<Jugador> getJugadores() throws RemoteException;
 
-    int getFigura() throws RemoteException;
+    static int getFigura() throws RemoteException {return Juego.FIGURA;}
 
-    int getAs() throws RemoteException;
+    static int getAs() throws RemoteException {return Juego.AS;}
 
-    int getPuntosComodin() throws RemoteException;
+    static int getPuntosComodin() throws RemoteException {return Juego.PUNTOS_COMODIN;}
 
     Partida getPartidaActual() throws RemoteException;
     void setPartidaActual(Serializador srl) throws RemoteException;
 
-    boolean crearPartida(String nombreVista) throws RemoteException;
+    boolean crearPartida(String nombreVista, int cantJugadores) throws RemoteException;
 
     void iniciarPartida() throws RemoteException;
 
     void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException;
+
+    void cambioPartida(Partida p) throws RemoteException;
 }

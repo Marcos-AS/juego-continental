@@ -35,6 +35,7 @@ public class Controlador implements IControladorRemoto {
 
     public ArrayList<String> enviarManoJugador(ifJugador jA) throws RemoteException {
         ArrayList<String> manoString = new ArrayList<>();
+        //ifJugador jA = getJugadorPartida(numJugador);
         try {
             ArrayList<Carta> mano = jA.getMano();
             manoString = ifVista.cartasToStringArray(cartasToIfCarta(mano));
@@ -65,14 +66,21 @@ public class Controlador implements IControladorRemoto {
         return ifVista.cartasToStringArray(cartasToIfCarta(mazo));
     }
 
-    public boolean bajarJuego(String nombreJugador, Object[] cartasABajar) throws RemoteException {
-        jugadorActual j = this.partidaActual.getJugador(nombreJugador);
+    public boolean bajarJuego(ifJugador j, Object[] cartasABajar) throws RemoteException {
         boolean puedeBajar = false;
         if (cartasABajar.length >= 6) {
-            if (j.bajarJuego(cartasABajar)) {
+            int tipoJuego = j.bajarJuego(j.getJuego(cartasABajar)); //comprueba si puede
+            if (tipoJuego < 2) {
                 puedeBajar = true;
-                j.setPuedeBajar();
+                j.addJuego(j.getJuego(cartasABajar));
+                j.eliminarDeLaMano(cartasABajar);
+                if (tipoJuego == 0) {
+                    j.incrementarTriosBajados();
+                } else if(tipoJuego == 1) {
+                    j.incrementarEscalerasBajadas();
+                }
             }
+            //this.juego.cambioPartida((Partida) this.partidaActual); //envia el cambio al modelo
         }
         return puedeBajar;
     }
@@ -121,8 +129,8 @@ public class Controlador implements IControladorRemoto {
     //partida------------------
 
     //crea la partida y la inicia si hay al menos 2 jugadores
-    public boolean crearPartida(ifVista vista) throws RemoteException {
-        return this.juego.crearPartida(vista.getNombreVista());
+    public boolean crearPartida(ifVista vista, int cantJugadores) throws RemoteException {
+        return this.juego.crearPartida(vista.getNombreVista(), cantJugadores);
     }
 
     public void iniciarPartida() throws RemoteException {
@@ -130,9 +138,6 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
-        //Serializador srl = new Serializador("partidas.dat");
-        //srl.writeOneObject(this.partidaActual);
-        //this.juego.finalizoTurno(srl, numJugador, corte);
         this.juego.finalizoTurno((Partida) this.partidaActual, numJugador, corte);
     }
 
@@ -140,23 +145,30 @@ public class Controlador implements IControladorRemoto {
         this.partidaActual.agregarAlPozo((Carta) c);
     }
 
-    public boolean jugarPartidaRecienIniciada(String nombreVista) throws RemoteException {
+    public int jugarPartidaRecienIniciada(String nombreVista) throws RemoteException {
         int i = 0;
+        int inicio = 0;
         boolean encontrado = false;
-        if (this.partidaActual != null) {
+        if (this.partidaActual != null) { //si ya se llamo a crearPartida()
             while (i < this.partidaActual.getJugadoresActuales().size() && !encontrado) {
-                if (this.partidaActual.getJugadoresActuales().get(i).getNombre().equals(nombreVista)) {
-                    encontrado = true;
+                if (this.partidaActual.getJugadoresActuales().get(i).getNombre().equals(nombreVista)) { //vista es la que llama a esta funcion
+                    encontrado = true; //significa que el creo la partida, llamo a esta funcion
+                    inicio = 1;
                 }
                 i++;
             }
-            if (!encontrado) {
+            if (!encontrado) { //significa que la vista llamo a esta funcion pero no creo la partida
                 this.juego.agregarJugadorAPartidaActual(nombreVista);
-                this.vista.mostrarInicioPartida();
-                this.juego.iniciarPartida();
+                if (this.juego.getPartidaActual().getJugadoresActuales().size() == this.partidaActual.getCantJugadoresDeseada()) {
+                    this.vista.mostrarInicioPartida();
+                    this.juego.iniciarPartida(); //esto inicia el funcionamiento del juego
+                    inicio = 2; //indica partida finalizada
+                } else {
+                    inicio = 1;
+                }
             }
         }
-        return encontrado;
+        return inicio;
     }
 
     public void roboConCastigo(String nombreJugador) throws RemoteException {
@@ -169,6 +181,14 @@ public class Controlador implements IControladorRemoto {
 
     public ifJugador getJugadorPartida(int numJugadorPartida) {
         return this.partidaActual.getJugadoresActuales().get(numJugadorPartida);
+    }
+
+    public int getRonda() {
+        return this.partidaActual.getRonda();
+    }
+
+    public boolean getEstadoPartida() {
+        return this.partidaActual.getEstadoPartida();
     }
 
     //OBSERVER-----------------------------------------------------
@@ -205,7 +225,7 @@ public class Controlador implements IControladorRemoto {
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
         } else if (cambio instanceof Partida) { //cuando se inicia la partida
             vista.actualizar(cambio, 6);
-        } else if (cambio instanceof Object[] c) {
+        } else if (cambio instanceof Object[] c) { //serializador
             this.partidaActual = (Partida) ((Serializador) c[0]).readFirstObject(); //setea partida actual
             if (c[1] == null) {
                 if (this.partidaActual.getPozo() == null) { // cuando recien se inicia la partida
@@ -217,7 +237,10 @@ public class Controlador implements IControladorRemoto {
         } else if (cambio instanceof String) {
             vista.actualizar(cambio, 10);
         } else if (cambio instanceof int[] cambioA) { //robo con castigo
-            if (cambioA[1] == 11) {
+            if (cambioA[0] == -1) { //para mostrar los puntos de la ronda finalizada
+                vista.actualizar(cambio, 15);
+            }
+            if (cambioA[1] == 11) { //notificar al jugador cambioA[0] que puede robar con castigo
                 vista.actualizar(cambioA, cambioA[1]);
             } else if (cambioA[1] == 12 || cambioA[1] == 13) {
                 vista.actualizar(cambioA[0], cambioA[1]);

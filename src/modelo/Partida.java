@@ -15,12 +15,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private ArrayList<Carta> pozo;
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
-    private static final int BARAJAS_MAS_6_JUGADORES = 4;
+    //private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private static final int CANT_TOTAL_RONDAS = 1; //prueba
     private boolean enCurso = false;
     @Serial
     private static final long serialVersionUID = 1L;
+    private int cantJugadoresDeseada;
 
     public Partida() {}
 
@@ -32,8 +33,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
         if (this.jugadoresActuales.size() >= 4 && this.jugadoresActuales.size() <= 6) {
             cantBarajas = BARAJAS_MAS_4_JUGADORES;
-        } else if(this.jugadoresActuales.size() >= 6 && this.jugadoresActuales.size() <= 8) {
-            cantBarajas = BARAJAS_MAS_6_JUGADORES;
+        //} else if(this.jugadoresActuales.size() >= 6 && this.jugadoresActuales.size() <= 8) {
+          //  cantBarajas = BARAJAS_MAS_6_JUGADORES;
         }
         return cantBarajas;
     }
@@ -102,7 +103,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         nuevoJugador.sumarPartida(this);
         nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
 		this.jugadoresActuales.add(nuevoJugador);
-		//nuevoJugador.setNumeroJugador(this.jugadoresActuales.size());
         notificarObservadores(8);
 	}
 
@@ -133,37 +133,37 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
 	@Override
     public void repartirCartas() throws RemoteException {
-		//int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
-//		for(jugadorActual j: this.jugadoresActuales) {
-//			for(int i = 0; i < numCartasARepartir; i++) {
-//			    Carta c = this.eliminarDelMazo();
-//			 	j.agregarCarta(c);
-//			}
-             Carta c = new Carta(-1, Palo.COMODIN);
-             Carta c1 = new Carta(5, Palo.TREBOL);
-             Carta c2 = new Carta(5, Palo.PICAS);
-             Carta c3 = new Carta(6, Palo.PICAS);
-             Carta c4 = new Carta(6, Palo.TREBOL);
-             Carta c5 = new Carta(6, Palo.DIAMANTES);
-             this.jugadoresActuales.get(0).agregarCarta(c);
-             this.jugadoresActuales.get(0).agregarCarta(c1);
-             this.jugadoresActuales.get(0).agregarCarta(c2);
-             this.jugadoresActuales.get(0).agregarCarta(c3);
-             this.jugadoresActuales.get(0).agregarCarta(c4);
-             this.jugadoresActuales.get(0).agregarCarta(c5);
-             Carta c6 = new Carta(3, Palo.PICAS);
-             Carta c7 = new Carta(3, Palo.DIAMANTES);
-             Carta c8 = new Carta(3, Palo.TREBOL);
-             Carta c9 = new Carta(-1, Palo.COMODIN);
-             Carta c10 = new Carta(8, Palo.PICAS);
-             Carta c11 = new Carta(8, Palo.TREBOL);
-             this.jugadoresActuales.get(1).agregarCarta(c6);
-             this.jugadoresActuales.get(1).agregarCarta(c7);
-             this.jugadoresActuales.get(1).agregarCarta(c8);
-             this.jugadoresActuales.get(1).agregarCarta(c9);
-             this.jugadoresActuales.get(1).agregarCarta(c10);
-             this.jugadoresActuales.get(1).agregarCarta(c11);
-//		}
+		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
+		for(jugadorActual j: this.jugadoresActuales) {
+			for(int i = 0; i < numCartasARepartir; i++) {
+			    Carta c = this.eliminarDelMazo();
+			 	j.agregarCarta(c);
+			}
+        }
+//             Carta c = new Carta(-1, Palo.COMODIN);
+//             Carta c1 = new Carta(5, Palo.TREBOL);
+//             Carta c2 = new Carta(5, Palo.PICAS);
+//             Carta c3 = new Carta(6, Palo.PICAS);
+//             Carta c4 = new Carta(6, Palo.TREBOL);
+//             Carta c5 = new Carta(6, Palo.DIAMANTES);
+//             this.jugadoresActuales.get(0).agregarCarta(c);
+//             this.jugadoresActuales.get(0).agregarCarta(c1);
+//             this.jugadoresActuales.get(0).agregarCarta(c2);
+//             this.jugadoresActuales.get(0).agregarCarta(c3);
+//             this.jugadoresActuales.get(0).agregarCarta(c4);
+//             this.jugadoresActuales.get(0).agregarCarta(c5);
+//             Carta c6 = new Carta(3, Palo.PICAS);
+//             Carta c7 = new Carta(3, Palo.DIAMANTES);
+//             Carta c8 = new Carta(3, Palo.TREBOL);
+//             Carta c9 = new Carta(-1, Palo.COMODIN);
+//             Carta c10 = new Carta(8, Palo.PICAS);
+//             Carta c11 = new Carta(8, Palo.TREBOL);
+//             this.jugadoresActuales.get(1).agregarCarta(c6);
+//             this.jugadoresActuales.get(1).agregarCarta(c7);
+//             this.jugadoresActuales.get(1).agregarCarta(c8);
+//             this.jugadoresActuales.get(1).agregarCarta(c9);
+//             this.jugadoresActuales.get(1).agregarCarta(c10);
+//             this.jugadoresActuales.get(1).agregarCarta(c11);
 	}
 
     @Override
@@ -186,13 +186,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
                 int num = c.getNumero();
                 switch(num) {
                 case 1:
-                    //puntos += ifJuego.getAs();
+                    puntos += ifJuego.getAs();
                     break;
                 case 11, 12, 13:
-                    //puntos += ifJuego.getFigura();
+                    puntos += ifJuego.getFigura();
                     break;
                 case -1:
-                    //puntos += ifJuego.getPuntosComodin();
+                    puntos += ifJuego.getPuntosComodin();
                     break;
                 case 2,3,4,5,6,7,8,9,10:
                     puntos += num;
@@ -218,8 +218,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     @Override
     public int[] getPuntosJugadores() {
-        int[] puntos = new int[this.jugadoresActuales.size()];
+        int[] puntos = new int[this.jugadoresActuales.size()+1];
         int i = 0;
+        puntos[i] = -1;
+        i++;
         for (jugadorActual jugadorActual : this.jugadoresActuales) {
             puntos[i] = jugadorActual.getPuntos();
             i++;
@@ -289,5 +291,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public void setEstadoPartida() {
         this.enCurso = !this.enCurso;
+    }
+
+    public void setCantJugadoresDeseada(int cant) {
+        this.cantJugadoresDeseada = cant;
+    }
+
+    public int getCantJugadoresDeseada() {
+        return this.cantJugadoresDeseada;
     }
 }
