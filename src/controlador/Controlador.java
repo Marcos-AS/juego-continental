@@ -147,10 +147,11 @@ public class Controlador implements IControladorRemoto {
 
     public void bajarse(int numJugador, Object [] cartasABajar) throws RemoteException {
         ifJugador j = getJugadorPartida(numJugador);
-        if(!bajarJuego(j, cartasABajar)) {
-            this.vista.mostrarNoPuedeBajarJuego(1);
-        } else {
+        if(bajarJuego(j, cartasABajar)) {
+            j.setPuedeBajar();
             this.vista.mostrarJuegos(enviarJuegosJugador(j));
+        } else {
+            this.vista.mostrarNoPuedeBajarJuego(1);
         }
     }
 
@@ -233,10 +234,8 @@ public class Controlador implements IControladorRemoto {
         }
 
         //bajarse
-        boolean bajo = false;
         while (eleccion == ifVista.getEleccionBajarse()) {
             if (j.getPuedeBajar()) {
-                bajo = true;
                 bajarse(j.getNumeroJugador(), vista.preguntarQueBajarParaJuego());
                 vista.mostrarCartas(enviarManoJugador(getJugadorPartida(j.getNumeroJugador())));
                 eleccion = vista.menuBajar();
@@ -245,8 +244,6 @@ public class Controlador implements IControladorRemoto {
             }
 
         }
-        if (bajo)
-            j.setPuedeBajar();
 
         //si quiere cortar, comprobar si puede
         if (eleccion == ifVista.getEleccionCortar())

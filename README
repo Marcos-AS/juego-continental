@@ -53,16 +53,3 @@ Los números valen su denominación, las figuras valen 10, el as vale 20 y el co
 ------------------------------------------------------
 FIN DEL JUEGO
 al final de todas las rondas, el jugador con menos puntos gana.
-
-
-
-HACER
-- ranking
-- restricciones de bajar
-
-
-1. aplicar MVC
-2. aplicar Observer
-3. persistencia por serialización
-4. aplicar RMI
-5. hacer interfaz gráfica

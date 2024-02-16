@@ -28,7 +28,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private final Serializador srlRanking = new Serializador("jugadores.dat");
 
 	//singleton
-	public static Juego getInstancia() {
+	public static Juego getInstancia() throws RemoteException {
 		if (instancia == null) instancia = new Juego();
 		return instancia;
 	}
