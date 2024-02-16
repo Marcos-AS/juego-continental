@@ -73,7 +73,7 @@ public interface ifVista {
 
     }
 
-    void mostrarPozo(ifPartida p);
+    void mostrarPozo(ifCarta c);
 
     void mostrarTurnoJugador(String nombreJugador);
 
@@ -124,4 +124,6 @@ public interface ifVista {
     Object[] preguntarQueBajarParaJuego();
     void jugadorPuedeRobarConCastigo(String nombreJugador);
     int menuRobarDelPozo();
+    void nuevaVentana();
+    int[] preguntarParaOrdenarCartas();
 }

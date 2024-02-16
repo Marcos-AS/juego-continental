@@ -1,46 +1,19 @@
 package src.vista;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.URL;
+import java.awt.*;
 import java.util.ArrayList;
+import javax.swing.*;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.JTextArea;
-
-public class VentanaJuego extends VentanaInicio{
+public class VentanaJuego extends JFrame{
         JPanel panel;
 
         public VentanaJuego() {
-            getContentPane().setLayout(new BorderLayout());
-            JPanel panel = iniciarPanel();
-            getContentPane().add(panel, BorderLayout.CENTER);
-            //getContentPane().setLayout(new BorderLayout());
-            //pack();
+            this.panel = new JPanel();
+            this.getContentPane().add(panel, BorderLayout.CENTER);
+            this.getContentPane().setLayout(new BorderLayout());
+            this.getContentPane().setBackground(new Color(56, 102, 65));
             setExtendedState(JFrame.MAXIMIZED_BOTH);
-            setTitle("Partida en juego");    
-            setVisible(true);
-        }
-
-        public JPanel iniciarPanel() {
-            JPanel panel = new JPanel();
-            panel.setBackground(new Color(56, 102, 65));
-            //JPanel panel = crearPanel();
-            //JLabel titulo = agregarTitulo();
-            //panel.add(titulo); //CONTINENTAL
-            this.panel = panel;
-            //JLabel labelImagen = getLabelImagen("src\\vista\\imgs\\cartas_inicio.png");
-            // if (labelImagen != null) 
-            //     panel.add(labelImagen);
-            return panel;
+            setTitle("Partida en juego");
         }
 
         public void mostrarTurnoJugador(String nombreJugador) {
@@ -48,9 +21,6 @@ public class VentanaJuego extends VentanaInicio{
             JPanel panel = new JPanel();
             panel.add(text, BorderLayout.CENTER);
             getContentPane().add(panel, BorderLayout.NORTH);
-            // this.panel.add(text);
-            // this.panel.revalidate();
-            // this.panel.repaint();
         }
 
         public void mostrarCartasJugador(ArrayList<String> mano) {
@@ -60,8 +30,6 @@ public class VentanaJuego extends VentanaInicio{
             }
             JTextArea text = new JTextArea(cartas);
             JPanel panel = new JPanel();
-            //Rectangle r = new Rectangle(5, 3, 1, 1);
-            //panel.setBounds(r);
             panel.add(text, BorderLayout.CENTER);
             getContentPane().add(panel, BorderLayout.SOUTH);
         }
@@ -70,27 +38,12 @@ public class VentanaJuego extends VentanaInicio{
             return "\\src\\vista\\cartas\\" + carta + ".png";
         }
 
-        public JLabel agregarImagenCartaAPanel(String carta) {
-            //JLabel labelImagen = getLabelImagen(rutaImagen);
-            //return labelImagen;
-            //try {
+        public JButton agregarImagenCartaAPanel(String carta) {
             String rutaImagen = asociarRuta(carta);
-            JLabel label = new JLabel();
-            URL imgUrl = getClass().getResource(rutaImagen);
-            if (imgUrl != null) {
-                label.setIcon(new ImageIcon(imgUrl));
-                //this.panel.add(label);
-            }
-            return label;
-                //BufferedImage myPicture = ImageIO.read(new File(rutaImagen));
-                //JLabel labelImagen = new JLabel(new ImageIcon(myPicture));
-                //this.panel.add(labelImagen);
-            //} catch (Exception e) {
-                //e.printStackTrace();
-            //}
-            //this.validate(); 
-            // this.panel.revalidate();
-            // this.panel.repaint();
+            JButton btnImg = new JButton(new ImageIcon(rutaImagen));
+            btnImg.setAlignmentX(Component.CENTER_ALIGNMENT);
+            this.panel.add(btnImg);
+            return btnImg;
         }
 
         public JPanel getPanel() {

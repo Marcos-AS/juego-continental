@@ -12,6 +12,11 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	protected static final int PUNTOS_COMODIN = 50;
 	protected static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
 	protected static final int CANT_CARTAS_INICIAL = 6;
+	private static final int NOTIFICAR_NUEVO_JUGADOR = 7;
+	private static final int NOTIFICAR_PUEDE_ROBO_CASTIGO = 11;
+	private static final int NOTIFICAR_HUBO_ROBO_CASTIGO = 12;
+	private static final int NOTIFICAR_RONDA_FINALIZADA = 14;
+	private static final int NOTIFICAR_VENTANA_JUEGO = 16;
 	private ArrayList<Jugador> jugadores = new ArrayList<>();
 	private static Juego instancia;
 	private Partida partidaActual;
@@ -28,7 +33,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void agregarJugador(Jugador j) throws RemoteException {
 		this.jugadores.add(j);
-		notificarObservadores(7);
+		notificarObservadores(NOTIFICAR_NUEVO_JUGADOR);
 	}
 
 	public boolean crearPartida(String nombreVista, int cantJugadores) throws RemoteException{
@@ -40,7 +45,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			this.partidaActual.setEstadoPartida();
 			this.partidaActual.setCantJugadoresDeseada(cantJugadores);
 			this.srl.writeOneObject(this.partidaActual);
-			notificarSrl(this.srl, false);
+			notificarSrl(this.srl, false); //el ctrl setea la partida
 			notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
 		}
 		return creada;
@@ -63,7 +68,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 				notificarSrl(this.srl, false); //muestra combinacion requerida y pozo
 				int i = 0;
 				desarrolloTurno(this.partidaActual, i); //supongo que tiene que mantenerse en esta funcion y desp volver
-				notificarObservadores(14);
+				notificarObservadores(NOTIFICAR_RONDA_FINALIZADA);
 				this.partidaActual.incrementarRonda();
 				this.partidaActual.resetearJuegosJugadores();
 				this.partidaActual.sumarPuntos();
@@ -102,24 +107,18 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		desarrolloRoboConCastigo(i, numJNoPuedeRobar, false);
 	}
 
-	public void desarrolloRoboConCastigo(int i, int numJNoPuedeRobar, boolean robo) throws RemoteException {
-		if (i < this.partidaActual.getJugadoresActuales().size()) {
-			if (i == numJNoPuedeRobar) {
-				i++;
+	public void desarrolloRoboConCastigo(int iJugador, int numJNoPuedeRobar, boolean robo) throws RemoteException {
+		if (iJugador < this.partidaActual.getJugadoresActuales().size()) {
+			if (iJugador == numJNoPuedeRobar) {
+				iJugador++;
 			}
-			if (i < this.partidaActual.getJugadoresActuales().size()) {
+			if (iJugador < this.partidaActual.getJugadoresActuales().size()) {
 				int[] cambio = new int[3];
-				cambio[0] = i;
-				cambio[1] = 11;
+				cambio[0] = iJugador;
+				cambio[1] = NOTIFICAR_PUEDE_ROBO_CASTIGO;
 				cambio[2] = numJNoPuedeRobar;
 				notificarObservadores(cambio); //notifica a la vista que i que puede robar con castigo
 			}
-		}
-		if (!robo) {
-			int[] cambio = new int[2];
-			cambio[0] = numJNoPuedeRobar;
-			cambio[1] = 13;
-			notificarObservadores(cambio); //notifica que la vista n puede continuar con su turno
 		}
 	}
 
@@ -131,7 +130,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 			notificarSrl(this.srl, true);
 			int[] cambio = new int[2];
 			cambio[0] = numJ;
-			cambio[1] = 12;
+			cambio[1] = NOTIFICAR_HUBO_ROBO_CASTIGO;
 			notificarObservadores(cambio); //notifica que la vista i robo con castigo
 		}
 	}
@@ -147,10 +146,8 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarObservadores(cambio);
 	}
 
-	public void cambioPartida(Partida p) throws RemoteException {
-		this.partidaActual = p;
-		this.srl.writeOneObject(p);
-		notificarSrl(srl, true);
+	public void nuevaVentana() throws RemoteException {
+		notificarObservadores(NOTIFICAR_VENTANA_JUEGO);
 	}
 
 	//GETTERS Y SETTERS------------------------------------------------------------

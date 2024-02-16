@@ -193,6 +193,9 @@ public class Consola implements ifVista{
         return eleccion;
     }
 
+    @Override
+    public void nuevaVentana() {}
+
     public int menuBienvenida() {
         //Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido al juego Continental.");
@@ -297,8 +300,7 @@ public class Consola implements ifVista{
         System.out.println(carta);
     }
     
-    public void mostrarPozo(ifPartida p) {
-        ifCarta c = p.sacarPrimeraDelPozo();
+    public void mostrarPozo(ifCarta c) {
         String carta = ifVista.transformarNumCarta(c.getNumero()) + " de " + c.getPalo().name();
         System.out.println("Pozo: ");
         mostrarCarta(carta);
@@ -385,12 +387,8 @@ public class Consola implements ifVista{
         System.out.println("Jugador " + numJugador + ": " + nombreJugador);
     }
 
-    public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js, int indice) {
-        if (indice == 1) {
-            System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
-        } else {
-            System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado a una partida.");
-        }
+    public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {
+        System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
     }
 
     public void noSePuedeIniciarPartida(int i) {
@@ -484,19 +482,14 @@ public class Consola implements ifVista{
                 mostrarInicioPartida();
                 break;
             }
-            case 7:
-            case 8: {
+            case 7: {
                 ArrayList<ifJugador> js = (ArrayList<ifJugador>) actualizacion;
-                if (indice == 7) {
-                    mostrarUltimoJugadorAgregado(js, 1);
-                } else {
-                    mostrarUltimoJugadorAgregado(js,2);
-                }
+                mostrarUltimoJugadorAgregado(js);
                 break;
             }
             case 9: {
                 mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
-                mostrarPozo((ifPartida)actualizacion);
+                mostrarPozo(((ifPartida) actualizacion).sacarPrimeraDelPozo());
                 break;
             }
             case 10: {
