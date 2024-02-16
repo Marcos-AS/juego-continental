@@ -180,23 +180,6 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         return boton;
     }
 
-    public JButton getBotonImagen(String rutaImagen) {
-        JButton botonImg = null;
-        try {
-            ImageIcon imagen = new ImageIcon(rutaImagen); 
-            //Thread.sleep(300);
-            // boolean cargoImagen = imagen.getImageLoadStatus() == MediaTracker.COMPLETE;
-            // while (!cargoImagen) {            
-            //     cargoImagen = imagen.getImageLoadStatus() == MediaTracker.COMPLETE;
-            // }
-            botonImg = new JButton(imagen);
-            botonImg.setAlignmentX(Component.CENTER_ALIGNMENT);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        return botonImg;
-    }
-
     public JMenuItem crearItemReglas() {
         JMenuItem itemReglas = new JMenuItem("Reglas");
         itemReglas.addActionListener(e -> {
@@ -214,7 +197,13 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     public JMenuItem crearItemRanking() {
         JMenuItem itemVerRanking = new JMenuItem("Mostrar el ranking");
-        itemVerRanking.addActionListener(e -> JOptionPane.showMessageDialog(VentanaInicio.this, "Mostrar Ranking"));
+        itemVerRanking.addActionListener(e -> {
+            try {
+                ctrl.getRanking();
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         return itemVerRanking;
     }
 
@@ -322,7 +311,15 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     }
 
-    private void mostrarRanking(Object[] objects) {
+    private void mostrarRanking(Object[] rankingJugadores) {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < rankingJugadores.length; i++) {
+            ifJugador j = (ifJugador) rankingJugadores[i];
+            s.append((i + 1)).append(": ").append(j.getNombre()).append(" --- puntos: ").append(j.getPuntosAlFinalizar()).append("\n");
+        }
+        String finalS = s.toString();
+        SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(this, finalS, "Ranking", JOptionPane.INFORMATION_MESSAGE));
     }
 
     //GETTERS Y SETTERS, OBSERVER-----------------
@@ -474,6 +471,9 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void mostrarPozo(ifCarta c) {
+        panel.removeAll();
+        revalidate();
+        repaint();
         panel.add(agregarImagenCartaAPanel(ifVista.cartaToString(c)));
     }
 
@@ -491,6 +491,9 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
             panelCartas = jPanel;
             getContentPane().add(jPanel, BorderLayout.SOUTH);
         }
+            panelCartas.removeAll();
+            revalidate();
+            repaint();
         for (String c : cartas) {
             panelCartas.add(agregarImagenCartaAPanel(c));
         }
