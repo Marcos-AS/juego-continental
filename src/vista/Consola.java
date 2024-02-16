@@ -301,9 +301,8 @@ public class Consola implements ifVista{
     }
     
     public void mostrarPozo(ifCarta c) {
-        String carta = ifVista.transformarNumCarta(c.getNumero()) + " de " + c.getPalo().name();
         System.out.println("Pozo: ");
-        mostrarCarta(carta);
+        mostrarCarta(ifVista.cartaToString(c));
     }
 
     public void mostrarNoPuedeBajarJuego() {

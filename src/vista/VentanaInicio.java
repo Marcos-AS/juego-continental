@@ -21,6 +21,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     private String nombreVista;
     private int numJugadores;
     private JPanel panel;
+    private JPanel panelCartas;
 
     //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto) {
@@ -218,7 +219,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     public void accionarBotonCrearPartida(ActionEvent e) {
         if(e.getActionCommand().equals("Crear")) {
-            String input = JOptionPane.showInputDialog(null, "¿Cuántos jugadores quieres para la partida?", "Número de jugadores", JOptionPane.QUESTION_MESSAGE);
+            String input = JOptionPane.showInputDialog(this, "¿Cuántos jugadores quieres para la partida?", "Número de jugadores", JOptionPane.QUESTION_MESSAGE);
             numJugadores = Integer.parseInt(input);
             try {
                 if (!this.ctrl.crearPartida(this, numJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
@@ -270,7 +271,9 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 break;
             }
             case 9: {
-                mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
+                String combinacion = mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
+                SwingUtilities.invokeLater(() ->
+                        JOptionPane.showMessageDialog(this, combinacion, "Mensaje", JOptionPane.INFORMATION_MESSAGE));
                 mostrarPozo(((ifPartida) actualizacion).sacarPrimeraDelPozo());
                 break;
             }
@@ -280,7 +283,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                     mostrarGanador(s);
                 } else if (!s.equalsIgnoreCase(this.nombreVista)) {
                     String mensaje = "El jugador " + s + " ha iniciado una partida nueva.";
-                    JOptionPane.showMessageDialog(null, mensaje, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, mensaje, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
                 }
                 break;
             }
@@ -325,9 +328,34 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     // }
 
     public void nuevaVentana() {
-        this.setVisible(false);
-        this.ventanaJuego = new VentanaJuego();
-        this.ventanaJuego.setVisible(true);
+        //this.setVisible(false);
+        this.panel.removeAll();
+        revalidate();
+        repaint();
+        //this.getContentPane().removeAll();
+        //this.ventanaJuego = new VentanaJuego();
+        //this.ventanaJuego.setVisible(true);
+    }
+
+    public String asociarRuta(String carta) {
+        return "src\\vista\\cartas\\" + carta + ".png";
+    }
+
+    public JButton agregarImagenCartaAPanel(String carta) {
+        String rutaImagen = asociarRuta(carta.toLowerCase());
+        ImageIcon icon = new ImageIcon(rutaImagen);
+        Image imagenEscalada = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        ImageIcon iconoEscalado = new ImageIcon(imagenEscalada);
+        JButton btnImg = new JButton(iconoEscalado);
+        btnImg.setPreferredSize(new Dimension(100, 100));
+        //JLabel lblImg = new JLabel();
+        //lblImg.setIcon(icon);
+        //btnImg.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+        btnImg.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        //this.add(lblImg);
+        //getContentPane().add(btnImg);
+        //pack(); //para el size
+        return btnImg;
     }
 
     @Override
@@ -344,7 +372,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     private void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {
         String s = "El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.";
         SwingUtilities.invokeLater(() ->
-                JOptionPane.showMessageDialog(null, s, "Mensaje", JOptionPane.INFORMATION_MESSAGE));
+                JOptionPane.showMessageDialog(this, s, "Mensaje", JOptionPane.INFORMATION_MESSAGE));
     }
 
     public int preguntarEnQueJuegoQuiereAcomodar() {
@@ -413,7 +441,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     }
 
-    public static void mostrarCombinacionRequerida(int ronda) {
+    public static String mostrarCombinacionRequerida(int ronda) {
         String s = "Para esta ronda deben bajarse: ";
         switch (ronda) {
             case 1:
@@ -438,25 +466,31 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 s += "Ronda 7: 3 escaleras";
                 break;
         }
-        String finalS = s;
-        SwingUtilities.invokeLater(() ->
-                JOptionPane.showMessageDialog(null, finalS, "Mensaje", JOptionPane.INFORMATION_MESSAGE));
+        return s;
     }
 
     @Override
     public void mostrarPozo(ifCarta c) {
-
+        panel.add(agregarImagenCartaAPanel(ifVista.cartaToString(c)));
     }
 
     @Override
     public void mostrarTurnoJugador(String nombreJugador) {
         String s = "Es el turno del jugador: " + nombreJugador;
-        JOptionPane.showMessageDialog(null, s, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, s, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void mostrarCartas(ArrayList<String> cartas) {
-
+        if (panelCartas==null) {
+            GridLayout gridLayout = new GridLayout(0, 13); //filas dinamicas
+            JPanel jPanel = new JPanel(gridLayout);
+            panelCartas = jPanel;
+            getContentPane().add(jPanel, BorderLayout.SOUTH);
+        }
+        for (String c : cartas) {
+            panelCartas.add(agregarImagenCartaAPanel(c));
+        }
     }
 
     @Override
@@ -512,11 +546,11 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     @Override
     public void noSePuedeIniciarPartida(int i) {
         if (i == 1) {
-            JOptionPane.showMessageDialog(null, "No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         } else if (i == 2) {
-            JOptionPane.showMessageDialog(null, "La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva'", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva'", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         } else if (i == 3) {
-            JOptionPane.showMessageDialog(null, "No se puede iniciar la partida porque faltan jugadores (minimo 2)", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se puede iniciar la partida porque faltan jugadores (minimo 2)", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

@@ -41,18 +41,21 @@ public interface ifVista {
     }
 
     static ArrayList<String> cartasToStringArray(ArrayList<ifCarta> mano) {
-        ArrayList<String> manoString = new ArrayList<>();
-        for (ifCarta c : mano) {
-            String numString = transformarNumCarta(c.getNumero());
-            String carta;
-            if (c.getPalo().toString().equalsIgnoreCase("COMODIN")) {
-                carta = "COMODIN";
-            } else {
-                carta = numString + " de " + c.getPalo().toString();
-            }
-            manoString.add(carta);
-        }
+        ArrayList<String> manoString = new ArrayList<String>();
+        for (ifCarta c : mano)
+            manoString.add(cartaToString(c));
         return manoString;
+    }
+
+    static String cartaToString(ifCarta c) {
+        String carta;
+        if (c.getPalo().toString().equalsIgnoreCase("COMODIN")) {
+            carta = "COMODIN";
+        } else {
+            String numString = transformarNumCarta(c.getNumero());
+            carta = numString + " de " + c.getPalo().toString();
+        }
+        return carta;
     }
 
     void actualizar(Object actualizacion, int indice) throws RemoteException;
