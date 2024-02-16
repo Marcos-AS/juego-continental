@@ -7,6 +7,7 @@ import src.controlador.Controlador;
 import src.modelo.ifCarta;
 import src.modelo.ifPartida;
 import src.modelo.ifJugador;
+import src.serializacion.Serializador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
@@ -114,15 +115,6 @@ public class Consola implements ifVista{
         return elecciones;
     }
 
-    public int preguntarSiDeseaContinuar() {
-        System.out.println("Desea continuar?");
-        System.out.println("1 - Si");
-        System.out.println("2 - No");
-        int eleccion = this.s.nextInt();
-        System.out.println();
-        return eleccion;
-    }
-
     public int preguntarQueBajarParaPozo(int cantCartas) {
         int eleccion;
         System.out.println("Indique el indice de carta para tirar al pozo: ");
@@ -160,7 +152,6 @@ public class Consola implements ifVista{
 
     //MENUS-------------------------------
     public int menuRobar() {
-        //Scanner sc = new Scanner(System.in);
 		System.out.println("----------------------------------------");
 		System.out.println("Quiere robar del pozo o robar del mazo?");
 		System.out.println("1 - Robar del mazo");
@@ -172,7 +163,6 @@ public class Consola implements ifVista{
 	}
 
     public int menuBajar() {
-        //Scanner sc = new Scanner(System.in);
         System.out.println("Elija una opcion: ");
         System.out.println("1 - Bajar algún juego");
    		System.out.println("2 - Ir a tirar");
@@ -197,14 +187,12 @@ public class Consola implements ifVista{
     public void nuevaVentana() {}
 
     public int menuBienvenida() {
-        //Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido al juego Continental.");
         System.out.println("Elija una opcion: ");
         System.out.println("1 - Iniciar partida nueva");
-        System.out.println("2 - Continuar una partida");
-        System.out.println("3 - Ver ranking de partidas");
-        System.out.println("4 - Ver reglas de juego");
-        System.out.println("5 - Jugar partida recién iniciada");
+        System.out.println("2 - Ver ranking mejores jugadores");
+        System.out.println("3 - Ver reglas de juego");
+        System.out.println("4 - Jugar partida recién iniciada");
         System.out.println("-1 - Salir del juego");
         int eleccion = this.s.nextInt();
         System.out.println();
@@ -264,7 +252,7 @@ public class Consola implements ifVista{
 
     public void mostrarInicioPartida() {
         System.out.println("Se ha iniciado una nueva partida.");
-        System.out.println("Para ingresar vaya a la opcion 5: Jugar partida recien iniciada.");
+        System.out.println("Para ingresar vaya a la opcion 4: Jugar partida recien iniciada.");
     }
 
     public void mostrarCartasNombreJugador(String nombreJugador) {
@@ -305,12 +293,12 @@ public class Consola implements ifVista{
         mostrarCarta(ifVista.cartaToString(c));
     }
 
-    public void mostrarNoPuedeBajarJuego() {
-        System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
-    }
-
-    public void mostrarYaNoPuedeBajar() {
-        System.out.println("No puede volver a bajar juegos en esta ronda.");
+    public void mostrarNoPuedeBajarJuego(int i) {
+        if (i == 1) {
+            System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
+        } else {
+            System.out.println("No puede volver a bajar juegos en esta ronda.");
+        }
     }
 
     public void mostrarJuego(int numJuego) {
@@ -353,10 +341,6 @@ public class Consola implements ifVista{
         System.out.println("El jugador "+ nombreJugador + " ha robado con castigo.");
     }
 
-    public void mostrarContinuaTurno(String nombreJugador) {
-        System.out.println("Continua el turno del jugador " + nombreJugador);
-    }
-
     public void mostrarNoPuedeRobarDelPozo() {
         System.out.println("No puede robar del pozo porque no tiene cartas");
     }
@@ -371,19 +355,6 @@ public class Consola implements ifVista{
 
     public void mostrarNoPuedeAcomodarJuegoPropio() {
         System.out.println("No puede acomodar porque no tiene juegos bajados.");
-    }
-
-    public void mostrarListaJugadores(Object jugadores) {
-        int i = 1;
-        ArrayList<ifJugador> js = (ArrayList<ifJugador>) jugadores;
-        for (ifJugador j : js) {
-            System.out.println("Jugador " + i + ": " +j.getNombre());
-            i++;
-        }
-    }
-
-    public void mostrarJugador(String nombreJugador, int numJugador) {
-        System.out.println("Jugador " + numJugador + ": " + nombreJugador);
     }
 
     public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {
@@ -401,7 +372,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarPuntosRonda(int[] puntos) {
-        System.out.println("Puntuacion en la partida: ");
+        System.out.println("Puntuacion: ");
         for (int i = 1; i < puntos.length; i++) {
             mostrarPuntosJugador(this.ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
         }
@@ -418,6 +389,14 @@ public class Consola implements ifVista{
         return cantJugadores;
     }
 
+    public void mostrarRanking(Object[] rankingJugadores) {
+        System.out.println("Ranking: ");
+        for (int i = 0; i < rankingJugadores.length; i++) {
+            ifJugador j = (ifJugador) rankingJugadores[i];
+            System.out.println((i+1) +": " + j.getNombre() + " --- puntos: " + j.getPuntosAlFinalizar());
+        }
+    }
+
     //GETTERS Y SETTERS---------------------------
 
     public String getNombreVista() {
@@ -427,38 +406,6 @@ public class Consola implements ifVista{
     public void setNombreVista(String i) {
         this.nombreVista = i;
     }
-
-    public static int getEleccionOrdenarCartas(){
-        return ELECCION_ORDENAR_CARTAS;
-    }
-
-    public int getEleccionBajarse(){
-        return ELECCION_BAJARSE;
-    }
-
-    public int getEleccionNoBajarse(){
-        return ELECCION_NO_BAJARSE;
-    }
-
-    public int getEleccionCortar(){
-        return ELECCION_CORTAR;
-    }
-
-    public int getEleccionRobarDelPozo() {
-        return ELECCION_ROBAR_DEL_POZO;
-    }
-
-    public int getEleccionRobarDelMazo() {
-        return ELECCION_ROBAR_DEL_MAZO;
-    }
-
-    public int getEleccionAcomodarJuegoPropio() {
-        return ELECCION_ACOMODAR_JUEGO_PROPIO;
-    }
-
-    //public int getEleccionAcomodarJuegoAjeno() {
-        //return ELECCION_ACOMODAR_JUEGO_AJENO;
-    //}
 
     @Override
     public void actualizar(Object actualizacion, int indice) throws RemoteException {
@@ -521,6 +468,10 @@ public class Consola implements ifVista{
             case 15: {
                 int[] puntos = (int[]) actualizacion;
                 mostrarPuntosRonda(puntos);
+                break;
+            }
+            case 16: {
+                mostrarRanking((Object[]) actualizacion);
                 break;
             }
         }

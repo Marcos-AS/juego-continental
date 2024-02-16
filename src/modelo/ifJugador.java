@@ -36,4 +36,6 @@ public interface ifJugador {
     void incrementarEscalerasBajadas();
     void incrementarTriosBajados();
     void moverCartaEnMano(int indCarta, int destino);
+    void setPuntosAlFinalizar(int puntos);
+    int getPuntosAlFinalizar();
 }

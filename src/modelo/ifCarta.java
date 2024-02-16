@@ -1,4 +1,5 @@
-package src.modelo;public interface ifCarta {
+package src.modelo;
+public interface ifCarta {
     //SETTERS Y GETTERS
     int getComodin();
 

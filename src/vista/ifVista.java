@@ -70,8 +70,6 @@ public interface ifVista {
 
     void mostrarInicioPartida();
 
-    void mostrarJugador(String nombreJugador, int numJugador);
-
     static void mostrarCombinacionRequerida(int ronda) {
 
     }
@@ -94,7 +92,7 @@ public interface ifVista {
     void mostrarFinalizoPartida();
     int preguntarCantJugadores();
     void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
-    void mostrarNoPuedeBajarJuego();
+    void mostrarNoPuedeBajarJuego(int i);
     void mostrarNoPuedeAcomodarJuegoPropio();
     void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar);
     int menuBajar();

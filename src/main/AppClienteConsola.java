@@ -86,18 +86,14 @@ public class AppClienteConsola {
                     break;
                 }
                 case 2: {
-                    continuarPartida();
+                    ranking(ctrl);
                     break;
                 }
                 case 3: {
-                    ranking();
-                    break;
-                }
-                case 4: {
                     vista.mostrarReglas();
                     break;
                 }
-                case 5: {
+                case 4: {
                     int inicioPartida = ctrl.jugarPartidaRecienIniciada(vista.getNombreVista());
                     if(inicioPartida == 0) {
                         vista.noSePuedeIniciarPartida(2);
@@ -113,7 +109,7 @@ public class AppClienteConsola {
         }
     }
 
-    private static void continuarPartida() {}
-
-    private static void ranking() {}
+    private static void ranking(Controlador ctrl) throws RemoteException {
+        ctrl.getRanking();
+    }
 }

@@ -14,6 +14,7 @@ public class Controlador implements IControladorRemoto {
     ifJuego juego;
     ifPartida partidaActual;
     ifVista vista;
+    private static final int NOTIFICACION_RECIBIDA_RANKING = 3;
     private static final int NOTIFICACION_NUEVO_JUGADOR = 7;
     private static final int NOTIFICACION_NUEVA_PARTIDA = 6;
     private static final int NOTIFICACION_RONDA_POZO = 9;
@@ -21,6 +22,7 @@ public class Controlador implements IControladorRemoto {
     private static final int NOTIFICACION_PUEDE_ROBO_CASTIGO = 11;
     private static final int NOTIFICACION_HUBO_ROBO_CASTIGO = 12;
     private static final int NOTIFICACION_PUNTOS = 15;
+    private static final int NOTIFICACION_RANKING = 16;
 
 
     public Controlador(ifVista vista) {
@@ -83,7 +85,6 @@ public class Controlador implements IControladorRemoto {
                     j.incrementarEscalerasBajadas();
                 }
             }
-            //this.juego.cambioPartida((Partida) this.partidaActual); //envia el cambio al modelo
         }
         return puedeBajar;
     }
@@ -147,7 +148,7 @@ public class Controlador implements IControladorRemoto {
     public void bajarse(int numJugador, Object [] cartasABajar) throws RemoteException {
         ifJugador j = getJugadorPartida(numJugador);
         if(!bajarJuego(j, cartasABajar)) {
-            this.vista.mostrarNoPuedeBajarJuego();
+            this.vista.mostrarNoPuedeBajarJuego(1);
         } else {
             this.vista.mostrarJuegos(enviarJuegosJugador(j));
         }
@@ -240,7 +241,7 @@ public class Controlador implements IControladorRemoto {
                 vista.mostrarCartas(enviarManoJugador(getJugadorPartida(j.getNumeroJugador())));
                 eleccion = vista.menuBajar();
             } else {
-                vista.mostrarNoPuedeBajarJuego();
+                vista.mostrarNoPuedeBajarJuego(2);
             }
 
         }
@@ -324,6 +325,10 @@ public class Controlador implements IControladorRemoto {
         j.moverCartaEnMano(ordenar[0], ordenar[1]);
     }
 
+    public void getRanking() throws RemoteException {
+        juego.getRanking();
+    }
+
     //OBSERVER-----------------------------------------------------
     @Override
     public <T extends IObservableRemoto> void setModeloRemoto(T modeloRemoto) throws RemoteException {
@@ -342,13 +347,19 @@ public class Controlador implements IControladorRemoto {
         } else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
         } else if (cambio instanceof Object[] c) { //serializador
-            this.partidaActual = (Partida) ((Serializador) c[0]).readFirstObject(); //setea partida actual
             if (c[1] == null) {
+                this.partidaActual = (Partida) ((Serializador) c[0]).readFirstObject(); //setea partida actual
                 if (this.partidaActual.getPozo() == null) {
                     vista.actualizar(this.partidaActual, NOTIFICACION_NUEVA_PARTIDA);
                 } else {
                     vista.actualizar(this.partidaActual, NOTIFICACION_RONDA_POZO);
                 }
+            } else if ((int)c[1] == NOTIFICACION_RECIBIDA_RANKING) {
+                Object[] jugadores = ((Serializador) c[0]).readObjects();
+                //jugadorActual[] jas = (jugadorActual[]) jugadores;
+                vista.actualizar(jugadores, NOTIFICACION_RANKING);
+            } else {
+                this.partidaActual = (Partida) ((Serializador) c[0]).readFirstObject();
             }
         } else if (cambio instanceof String) {
             vista.actualizar(cambio, NOTIFICACION_NOMBRE_JUGADOR);

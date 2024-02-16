@@ -196,4 +196,5 @@ public interface ifJuego extends IObservableRemoto {
 
     void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException;
     void nuevaVentana() throws RemoteException;
+    void getRanking() throws RemoteException;
 }

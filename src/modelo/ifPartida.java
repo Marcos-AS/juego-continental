@@ -31,7 +31,7 @@ public interface ifPartida {
 
     void sumarPuntos() throws RemoteException;
 
-    String determinarGanador();
+    jugadorActual determinarGanador();
 
     int[] getPuntosJugadores();
 

@@ -12,7 +12,6 @@ public class jugadorActual extends Jugador implements Serializable {
 	private int escalerasBajadas;
 	private int triosBajados;
 	private boolean puedeBajar = true;
-	private boolean puedeRobarConCastigo = true;
 	private boolean turno = false;
 
 	public jugadorActual() {}
@@ -85,7 +84,7 @@ public class jugadorActual extends Jugador implements Serializable {
 	public boolean cortar(int ronda) throws RemoteException {
 		boolean puedeCortar = false;
 		if(ifJuego.comprobarPosibleCorte(ronda, this.triosBajados, this.escalerasBajadas)) {
-			if (this.getMano().size()==1) {
+			if (!this.getMano().isEmpty()) {
 				Carta c = this.getCartaParaTirarAlPozo(0);
 			}
 			puedeCortar = true;

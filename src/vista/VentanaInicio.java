@@ -7,6 +7,7 @@ import src.controlador.Controlador;
 import src.modelo.ifCarta;
 import src.modelo.ifJugador;
 import src.modelo.ifPartida;
+import src.serializacion.Serializador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -310,11 +311,18 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 break;
             }
             case 16: {
+                mostrarRanking(((Serializador) actualizacion).readObjects());
+                break;
+            }
+            case 27: {
                 nuevaVentana();
                 break;
             }
         }
 
+    }
+
+    private void mostrarRanking(Object[] objects) {
     }
 
     //GETTERS Y SETTERS, OBSERVER-----------------
@@ -436,11 +444,6 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     public void mostrarInicioPartida() {
     }
 
-    @Override
-    public void mostrarJugador(String nombreJugador, int numJugador) {
-
-    }
-
     public static String mostrarCombinacionRequerida(int ronda) {
         String s = "Para esta ronda deben bajarse: ";
         switch (ronda) {
@@ -519,7 +522,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     }
 
     @Override
-    public void mostrarNoPuedeBajarJuego() {
+    public void mostrarNoPuedeBajarJuego(int i) {
 
     }
 

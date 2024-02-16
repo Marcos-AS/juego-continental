@@ -7,8 +7,6 @@ import java.util.ArrayList;
 public class Jugador implements Serializable, ifJugador {
     protected String nombre;
     protected ArrayList<Partida> partidas = new ArrayList<>();
-    private int puestoRanking;
-    private int puntosTotales;
     private int puntosAlFinalizar;
 
     public Jugador() {}
@@ -45,6 +43,14 @@ public class Jugador implements Serializable, ifJugador {
             }
         }
         return this.partidas.get(i);
+    }
+
+    public void setPuntosAlFinalizar(int puntos) {
+        this.puntosAlFinalizar = puntos;
+    }
+
+    public int getPuntosAlFinalizar() {
+        return puntosAlFinalizar;
     }
 
     @Override
