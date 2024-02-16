@@ -230,10 +230,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return puntos;
     }
 
-//    public void partidaIniciada() throws RemoteException {
-//        notificarObservadores(this);
-//    }
-
 //SETTERS Y GETTERS------------
     @Override
     public int getNumJugadores() {

@@ -71,16 +71,6 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	//PUBLIC-----------------------------------------------------------------
 
-    public void robarDelMazo() {
-		Carta c = getPartidaActual().eliminarDelMazo();
-		this.mano.add(c);
-	}
-
-	public void robarDelPozo() {
-		Carta c = getPartidaActual().eliminarDelPozo();
-		this.mano.add(c);
-	}
-
 	public boolean cortar(int ronda) throws RemoteException {
 		boolean puedeCortar = false;
 		if(ifJuego.comprobarPosibleCorte(ronda, this.triosBajados, this.escalerasBajadas)) {

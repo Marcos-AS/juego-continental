@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class Carta implements ifCarta, Serializable {
 
-    private int numero;  
-    private Palo palo;
+    private final int numero;
+    private final Palo palo;
     private String rutaImagen;
     private static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
 
