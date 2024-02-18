@@ -2,7 +2,6 @@ package src.vista;
 
 import src.controlador.Controlador;
 import src.modelo.ifCarta;
-import src.modelo.ifPartida;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -122,9 +121,11 @@ public interface ifVista {
     int menuRobar();
     int preguntarCartaParaAcomodar();
     int preguntarEnQueJuegoQuiereAcomodar();
-    Object[] preguntarQueBajarParaJuego();
+    int[] preguntarQueBajarParaJuego(int cantCartas);
     void jugadorPuedeRobarConCastigo(String nombreJugador);
     int menuRobarDelPozo();
     void nuevaVentana();
     int[] preguntarParaOrdenarCartas();
+
+    int preguntarCantParaBajar();
 }

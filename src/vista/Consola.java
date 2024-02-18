@@ -11,22 +11,20 @@ import src.serializacion.Serializador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
-    private Scanner s = new Scanner(System.in);
+    private final Scanner s = new Scanner(System.in);
     private String nombreVista;
 
     public Consola(){}
 
-    //PRIVATE-------------------------------------------------------
-
-    private int preguntarCantParaBajar() {
+    public int preguntarCantParaBajar() {
         int numCartas;
 		System.out.println("Cuantas cartas quiere bajar para el juego?");
-        numCartas = this.s.nextInt();
-        this.s.nextLine();
+        numCartas = s.nextInt();
+        s.nextLine();
         while (numCartas > 4 || numCartas < 3) {
             System.out.println("La cantidad de cartas a bajar debe ser entre 3 y 4");
-            numCartas = this.s.nextInt();
-            this.s.nextLine();
+            numCartas = s.nextInt();
+            s.nextLine();
         }
         return numCartas;
 	}
@@ -52,65 +50,23 @@ public class Consola implements ifVista{
 	
     //preguntar-------------------------------------
 
-	public Object[] preguntarQueBajarParaJuego() {
-        int cantCartas = preguntarCantParaBajar();
-        Object [] cartasABajar = new Object[cantCartas*2];
-        String palo;
-        String letraCarta;
-        int j = 0;
-        int numCarta;
+	public int[] preguntarQueBajarParaJuego(int cantCartas) {
+        int[] cartasABajar = new int[cantCartas];
         for (int i = 0; i < cartasABajar.length; i+=2) {
-            boolean numValido = false;
-            System.out.println("Carta " + (j+1) + ": ");
-            System.out.println("Indique el numero o letra de la carta que quiere bajar: ");
-            letraCarta = this.s.nextLine();
-            letraCarta = letraCarta.toUpperCase();
-            if (letraCarta.equals("J") || letraCarta.equals("Q") ||
-                letraCarta.equals("K") || letraCarta.equals("A") ||
-                letraCarta.equals("COMODIN")) {
-                numCarta = ctrl.transformarLetraCarta(letraCarta);
-                cartasABajar[i] = numCarta;
-            } else {
-                //si lo ingresado no es una letra trato de pasarlo a int
-                while (!numValido) {                    
-                    try {
-                        cartasABajar[i] = Integer.parseInt(letraCarta);
-                        numValido = true;
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                        System.out.println("Carta " + (j+1) + ": ");
-                        System.out.println("Indique nuevamente el numero o letra de la carta que quiere bajar: ");
-                        letraCarta = this.s.nextLine();
-                    }
-
-                }
-
-            }
-
-            if (letraCarta.equals("COMODIN")) {
-                palo = "COMODIN";
-            } else {
-                System.out.println("Indique el palo de la carta que quiere bajar: ");
-                System.out.println("(PICAS, DIAMANTES, TREBOL, CORAZONES) ");
-                palo = this.s.nextLine();
-                while (!paloEsCorrecto(palo)) {
-                    System.out.println("El palo ingresado no es correcto, ingrese de nuevo: ");
-                    palo = this.s.nextLine();
-                }
-            }
-            cartasABajar[i+1] = palo;
-            j++;
+            System.out.println("Carta " + (i + 1) + ": ");
+            System.out.println("Indique el indice de la carta que quiere bajar: ");
+            cartasABajar[i] = s.nextInt();
+            System.out.println();
         }
-        System.out.println();
         return cartasABajar;
 	}
 
     public int[] preguntarParaOrdenarCartas() {
         int[] elecciones = new int[2];
         System.out.println("Elija el número de carta que quiere mover: ");
-        elecciones[0] = this.s.nextInt();
+        elecciones[0] = s.nextInt();
         System.out.println("Elija el número de destino al que quiere mover la carta: ");
-        elecciones[1] = this.s.nextInt();
+        elecciones[1] = s.nextInt();
         System.out.println();
         return elecciones;
     }
@@ -118,11 +74,11 @@ public class Consola implements ifVista{
     public int preguntarQueBajarParaPozo(int cantCartas) {
         int eleccion;
         System.out.println("Indique el indice de carta para tirar al pozo: ");
-        eleccion = this.s.nextInt();
+        eleccion = s.nextInt();
         System.out.println();
         while (eleccion < 0 || eleccion >= cantCartas) {
             System.out.println("Vuelva a ingresar un indice de carta");
-            eleccion = this.s.nextInt();
+            eleccion = s.nextInt();
             System.out.println();
         }
         return eleccion;
@@ -130,14 +86,14 @@ public class Consola implements ifVista{
 
 	public int preguntarCartaParaAcomodar() {
 		System.out.println("Indique el numero de carta que quiere acomodar en un juego");
-		int numCarta = this.s.nextInt();
+		int numCarta = s.nextInt();
         System.out.println();
 		return numCarta;
 	}
 
     public int preguntarEnQueJuegoQuiereAcomodar() {
         System.out.println("En que numero de juego quiere acomodar su carta?");
-        int eleccion = this.s.nextInt();
+        int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
     }
@@ -145,7 +101,7 @@ public class Consola implements ifVista{
     @Override
     public String preguntarNombreNuevoJugador() throws RemoteException {
         System.out.println("Indique su nombre:");
-        String nombreJugador = this.s.nextLine();
+        String nombreJugador = s.nextLine();
         System.out.println("Jugador agregado.");
         return nombreJugador;
     }
@@ -157,7 +113,7 @@ public class Consola implements ifVista{
 		System.out.println("1 - Robar del mazo");
 		System.out.println("2 - Robar del pozo");
 		System.out.println("Elija una opcion: ");
-		int eleccion = this.s.nextInt();
+		int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
 	}
@@ -169,7 +125,7 @@ public class Consola implements ifVista{
   		System.out.println("3 - Ordenar cartas");
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         System.out.println("5 - Acomodar en un juego bajado propio");
-        int eleccion = this.s.nextInt();
+        int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
     }
@@ -178,7 +134,7 @@ public class Consola implements ifVista{
 		System.out.println("Quiere robar del pozo?");
         System.out.println("1 - No");
         System.out.println("2 - Si");
-        int eleccion = this.s.nextInt();
+        int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
     }
@@ -194,7 +150,7 @@ public class Consola implements ifVista{
         System.out.println("3 - Ver reglas de juego");
         System.out.println("4 - Jugar partida recién iniciada");
         System.out.println("-1 - Salir del juego");
-        int eleccion = this.s.nextInt();
+        int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
     }
@@ -307,30 +263,17 @@ public class Consola implements ifVista{
 
     public static void mostrarCombinacionRequerida(int ronda) {
         System.out.print("Para esta ronda deben bajarse: ");
-        switch (ronda) {
-            case 1:
-                System.out.println("Ronda 1: 2 tríos");
-                break;
-            case 2:
-                System.out.println("Ronda 2: 1 trío y 1 escalera");
-                break;
-            case 3:
-                System.out.println("Ronda 3: 2 escaleras");
-                break;
-            case 4:
-                System.out.println("Ronda 4: 3 tríos");
-                break;
-            case 5:
-                System.out.println("Ronda 5: 2 tríos y 1 escalera");
-                break;
-            case 6:
-                System.out.println("Ronda 6: 1 tríos y 2 escaleras");
-                break;
-            case 7:
-                System.out.println("Ronda 7: 3 escaleras");
-                break;
-
-        }
+        String s = switch (ronda) {
+            case 1 -> "Ronda 1: 2 tríos";
+            case 2 -> "Ronda 2: 1 trío y 1 escalera";
+            case 3 -> "Ronda 3: 2 escaleras";
+            case 4 -> "Ronda 4: 3 tríos";
+            case 5 -> "Ronda 5: 2 tríos y 1 escalera";
+            case 6 -> "Ronda 6: 1 tríos y 2 escaleras";
+            case 7 -> "Ronda 7: 3 escaleras";
+            default -> "";
+        };
+        System.out.println(s);
     }
 
     public void jugadorPuedeRobarConCastigo(String nombreJugador) {
@@ -374,7 +317,7 @@ public class Consola implements ifVista{
     public void mostrarPuntosRonda(int[] puntos) {
         System.out.println("Puntuacion: ");
         for (int i = 1; i < puntos.length; i++) {
-            mostrarPuntosJugador(this.ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
+            mostrarPuntosJugador(ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
         }
     }
 
@@ -384,7 +327,7 @@ public class Consola implements ifVista{
 
     public int preguntarCantJugadores() {
         System.out.println("Cuantos jugadores desea para la nueva partida?");
-        int cantJugadores = this.s.nextInt();
+        int cantJugadores = s.nextInt();
         System.out.println();
         return cantJugadores;
     }
@@ -400,11 +343,11 @@ public class Consola implements ifVista{
     //GETTERS Y SETTERS---------------------------
 
     public String getNombreVista() {
-        return this.nombreVista;
+        return nombreVista;
     }
 
     public void setNombreVista(String i) {
-        this.nombreVista = i;
+        nombreVista = i;
     }
 
     @Override
@@ -419,7 +362,7 @@ public class Consola implements ifVista{
                 ifJugador jA = (ifJugador) actualizacion;
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
-                if (this.nombreVista.equals(nombreJugador)) {
+                if (nombreVista.equals(nombreJugador)) {
                     ctrl.desarrolloTurno(jA);
                 }
                 break;
@@ -440,23 +383,23 @@ public class Consola implements ifVista{
             }
             case 10: {
                 String s = (String) actualizacion;
-                if (!this.ctrl.getEstadoPartida()) {
+                if (!ctrl.getEstadoPartida()) {
                     mostrarGanador(s);
-                } else if (!s.equalsIgnoreCase(this.nombreVista)) {
+                } else if (!s.equalsIgnoreCase(nombreVista)) {
                     System.out.println("El jugador " + s + " ha iniciado una partida nueva");
                 }
                 break;
             }
             case 11: { //un jugador puede robar con castigo
                 int[] a = (int[]) actualizacion;
-                ifJugador j = this.ctrl.getJugadorPartida(a[0]);
-                if (this.nombreVista.equals(j.getNombre())) {
+                ifJugador j = ctrl.getJugadorPartida(a[0]);
+                if (nombreVista.equals(j.getNombre())) {
                     ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
                 }
                 break;
             }
             case 12: {
-                String nombreJugador = this.ctrl.getJugadorPartida((int)actualizacion).getNombre();
+                String nombreJugador = ctrl.getJugadorPartida((int)actualizacion).getNombre();
                 jugadorHaRobadoConCastigo(nombreJugador);
                 break;
             }

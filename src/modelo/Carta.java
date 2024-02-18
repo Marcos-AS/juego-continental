@@ -10,7 +10,7 @@ public class Carta implements ifCarta, Serializable {
     private static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
 
     public Carta(int num, Palo palo) {
-        this.numero = num;
+        numero = num;
         this.palo = palo;
     }
 
@@ -22,12 +22,12 @@ public class Carta implements ifCarta, Serializable {
 
     @Override
     public Palo getPalo() {
-        return this.palo;
+        return palo;
     }
 
     @Override
     public int getNumero() {
-        return this.numero;
+        return numero;
     }
 
     @Override

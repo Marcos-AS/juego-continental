@@ -7,7 +7,7 @@ public interface ifPartida {
 
     int determinarNumBarajas();
 
-    void iniciarMazo();
+    void iniciarMazo(int numBarajas);
 
     void mezclarCartas();
 

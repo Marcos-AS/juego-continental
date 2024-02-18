@@ -100,7 +100,7 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public ArrayList<Carta> getJuego(Object[] cartasABajar) {
+    public ArrayList<Carta> getJuego(int[] cartasABajar) {
         return null;
     }
 
@@ -110,7 +110,7 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public void eliminarDeLaMano(Object[] cartasABajar) {
+    public void eliminarDeLaMano(ArrayList<Carta> cartasABajar) {
 
     }
 

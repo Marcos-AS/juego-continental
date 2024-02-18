@@ -28,9 +28,9 @@ public interface ifJugador {
 
     boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException;
     int bajarJuego(ArrayList<Carta> juego) throws RemoteException;
-    ArrayList<Carta> getJuego(Object[] cartasABajar);
+    ArrayList<Carta> getJuego(int[] cartasABajar);
     void addJuego(ArrayList<Carta> juego);
-    void eliminarDeLaMano(Object[] cartasABajar);
+    void eliminarDeLaMano(ArrayList<Carta> cartasABajar);
     void setPuedeBajar();
     boolean getPuedeBajar();
     void incrementarEscalerasBajadas();
