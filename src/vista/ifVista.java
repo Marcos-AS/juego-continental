@@ -128,4 +128,5 @@ public interface ifVista {
     int[] preguntarParaOrdenarCartas();
 
     int preguntarCantParaBajar();
+    boolean partida() throws RemoteException;
 }

@@ -174,7 +174,7 @@ public interface ifJuego extends IObservableRemoto {
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
     void roboConCastigo(String nombreJugador) throws RemoteException;
-    void haRobadoConCastigo(int numJ, int numJNoPuedoRobar, boolean robo, Partida p) throws RemoteException;
+    void haRobadoConCastigo(int numJ, int numJNoPuedoRobar, boolean robo) throws RemoteException;
 
     //GETTERS Y SETTERS
     Jugador getJugador(String nombreJugador) throws RemoteException;
@@ -190,11 +190,18 @@ public interface ifJuego extends IObservableRemoto {
     Partida getPartidaActual() throws RemoteException;
     void setPartidaActual(Serializador srl) throws RemoteException;
 
-    boolean crearPartida(String nombreVista, int cantJugadores) throws RemoteException;
-
-    void iniciarPartida() throws RemoteException;
-
-    void finalizoTurno(Partida p, int numJugador, boolean corte) throws RemoteException;
+    void crearPartida(String nombreVista, int cantJugadores) throws RemoteException;
+    jugadorActual notificarTurno(int numJugador) throws RemoteException;
+    void finalizoTurno(int numJugador, boolean corte) throws RemoteException;
     void nuevaVentana() throws RemoteException;
     void getRanking() throws RemoteException;
+    void notificarRondaFinalizada() throws RemoteException;
+    void notificarPuntos() throws RemoteException;
+    void notificarGanador(String nombreGanador) throws RemoteException;
+    void iniciarCartasPartida() throws RemoteException;
+    void setCorteRonda() throws RemoteException;
+    boolean getCorteRonda() throws RemoteException;
+    int getCantJugadores() throws RemoteException;
+    void partidaFinRonda() throws RemoteException;
+    void determinarGanador() throws RemoteException;
 }

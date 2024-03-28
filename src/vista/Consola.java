@@ -7,12 +7,15 @@ import src.controlador.Controlador;
 import src.modelo.ifCarta;
 import src.modelo.ifPartida;
 import src.modelo.ifJugador;
+import src.modelo.jugadorActual;
 import src.serializacion.Serializador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
     private final Scanner s = new Scanner(System.in);
     private String nombreVista;
+    private String nombreJugador;
+    private static final int NUEVA_PARTIDA = 6;
 
     public Consola(){}
 
@@ -28,14 +31,6 @@ public class Consola implements ifVista{
         }
         return numCartas;
 	}
-
-    private boolean paloEsCorrecto(String palo) {
-        boolean paloCorrecto;
-        palo = palo.toUpperCase();
-        paloCorrecto = palo.equals("PICAS") || palo.equals("DIAMANTES") || 
-        palo.equals("TREBOL") || palo.equals("CORAZONES");
-        return paloCorrecto;
-    }
 
     //PUBLIC-----------------------------------------------------------
 
@@ -145,10 +140,10 @@ public class Consola implements ifVista{
     public int menuBienvenida() {
         System.out.println("Bienvenido al juego Continental.");
         System.out.println("Elija una opcion: ");
-        System.out.println("1 - Iniciar partida nueva");
+        System.out.println("1 - Crear partida");
         System.out.println("2 - Ver ranking mejores jugadores");
         System.out.println("3 - Ver reglas de juego");
-        System.out.println("4 - Jugar partida recién iniciada");
+        System.out.println("4 - Jugar partida recién creada");
         System.out.println("-1 - Salir del juego");
         int eleccion = s.nextInt();
         System.out.println();
@@ -207,13 +202,9 @@ public class Consola implements ifVista{
     }
 
     public void mostrarInicioPartida() {
-        System.out.println("Se ha iniciado una nueva partida.");
-        System.out.println("Para ingresar vaya a la opcion 4: Jugar partida recien iniciada.");
+        System.out.println("Se ha iniciado la partida.");
+        //System.out.println("Para ingresar vaya a la opcion 4: Jugar partida recien iniciada.");
     }
-
-    public void mostrarCartasNombreJugador(String nombreJugador) {
-		System.out.println("Cartas de " + nombreJugador);
-	}
 
     public void mostrarCartas(ArrayList<String> cartas) {
         int i = 0;
@@ -305,16 +296,14 @@ public class Consola implements ifVista{
     }
 
     public void noSePuedeIniciarPartida(int i) {
-        if (i == 1) {
+        if (i == 0) {
+            System.out.println("La partida aun no ha sido creada. Seleccione la opcion 1: 'Crear partida' ");
+        } else if (i == 1) {
             System.out.println("No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.");
-        } else if (i == 2) {
-            System.out.println("La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva' ");
-        } else if (i == 3) {
-            System.out.println("No se puede iniciar la partida porque faltan jugadores (minimo 2)");
         }
     }
 
-    public void mostrarPuntosRonda(int[] puntos) {
+    public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
         System.out.println("Puntuacion: ");
         for (int i = 1; i < puntos.length; i++) {
             mostrarPuntosJugador(ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
@@ -340,6 +329,27 @@ public class Consola implements ifVista{
         }
     }
 
+    public boolean partida() throws RemoteException {
+        boolean estadoPartida = true;
+        while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
+            ctrl.iniciarCartasPartida();
+            int i = 0;
+            while (ctrl.getCorteRonda()) {
+                ifJugador jA = ctrl.notificarTurno(i); //llama a actualizar
+                ctrl.desarrolloTurno(jA.getNumeroJugador()); //aca se modifica la variable corte del while de partida()
+                //modificar estadoPartida
+                i++;
+                if (i>ctrl.getCantJugadoresPartida()-1) {
+                    i = 0;
+                }
+            }
+            ctrl.notificarRondaFinalizada();
+            ctrl.partidaFinRonda();
+        }
+        ctrl.determinarGanador();
+        return estadoPartida;
+    }
+
     //GETTERS Y SETTERS---------------------------
 
     public String getNombreVista() {
@@ -359,15 +369,14 @@ public class Consola implements ifVista{
             case 3:
             case 4:
             case 5: {
+                ctrl.mostrarPozo();
+                mostrarCombinacionRequerida(ctrl.getRonda());
                 ifJugador jA = (ifJugador) actualizacion;
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
-                if (nombreVista.equals(nombreJugador)) {
-                    ctrl.desarrolloTurno(jA);
-                }
                 break;
             }
-            case 6: {
+            case NUEVA_PARTIDA: {
                 mostrarInicioPartida();
                 break;
             }

@@ -12,6 +12,7 @@ public class jugadorActual extends Jugador implements Serializable {
 	private int escalerasBajadas;
 	private int triosBajados;
 	private boolean puedeBajar = true;
+	private boolean turnoActual = false;
 
 	public jugadorActual() {}
 
@@ -178,5 +179,13 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	public int getPuntos() {
 		return puntosPartida;
+	}
+
+	public boolean isTurnoActual() {
+		return turnoActual;
+	}
+
+	public void setTurnoActual() {
+		turnoActual = !turnoActual;
 	}
 }

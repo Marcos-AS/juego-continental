@@ -23,6 +23,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     private int numJugadores;
     private JPanel panel;
     private JPanel panelCartas;
+    private static final int VENTANA_NUEVA_PARTIDA = 27;
 
     //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto) {
@@ -247,7 +248,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (this.nombreVista.equals(nombreJugador)) {
-                    ctrl.desarrolloTurno(jA);
+                    ctrl.desarrolloTurno(jA.getNumeroJugador());
                 }
                 break;
             }
@@ -303,7 +304,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 mostrarRanking(((Serializador) actualizacion).readObjects());
                 break;
             }
-            case 27: {
+            case VENTANA_NUEVA_PARTIDA: {
                 nuevaVentana();
                 break;
             }
@@ -368,6 +369,16 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         return new int[0];
     }
 
+    @Override
+    public int preguntarCantParaBajar() {
+        return 0;
+    }
+
+    @Override
+    public void partida() throws RemoteException {
+
+    }
+
     private void jugadorHaRobadoConCastigo(String nombreJugador) {
     }
 
@@ -382,6 +393,11 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     public int preguntarEnQueJuegoQuiereAcomodar() {
         return 0;
+    }
+
+    @Override
+    public int[] preguntarQueBajarParaJuego(int cantCartas) {
+        return new int[0];
     }
 
     public int preguntarCartaParaAcomodar() {

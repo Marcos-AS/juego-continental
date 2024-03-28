@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class AppClienteConsola {
 
+
     public static void main(String[] args) {
         ArrayList<String> ips = Util.getIpDisponibles();
         String ip = (String) JOptionPane.showInputDialog(
@@ -53,9 +54,11 @@ public class AppClienteConsola {
                 8888
         );
 
+        //creacion de la vista y el controlador
         ifVista vista = new Consola();
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);
+
         Cliente c = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
         try {
             //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
@@ -70,43 +73,50 @@ public class AppClienteConsola {
         }
     }
 
-    private static void bienvenida(ifVista vista, Controlador ctrl) throws RemoteException, InterruptedException {
-        ctrl.agregarNuevoJugador(vista.preguntarNombreNuevoJugador()); //agrega jugador a juego y setea nombreVista
-        int eleccion = 0;
+    private static void bienvenida(ifVista pVista, Controlador pCtrl) throws RemoteException, InterruptedException {
+        pCtrl.agregarNuevoJugador(pVista.preguntarNombreNuevoJugador()); //agrega jugador a juego y setea nombreVista
+        int eleccion;
         int cantJugadores = 2; //minimo
         boolean partidaIniciada = false;
-        while (eleccion != -1 && !partidaIniciada) {
-            eleccion = vista.menuBienvenida();
+        do {
+            eleccion = pVista.menuBienvenida();
+            //1 - crear partida
+            //2 - ver ranking mejores jugadores
+            //3 - ver reglas de juego
+            //4 - jugar partida recien creada (por ahora, luego poder jugar partidas guardadas)
             switch (eleccion) {
                 case 1: {
-                    cantJugadores = vista.preguntarCantJugadores();
-                    if (!ctrl.crearPartida(vista, cantJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
-                        vista.noSePuedeIniciarPartida(1);
-                    }
+                    cantJugadores = pVista.preguntarCantJugadores();
+                    pCtrl.crearPartida(pVista, cantJugadores);
                     break;
                 }
                 case 2: {
-                    ranking(ctrl);
+                    ranking(pCtrl);
                     break;
                 }
                 case 3: {
-                    vista.mostrarReglas();
+                    pVista.mostrarReglas();
                     break;
                 }
                 case 4: {
-                    int inicioPartida = ctrl.jugarPartidaRecienIniciada(vista.getNombreVista());
+                    int inicioPartida = pCtrl.jugarPartidaRecienIniciada();
                     if(inicioPartida == 0) {
-                        vista.noSePuedeIniciarPartida(2);
+                        pVista.noSePuedeIniciarPartida(0); // partida aun no creada
                     } else if (inicioPartida == 1){
-                        vista.noSePuedeIniciarPartida(3);
-                        partidaIniciada = true;
+                        pVista.noSePuedeIniciarPartida(1); //faltan jugadores para la cant deseada
                     } else if (inicioPartida == 2) {
-                        vista.mostrarFinalizoPartida();
+                        partidaIniciada = true;
+                        pVista.mostrarInicioPartida();
+                        if (!pCtrl.iniciarPartida()) {
+                            //partida pausada, guardar
+                        } else {
+                            //partida finalizada
+                        }; //esto inicia el funcionamiento del juego
                     }
                     break;
                 }
             }
-        }
+        } while (eleccion != -1 && !partidaIniciada);
     }
 
     private static void ranking(Controlador ctrl) throws RemoteException {
