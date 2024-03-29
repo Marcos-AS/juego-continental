@@ -107,7 +107,7 @@ public class AppClienteConsola {
                     } else if (inicioPartida == 2) {
                         partidaIniciada = true;
                         pVista.mostrarInicioPartida();
-                        if (!pCtrl.iniciarPartida()) {
+                        if (!pVista.partida()) {
                             //partida pausada, guardar
                         } else {
                             //partida finalizada

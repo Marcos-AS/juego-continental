@@ -83,25 +83,6 @@ public class Controlador implements IControladorRemoto {
         return puedeBajar;
     }
 
-    public void robarDelMazo(ifJugador j) throws RemoteException {
-        j.addCarta(juego.getPartidaActual().eliminarDelMazo());
-    }
-
-    public boolean robarDelPozo(ifJugador j) throws RemoteException {
-        boolean pozoVacio = false;
-        if (!juego.getPartidaActual().getPozo().isEmpty()) {
-            j.addCarta(juego.getPartidaActual().eliminarDelPozo());
-        } else {
-            pozoVacio = true;
-        }
-        return pozoVacio;
-    }
-
-    public void robarConCastigo(ifJugador j) throws RemoteException {
-        robarDelPozo(j);
-        robarDelMazo(j);
-    }
-
     public int transformarLetraCarta(String letraCarta) {
         int numCarta = 0;
         switch (letraCarta) {
@@ -191,10 +172,20 @@ public class Controlador implements IControladorRemoto {
         //System.out.println("Nombre de la vista: " + this.nombreVista);
         vista.mostrarCartas(enviarManoJugador(j));
         int eleccion = vista.menuRobar();
+        //1 - robar del mazo
+        //2 - robar del pozo
 
         //si no roba del pozo, los demas pueden hacerlo, con "castigo"
-        if (eleccion != ifVista.getEleccionRobarDelPozo()) {
-            roboConCastigo(vista.getNombreVista());
+        if (!juego.isPozoEmpty()) {
+            if (eleccion != ifVista.getEleccionRobarDelPozo()) {
+                int i = 0;
+                if (i == iJugador) {
+                    i++;
+                }
+                while (i<getCantJugadoresPartida() && !juego.notificarRoboConCastigo(i, iJugador)) {
+                    i++;
+                }
+            }
         }
 
         if (eleccion == ifVista.getEleccionRobarDelPozo()) {
@@ -252,6 +243,29 @@ public class Controlador implements IControladorRemoto {
         finalizoTurno(j.getNumeroJugador(), corte);
     }
 
+    public void robarConCastigo(ifJugador j) throws RemoteException {
+        robarDelPozo(j);
+        robarDelMazo(j);
+    }
+
+    public boolean robarDelPozo(ifJugador j) throws RemoteException {
+        boolean pozoVacio = false;
+        if (!juego.isPozoEmpty()) {
+            j.addCarta(juego.getPartidaActual().eliminarDelPozo());
+        } else {
+            pozoVacio = true;
+        }
+        return pozoVacio;
+    }
+
+    public void robarDelMazo(ifJugador j) throws RemoteException {
+        j.addCarta(juego.getPartidaActual().eliminarDelMazo());
+    }
+
+    public void haRobadoConCastigo(int numJugador) throws RemoteException {
+        juego.notificarHaRobadoConCastigo(numJugador);
+    }
+
     public void notificarRondaFinalizada() throws RemoteException {
         juego.notificarRondaFinalizada();
     }
@@ -305,10 +319,6 @@ public class Controlador implements IControladorRemoto {
         return inicio;
     }
 
-    public boolean iniciarPartida() throws RemoteException {
-        return vista.partida();
-    }
-
     private void setRondaInicial() throws RemoteException {
         juego.getPartidaActual().setRonda(1);
     }
@@ -319,25 +329,6 @@ public class Controlador implements IControladorRemoto {
 
     public void iniciarCartasPartida() throws RemoteException {
         juego.iniciarCartasPartida();
-    }
-
-    public void desarrolloRoboConCastigo(ArrayList<String> mano, ifJugador j, int numJNoPuedeRobar) throws RemoteException {
-        vista.mostrarCartas(mano);
-        vista.jugadorPuedeRobarConCastigo(j.getNombre());
-        if (vista.menuRobarDelPozo() == ifVista.getEleccionRobarDelPozo()) {
-            robarConCastigo(j);
-            haRobadoConCastigo(j.getNumeroJugador(), numJNoPuedeRobar, true);
-        } else {
-            haRobadoConCastigo(j.getNumeroJugador(),numJNoPuedeRobar,false);
-        }
-    }
-
-    public void roboConCastigo(String nombreJugador) throws RemoteException {
-        juego.roboConCastigo(nombreJugador);
-    }
-
-    public void haRobadoConCastigo(int numJugador, int numJNoPuedeRobar, boolean robo) throws RemoteException {
-        juego.haRobadoConCastigo(numJugador, numJNoPuedeRobar, robo);
     }
 
     public ifJugador getJugadorPartida(int numJugadorPartida) throws RemoteException {
@@ -369,7 +360,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     public int getCantJugadoresPartida() throws RemoteException {
-        return juego.getCantJugadores();
+        return juego.getCantJugadoresPartida();
     }
 
     //OBSERVER-----------------------------------------------------

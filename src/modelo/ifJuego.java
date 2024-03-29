@@ -173,8 +173,8 @@ public interface ifJuego extends IObservableRemoto {
 
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
-    void roboConCastigo(String nombreJugador) throws RemoteException;
-    void haRobadoConCastigo(int numJ, int numJNoPuedoRobar, boolean robo) throws RemoteException;
+    boolean notificarRoboConCastigo(int iJugador, int numJNoPuedeRobar) throws RemoteException;
+    void notificarHaRobadoConCastigo(int numJ) throws RemoteException;
 
     //GETTERS Y SETTERS
     Jugador getJugador(String nombreJugador) throws RemoteException;
@@ -201,7 +201,8 @@ public interface ifJuego extends IObservableRemoto {
     void iniciarCartasPartida() throws RemoteException;
     void setCorteRonda() throws RemoteException;
     boolean getCorteRonda() throws RemoteException;
-    int getCantJugadores() throws RemoteException;
+    int getCantJugadoresPartida() throws RemoteException;
     void partidaFinRonda() throws RemoteException;
     void determinarGanador() throws RemoteException;
+    boolean isPozoEmpty() throws RemoteException;
 }

@@ -16,6 +16,8 @@ public class Consola implements ifVista{
     private String nombreVista;
     private String nombreJugador;
     private static final int NUEVA_PARTIDA = 6;
+    private static final int ROBO_CASTIGO = 11;
+    private static final int HUBO_ROBO_CASTIGO = 12;
 
     public Consola(){}
 
@@ -267,7 +269,7 @@ public class Consola implements ifVista{
         System.out.println(s);
     }
 
-    public void jugadorPuedeRobarConCastigo(String nombreJugador) {
+    public void mostrarPuedeRobarConCastigo(String nombreJugador) {
         System.out.println("El jugador " + nombreJugador + " puede robar con castigo.");
     }
 
@@ -336,7 +338,7 @@ public class Consola implements ifVista{
             int i = 0;
             while (ctrl.getCorteRonda()) {
                 ifJugador jA = ctrl.notificarTurno(i); //llama a actualizar
-                ctrl.desarrolloTurno(jA.getNumeroJugador()); //aca se modifica la variable corte del while de partida()
+                ctrl.desarrolloTurno(jA.getNumeroJugador()); //aca se modifica la variable corte del while
                 //modificar estadoPartida
                 i++;
                 if (i>ctrl.getCantJugadoresPartida()-1) {
@@ -348,6 +350,11 @@ public class Consola implements ifVista{
         }
         ctrl.determinarGanador();
         return estadoPartida;
+    }
+
+    private boolean preguntarSiQuiereRobarCastigo(ArrayList<String> mano) {
+        mostrarCartas(mano);
+        return menuRobarDelPozo() == ifVista.getEleccionRobarDelPozo();
     }
 
     //GETTERS Y SETTERS---------------------------
@@ -399,15 +406,33 @@ public class Consola implements ifVista{
                 }
                 break;
             }
-            case 11: { //un jugador puede robar con castigo
+            case ROBO_CASTIGO: { //un jugador puede robar con castigo
                 int[] a = (int[]) actualizacion;
-                ifJugador j = ctrl.getJugadorPartida(a[0]);
-                if (nombreVista.equals(j.getNombre())) {
-                    ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
+                int numJugador = a[0];
+                int numJNoPuedeRobar = a[2];
+                boolean robo = false;
+                int contador = 0;
+                //los que pueden robar con castigo son el total - 1
+                while (contador < ctrl.getCantJugadoresPartida()-1 && !robo) {
+                    ifJugador j = ctrl.getJugadorPartida(numJugador);
+                    mostrarPuedeRobarConCastigo(j.getNombre());
+                    if (nombreVista.equals(j.getNombre())) {
+                        if (preguntarSiQuiereRobarCastigo(ctrl.enviarManoJugador(j))) {
+                            robo = true;
+                            ctrl.robarConCastigo(j);
+                            ctrl.haRobadoConCastigo(j.getNumeroJugador());
+                        } else {
+                            contador++;
+                            numJugador++;
+                            if (numJugador == numJNoPuedeRobar) {
+                                numJugador++;
+                            }
+                        }
+                    }
                 }
                 break;
             }
-            case 12: {
+            case HUBO_ROBO_CASTIGO: {
                 String nombreJugador = ctrl.getJugadorPartida((int)actualizacion).getNombre();
                 jugadorHaRobadoConCastigo(nombreJugador);
                 break;

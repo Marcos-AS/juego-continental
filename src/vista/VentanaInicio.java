@@ -212,20 +212,20 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         if(e.getActionCommand().equals("Crear")) {
             String input = JOptionPane.showInputDialog(this, "¿Cuántos jugadores quieres para la partida?", "Número de jugadores", JOptionPane.QUESTION_MESSAGE);
             numJugadores = Integer.parseInt(input);
-            try {
-                if (!this.ctrl.crearPartida(this, numJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
-                    noSePuedeIniciarPartida(1);
-                }
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+            //try {
+                //if (!this.ctrl.crearPartida(this, numJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
+                  //  noSePuedeIniciarPartida(1);
+                //}
+            //} catch (RemoteException ex) {
+              //  throw new RuntimeException(ex);
+            //}
 
             //setPartidaIniciada();
         }
     }
 
     public void accionarBotonIniciarPartida() throws RemoteException {
-        int inicioPartida = ctrl.jugarPartidaRecienIniciada(ctrl.getNombreVista());
+        int inicioPartida = ctrl.jugarPartidaRecienIniciada();
         if(inicioPartida == 0) {
             noSePuedeIniciarPartida(2);
         } else if (inicioPartida == 1){
@@ -375,8 +375,8 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     }
 
     @Override
-    public void partida() throws RemoteException {
-
+    public boolean partida() throws RemoteException {
+    return false;
     }
 
     private void jugadorHaRobadoConCastigo(String nombreJugador) {

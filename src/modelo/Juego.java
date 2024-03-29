@@ -5,7 +5,6 @@ import src.serializacion.Serializador;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Juego extends ObservableRemoto implements ifJuego {
 	protected static final int FIGURA = 10;
@@ -69,6 +68,10 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarPuntos();
 	}
 
+	public boolean isPozoEmpty() throws RemoteException {
+		return partidaActual.getPozo().isEmpty();
+	}
+
 	public void determinarGanador() throws RemoteException {
 		jugadorActual ganador = partidaActual.determinarGanador();
 		ganador.setPuntosAlFinalizar(ganador.getPuntos());
@@ -115,39 +118,24 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	}
 
-	public void roboConCastigo(String nombreJugador) throws RemoteException{
-		int numJNoPuedeRobar = partidaActual.getJugador(nombreJugador).getNumeroJugador();
-		int i = 0;
-		desarrolloRoboConCastigo(i, numJNoPuedeRobar, false);
+	public boolean notificarRoboConCastigo(int iJugador, int numJNoPuedeRobar) throws RemoteException{
+		boolean puedeBajar = false;
+		if (partidaActual.getJugadoresActuales().get(iJugador).getPuedeBajar()) { //si no puede bajar es porque ya bajo por lo que no puede robar con castigo
+			puedeBajar = true;
+			int[] cambio = new int[3];
+			cambio[0] = iJugador;
+			cambio[1] = NOTIFICAR_PUEDE_ROBO_CASTIGO;
+			cambio[2] = numJNoPuedeRobar;
+			notificarObservadores(cambio); //notifica a la vista que i que puede robar con castigo
+		}
+		return puedeBajar;
 	}
 
-	public void desarrolloRoboConCastigo(int iJugador, int numJNoPuedeRobar, boolean robo) throws RemoteException {
-		if (iJugador < partidaActual.getJugadoresActuales().size()) {
-			if (iJugador == numJNoPuedeRobar) {
-				iJugador++;
-			}
-			if (iJugador < partidaActual.getJugadoresActuales().size()) {
-				if (partidaActual.getJugadoresActuales().get(iJugador).getPuedeBajar()) { //si no puede bajar es porque ya bajo por lo que no puede robar con castigo
-					int[] cambio = new int[3];
-					cambio[0] = iJugador;
-					cambio[1] = NOTIFICAR_PUEDE_ROBO_CASTIGO;
-					cambio[2] = numJNoPuedeRobar;
-					notificarObservadores(cambio); //notifica a la vista que i que puede robar con castigo
-				}
-			}
-		}
-	}
-
-	public void haRobadoConCastigo(int numJ, int numJNoPuedoRobar, boolean robo) throws RemoteException {
-		if (!robo) {
-			desarrolloRoboConCastigo(numJ+1, numJNoPuedoRobar, robo);
-		} else {
-			notificarObservadores(ACTUALIZAR_PARTIDA);
-			int[] cambio = new int[2];
-			cambio[0] = numJ;
-			cambio[1] = NOTIFICAR_HUBO_ROBO_CASTIGO;
-			notificarObservadores(cambio); //notifica que la vista i robo con castigo
-		}
+	public void notificarHaRobadoConCastigo(int numJ) throws RemoteException {
+		int[] cambio = new int[2];
+		cambio[0] = numJ;
+		cambio[1] = NOTIFICAR_HUBO_ROBO_CASTIGO;
+		notificarObservadores(cambio); //notifica que la vista i robo con castigo
 	}
 
 	private void notificarSrl(Serializador srl, int situacion) throws RemoteException {
@@ -200,7 +188,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		return partidaActual.getCorteRonda();
 	}
 
-	public int getCantJugadores() throws RemoteException {
+	public int getCantJugadoresPartida() throws RemoteException {
 		return partidaActual.getNumJugadores();
 	}
 }
