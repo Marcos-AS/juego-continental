@@ -2,7 +2,7 @@ package src.modelo;
 
 import java.io.Serializable;
 
-public class Carta implements ifCarta, Serializable {
+public final class Carta implements ifCarta, Serializable {
 
     private final int numero;
     private final Palo palo;

@@ -248,7 +248,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (this.nombreVista.equals(nombreJugador)) {
-                    ctrl.desarrolloTurno(jA.getNumeroJugador());
+                    ctrl.desarrolloTurno(jA);
                 }
                 break;
             }
@@ -282,7 +282,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 int[] a = (int[]) actualizacion;
                 ifJugador j = this.ctrl.getJugadorPartida(a[0]);
                 if (this.nombreVista.equals(j.getNombre())) {
-                    ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
+                    //ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
                 }
                 break;
             }
@@ -410,7 +410,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     }
 
     @Override
-    public void jugadorPuedeRobarConCastigo(String nombreJugador) {
+    public void mostrarPuedeRobarConCastigo(String nombreJugador) {
 
     }
 

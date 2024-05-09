@@ -59,10 +59,10 @@ public class AppClienteConsola {
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);
 
-        Cliente c = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
+        Cliente cliente = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
         try {
             //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
-            c.iniciar(ctrl);
+            cliente.iniciar(ctrl);
             bienvenida(vista, ctrl);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -103,6 +103,7 @@ public class AppClienteConsola {
                     if(inicioPartida == 0) {
                         pVista.noSePuedeIniciarPartida(0); // partida aun no creada
                     } else if (inicioPartida == 1){
+                        partidaIniciada = true;
                         pVista.noSePuedeIniciarPartida(1); //faltan jugadores para la cant deseada
                     } else if (inicioPartida == 2) {
                         partidaIniciada = true;

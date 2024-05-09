@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     private int ronda;
-    private final ArrayList<jugadorActual> jugadoresActuales = new ArrayList<jugadorActual>();
+    private final ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo;
     private ArrayList<Carta> pozo;
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
@@ -96,6 +96,19 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         notificarObservadores(8);
 	}
 
+    public jugadorActual getJugadorQueLeToca() throws RemoteException {
+        int i = 0;
+        boolean encontrado = false;
+        while (!encontrado) {
+            if (jugadoresActuales.get(i).isTurnoActual()) {
+                encontrado = true;
+            } else {
+                i++;
+            }
+        }
+        return jugadoresActuales.get(i);
+    }
+
     @Override
     public Carta eliminarDelMazo() {
 		Carta c = sacarPrimeraDelMazo();
@@ -156,7 +169,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public void sumarPuntos() throws RemoteException {
 		int n = 0;
-		int puntos = 0;
+		int puntos;
 		while(n < jugadoresActuales.size()) {
 			jugadorActual j = jugadoresActuales.get(n);
 			puntos = 0;

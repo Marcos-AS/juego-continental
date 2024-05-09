@@ -107,7 +107,9 @@ public interface ifJuego extends IObservableRemoto {
                 break;
         }
         return cantCartas;
-    };
+    }
+
+    ;
 
     static int comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException {
         int esJuego = 2; //si no es juego entonces queda en 2, si es trio queda en 0, si es escalera queda en 1
@@ -174,6 +176,7 @@ public interface ifJuego extends IObservableRemoto {
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
     boolean notificarRoboConCastigo(int iJugador, int numJNoPuedeRobar) throws RemoteException;
+
     void notificarHaRobadoConCastigo(int numJ) throws RemoteException;
 
     //GETTERS Y SETTERS
@@ -181,28 +184,51 @@ public interface ifJuego extends IObservableRemoto {
 
     ArrayList<Jugador> getJugadores() throws RemoteException;
 
-    static int getFigura() throws RemoteException {return Juego.FIGURA;}
+    static int getFigura() throws RemoteException {
+        return Juego.FIGURA;
+    }
 
-    static int getAs() throws RemoteException {return Juego.AS;}
+    static int getAs() throws RemoteException {
+        return Juego.AS;
+    }
 
-    static int getPuntosComodin() throws RemoteException {return Juego.PUNTOS_COMODIN;}
+    static int getPuntosComodin() throws RemoteException {
+        return Juego.PUNTOS_COMODIN;
+    }
 
     Partida getPartidaActual() throws RemoteException;
+
     void setPartidaActual(Serializador srl) throws RemoteException;
 
     void crearPartida(String nombreVista, int cantJugadores) throws RemoteException;
-    jugadorActual notificarTurno(int numJugador) throws RemoteException;
+
     void finalizoTurno(int numJugador, boolean corte) throws RemoteException;
+
     void nuevaVentana() throws RemoteException;
+
     void getRanking() throws RemoteException;
+
     void notificarRondaFinalizada() throws RemoteException;
+
     void notificarPuntos() throws RemoteException;
+
     void notificarGanador(String nombreGanador) throws RemoteException;
+
     void iniciarCartasPartida() throws RemoteException;
+
     void setCorteRonda() throws RemoteException;
+
     boolean getCorteRonda() throws RemoteException;
+
     int getCantJugadoresPartida() throws RemoteException;
+
     void partidaFinRonda() throws RemoteException;
+
     void determinarGanador() throws RemoteException;
+
     boolean isPozoEmpty() throws RemoteException;
+
+    void setTurno(int numJugador) throws RemoteException;
+    public void notificarDesarrolloTurno() throws RemoteException;
+    public ifJugador getJugadorQueLeToca() throws RemoteException;
 }

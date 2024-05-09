@@ -18,29 +18,20 @@ public interface ifVista {
     static String transformarNumCarta(int numCarta) {
         String num = ((Integer) numCarta).toString();
         if (numCarta <= 1 || numCarta >= 11) {
-            switch (num) {
-                case "1":
-                    num = "A";
-                    break;
-                case "11":
-                    num = "J";
-                    break;
-                case "12":
-                    num = "Q";
-                    break;
-                case "13":
-                    num = "K";
-                    break;
-                case "-1":
-                    num = "COMODIN";
-                    break;
-            }
+            num = switch (num) {
+                case "1" -> "A";
+                case "11" -> "J";
+                case "12" -> "Q";
+                case "13" -> "K";
+                case "-1" -> "COMODIN";
+                default -> num;
+            };
         }
         return num;
     }
 
     static ArrayList<String> cartasToStringArray(ArrayList<ifCarta> mano) {
-        ArrayList<String> manoString = new ArrayList<String>();
+        ArrayList<String> manoString = new ArrayList<>();
         for (ifCarta c : mano)
             manoString.add(cartaToString(c));
         return manoString;
@@ -122,7 +113,7 @@ public interface ifVista {
     int preguntarCartaParaAcomodar();
     int preguntarEnQueJuegoQuiereAcomodar();
     int[] preguntarQueBajarParaJuego(int cantCartas);
-    void jugadorPuedeRobarConCastigo(String nombreJugador);
+    void mostrarPuedeRobarConCastigo(String nombreJugador);
     int menuRobarDelPozo();
     void nuevaVentana();
     int[] preguntarParaOrdenarCartas();

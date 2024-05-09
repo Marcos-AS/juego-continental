@@ -7,8 +7,6 @@ import src.controlador.Controlador;
 import src.modelo.ifCarta;
 import src.modelo.ifPartida;
 import src.modelo.ifJugador;
-import src.modelo.jugadorActual;
-import src.serializacion.Serializador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
@@ -16,6 +14,8 @@ public class Consola implements ifVista{
     private String nombreVista;
     private String nombreJugador;
     private static final int NUEVA_PARTIDA = 6;
+    private static final int DESARROLLO_TURNO = 8;
+    private static final int POZO = 9;
     private static final int ROBO_CASTIGO = 11;
     private static final int HUBO_ROBO_CASTIGO = 12;
 
@@ -96,7 +96,7 @@ public class Consola implements ifVista{
     }
 
     @Override
-    public String preguntarNombreNuevoJugador() throws RemoteException {
+    public String preguntarNombreNuevoJugador() {
         System.out.println("Indique su nombre:");
         String nombreJugador = s.nextLine();
         System.out.println("Jugador agregado.");
@@ -205,7 +205,6 @@ public class Consola implements ifVista{
 
     public void mostrarInicioPartida() {
         System.out.println("Se ha iniciado la partida.");
-        //System.out.println("Para ingresar vaya a la opcion 4: Jugar partida recien iniciada.");
     }
 
     public void mostrarCartas(ArrayList<String> cartas) {
@@ -336,9 +335,9 @@ public class Consola implements ifVista{
         while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
             ctrl.iniciarCartasPartida();
             int i = 0;
-            while (ctrl.getCorteRonda()) {
-                ifJugador jA = ctrl.notificarTurno(i); //llama a actualizar
-                ctrl.desarrolloTurno(jA.getNumeroJugador()); //aca se modifica la variable corte del while
+            while (!ctrl.getCorteRonda()) {
+                ctrl.notificarTurno(i);
+                ctrl.notificarDesarrolloTurno();
                 //modificar estadoPartida
                 i++;
                 if (i>ctrl.getCantJugadoresPartida()-1) {
@@ -367,6 +366,7 @@ public class Consola implements ifVista{
         nombreVista = i;
     }
 
+    //la invoca el metodo actualizar del controlador
     @Override
     public void actualizar(Object actualizacion, int indice) throws RemoteException {
         switch (indice) {//del 0 al 5 porque como maximo 6 jugadores
@@ -375,12 +375,15 @@ public class Consola implements ifVista{
             case 2:
             case 3:
             case 4:
-            case 5: {
-                ctrl.mostrarPozo();
+            case 5: { //lo que se tiene que mostrar en ambas vistas
+                mostrarPozo(ctrl.getPozo());
                 mostrarCombinacionRequerida(ctrl.getRonda());
                 ifJugador jA = (ifJugador) actualizacion;
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
+                if (nombreJugador.equals(nombreVista)) {
+                    ctrl.setTurno(jA.getNumeroJugador());
+                }
                 break;
             }
             case NUEVA_PARTIDA: {
@@ -390,6 +393,13 @@ public class Consola implements ifVista{
             case 7: {
                 ArrayList<ifJugador> js = (ArrayList<ifJugador>) actualizacion;
                 mostrarUltimoJugadorAgregado(js);
+                break;
+            }
+            case DESARROLLO_TURNO: {
+                ifJugador j = (ifJugador) actualizacion;
+                if (j.getNombre().equals(nombreVista)) {
+                    ctrl.desarrolloTurno(j); //aca se modifica la variable corte del while
+                }
                 break;
             }
             case 9: {
@@ -406,17 +416,17 @@ public class Consola implements ifVista{
                 }
                 break;
             }
-            case ROBO_CASTIGO: { //un jugador puede robar con castigo
+            case ROBO_CASTIGO: {
                 int[] a = (int[]) actualizacion;
                 int numJugador = a[0];
                 int numJNoPuedeRobar = a[2];
                 boolean robo = false;
                 int contador = 0;
-                //los que pueden robar con castigo son el total - 1
-                while (contador < ctrl.getCantJugadoresPartida()-1 && !robo) {
-                    ifJugador j = ctrl.getJugadorPartida(numJugador);
-                    mostrarPuedeRobarConCastigo(j.getNombre());
-                    if (nombreVista.equals(j.getNombre())) {
+                ifJugador j = ctrl.getJugadorPartida(numJugador); //obtiene jugador que puede robar
+                mostrarPuedeRobarConCastigo(j.getNombre());
+                if (nombreVista.equals(j.getNombre())) {
+                    //los que pueden robar con castigo son el total - 1
+                    while (contador < ctrl.getCantJugadoresPartida()-1 && !robo) {
                         if (preguntarSiQuiereRobarCastigo(ctrl.enviarManoJugador(j))) {
                             robo = true;
                             ctrl.robarConCastigo(j);

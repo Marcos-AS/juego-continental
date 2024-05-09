@@ -27,8 +27,7 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	private ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
-		for(int i = 0; i < cartasABajar.length; i++)
-			juego.add(mano.get(cartasABajar[i]));
+        for (int j : cartasABajar) juego.add(mano.get(j));
 		return juego;
 	}
 

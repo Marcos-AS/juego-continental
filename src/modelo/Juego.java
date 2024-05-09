@@ -13,6 +13,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	protected static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
 	protected static final int CANT_CARTAS_INICIAL = 6;
 	private static final int NOTIFICAR_NUEVO_JUGADOR = 7;
+	private static final int NOTIFICAR_DESARROLLO_TURNO = 8;
 	private static final int NOTIFICAR_PUEDE_ROBO_CASTIGO = 11;
 	private static final int NOTIFICAR_HUBO_ROBO_CASTIGO = 12;
 	private static final int NOTIFICAR_RONDA_FINALIZADA = 14;
@@ -42,23 +43,19 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	public void crearPartida(String nombreVista, int cantJugadores) throws RemoteException{
-		//boolean creada = false;
-		//if (jugadores.size()>=cantJugadores) {
-		//	creada = true;
-			partidaActual = new Partida(); //creacion de partida
-			partidaActual.agregarJugador(nombreVista);
-			partidaActual.setEstadoPartida();
-			partidaActual.setCantJugadoresDeseada(cantJugadores);
-			notificarObservadores(NUEVA_PARTIDA); //el ctrl setea la partida
-			notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
-		//}
-		//return creada;
+		partidaActual = new Partida(); //creacion de partida
+		partidaActual.agregarJugador(nombreVista);
+		partidaActual.setEstadoPartida();
+		partidaActual.setCantJugadoresDeseada(cantJugadores);
+		notificarObservadores(NUEVA_PARTIDA); //el ctrl setea la partida
+		notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
 	}
 
 	public void iniciarCartasPartida() throws RemoteException{
 		partidaActual.crearMazo();
 		partidaActual.repartirCartas();
 		partidaActual.iniciarPozo();
+		partidaActual.setRonda(1);
 	}
 
 	public void partidaFinRonda() throws RemoteException {
@@ -68,8 +65,20 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarPuntos();
 	}
 
+	public ifJugador getJugadorQueLeToca() throws RemoteException {
+		return partidaActual.getJugadorQueLeToca();
+	}
+
 	public boolean isPozoEmpty() throws RemoteException {
 		return partidaActual.getPozo().isEmpty();
+	}
+
+	public void setTurno(int numJugador) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).setTurnoActual();
+	}
+
+	public void notificarDesarrolloTurno() throws RemoteException {
+		notificarObservadores(NOTIFICAR_DESARROLLO_TURNO);
 	}
 
 	public void determinarGanador() throws RemoteException {
@@ -80,13 +89,6 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException {
 		partidaActual.agregarJugador(nombreJugador);
-	}
-
-	public jugadorActual notificarTurno(int numJugador) throws RemoteException {
-		jugadorActual j = partidaActual.getJugadoresActuales().get(numJugador);
-		j.setTurnoActual();
-		notificarObservadores(j);
-		return j;
 	}
 
 	public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
