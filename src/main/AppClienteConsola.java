@@ -4,6 +4,7 @@ import rmimvc.src.RMIMVCException;
 import rmimvc.src.Util;
 import rmimvc.src.cliente.Cliente;
 import src.controlador.Controlador;
+import src.serializacion.Serializador;
 import src.vista.Consola;
 
 import src.vista.ifVista;
@@ -13,8 +14,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class AppClienteConsola {
-
-
     public static void main(String[] args) {
         ArrayList<String> ips = Util.getIpDisponibles();
         String ip = (String) JOptionPane.showInputDialog(
@@ -57,13 +56,14 @@ public class AppClienteConsola {
         //creacion de la vista y el controlador
         ifVista vista = new Consola();
         Controlador ctrl = new Controlador(vista);
+        Serializador srl = new Serializador("partidas.dat");
         vista.setControlador(ctrl);
 
         Cliente cliente = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
         try {
             //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
             cliente.iniciar(ctrl);
-            bienvenida(vista, ctrl);
+            bienvenida(vista, ctrl, srl);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (RMIMVCException e) {
@@ -73,7 +73,8 @@ public class AppClienteConsola {
         }
     }
 
-    private static void bienvenida(ifVista pVista, Controlador pCtrl) throws RemoteException, InterruptedException {
+    private static void bienvenida(ifVista pVista, Controlador pCtrl, Serializador srl)
+            throws RemoteException, InterruptedException {
         pCtrl.agregarNuevoJugador(pVista.preguntarNombreNuevoJugador()); //agrega jugador a juego y setea nombreVista
         int eleccion;
         int cantJugadores = 2; //minimo
@@ -83,7 +84,8 @@ public class AppClienteConsola {
             //1 - crear partida
             //2 - ver ranking mejores jugadores
             //3 - ver reglas de juego
-            //4 - jugar partida recien creada (por ahora, luego poder jugar partidas guardadas)
+            //4 - jugar partida recien creada
+            //5 - cargar partida
             switch (eleccion) {
                 case 1: {
                     cantJugadores = pVista.preguntarCantJugadores();
@@ -115,6 +117,12 @@ public class AppClienteConsola {
                         }; //esto inicia el funcionamiento del juego
                     }
                     break;
+                }
+                case 5: {
+                    Object[] partidas = srl.readObjects();
+                    for (Object o : partidas) {
+                        System.out.println(o.toString());
+                    }
                 }
             }
         } while (eleccion != -1 && !partidaIniciada);

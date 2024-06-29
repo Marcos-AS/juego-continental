@@ -18,6 +18,8 @@ public class Consola implements ifVista{
     private static final int POZO = 9;
     private static final int ROBO_CASTIGO = 11;
     private static final int HUBO_ROBO_CASTIGO = 12;
+    private static final int SALIR_DEL_JUEGO = -1;
+    private static final int YA_NO_PUEDE_BAJAR = 1;
 
     public Consola(){}
 
@@ -49,7 +51,7 @@ public class Consola implements ifVista{
 
 	public int[] preguntarQueBajarParaJuego(int cantCartas) {
         int[] cartasABajar = new int[cantCartas];
-        for (int i = 0; i < cartasABajar.length; i+=2) {
+        for (int i = 0; i < cartasABajar.length; i++) {
             System.out.println("Carta " + (i + 1) + ": ");
             System.out.println("Indique el indice de la carta que quiere bajar: ");
             cartasABajar[i] = s.nextInt();
@@ -109,6 +111,7 @@ public class Consola implements ifVista{
 		System.out.println("Quiere robar del pozo o robar del mazo?");
 		System.out.println("1 - Robar del mazo");
 		System.out.println("2 - Robar del pozo");
+        System.out.println("-1 - Salir y guardar partida");
 		System.out.println("Elija una opcion: ");
 		int eleccion = s.nextInt();
         System.out.println();
@@ -122,6 +125,7 @@ public class Consola implements ifVista{
   		System.out.println("3 - Ordenar cartas");
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         System.out.println("5 - Acomodar en un juego bajado propio");
+        System.out.println("-1 - Salir y guardar partida");
         int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
@@ -131,6 +135,7 @@ public class Consola implements ifVista{
 		System.out.println("Quiere robar del pozo?");
         System.out.println("1 - No");
         System.out.println("2 - Si");
+        System.out.println("-1 - Salir y guardar partida");
         int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
@@ -146,6 +151,7 @@ public class Consola implements ifVista{
         System.out.println("2 - Ver ranking mejores jugadores");
         System.out.println("3 - Ver reglas de juego");
         System.out.println("4 - Jugar partida recién creada");
+        System.out.println(("5 - Cargar partida"));
         System.out.println("-1 - Salir del juego");
         int eleccion = s.nextInt();
         System.out.println();
@@ -242,10 +248,10 @@ public class Consola implements ifVista{
     }
 
     public void mostrarNoPuedeBajarJuego(int i) {
-        if (i == 1) {
-            System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
-        } else {
+        if (i == YA_NO_PUEDE_BAJAR) {
             System.out.println("No puede volver a bajar juegos en esta ronda.");
+        } else {
+            System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
         }
     }
 
@@ -351,8 +357,11 @@ public class Consola implements ifVista{
         return estadoPartida;
     }
 
-    private boolean preguntarSiQuiereRobarCastigo(ArrayList<String> mano) {
+    private boolean preguntarSiQuiereRobarCastigo(ArrayList<String> mano) throws RemoteException {
         mostrarCartas(mano);
+        if (menuRobarDelPozo() == SALIR_DEL_JUEGO) {
+            ctrl.guardarPartida();
+        }
         return menuRobarDelPozo() == ifVista.getEleccionRobarDelPozo();
     }
 

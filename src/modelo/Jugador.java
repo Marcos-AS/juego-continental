@@ -105,7 +105,7 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public void addJuego(ArrayList<Carta> juego) {
+    public void addJuego(int[] juego) {
 
     }
 
@@ -137,5 +137,10 @@ public class Jugador implements Serializable, ifJugador {
     @Override
     public void moverCartaEnMano(int indCarta, int destino) {
 
+    }
+
+    @Override
+    public int juegoValido(int[] cartasABajar) throws RemoteException {
+        return -1;
     }
 }

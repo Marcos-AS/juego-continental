@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public interface ifVista {
     int ELECCION_BAJARSE = 1;
-    int ELECCION_NO_BAJARSE = 2;
+    int ELECCION_TIRAR_AL_POZO = 2;
     int ELECCION_ORDENAR_CARTAS = 3;
     int ELECCION_CORTAR = 4;
     int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
@@ -87,21 +87,6 @@ public interface ifVista {
     void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar);
     int menuBajar();
     int preguntarQueBajarParaPozo(int cantCartas);
-    static int getEleccionBajarse() {
-        return ELECCION_BAJARSE;
-    }
-    static int getEleccionOrdenarCartas() {
-        return ELECCION_ORDENAR_CARTAS;
-    }
-    static int getEleccionNoBajarse() {
-        return ELECCION_NO_BAJARSE;
-    }
-    static int getEleccionCortar() {
-        return ELECCION_CORTAR;
-    }
-    static int getEleccionAcomodarJuegoPropio() {
-        return ELECCION_ACOMODAR_JUEGO_PROPIO;
-    }
     static int getEleccionRobarDelMazo() {
         return ELECCION_ROBAR_DEL_MAZO;
     }

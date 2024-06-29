@@ -8,14 +8,18 @@ import java.util.ArrayList;
 
 public interface ifJuego extends IObservableRemoto {
 
+    static final int TRIO = 0;
+    static final int ESCALERA = 1;
+    static final int JUEGO_INVALIDO = 2;
+
     //PRIVATE-----------------------------------------------------
     static int comprobarEscalera(ArrayList<Carta> juego) throws RemoteException {
-        int esEscalera = 2; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
+        int esEscalera = JUEGO_INVALIDO; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         if (comprobarMismoPalo(juego)) {
             ArrayList<Carta> comodines = new ArrayList<>();
-            int formaEscalera = 1;
-            juego = ordenarCartas(juego);
-            //si es un comodin lo almaceno, sino: si es un numero siguiente inc
+            int contadorEscalera = 1;
+            ordenarCartas(juego);
+            //si es un comodin lo almaceno, sino: si es un numero siguiente incremento
             //contador, sino: veo si puedo usar comodin
             for (int i = 0; i < juego.size(); i++) {
                 Carta cartaActual = juego.get(i);
@@ -25,20 +29,20 @@ public interface ifJuego extends IObservableRemoto {
                     comodines.add(cartaActual);
                     juego.remove(cartaActual);
                 } else if (numCartaSiguiente == numCartaActual + 1) {
-                    formaEscalera++;
+                    contadorEscalera++;
                 } else {
                     if (!comodines.isEmpty()) {
                         if (numCartaSiguiente == numCartaActual + 2) {
-                            formaEscalera++;
+                            contadorEscalera++;
                             comodines.remove(0);
                         }
                     } else {
-                        formaEscalera = 1;
+                        contadorEscalera = 1;
                     }
                 }
             }
-            if (formaEscalera >= 4)
-                esEscalera = 1;
+            if (contadorEscalera >= 4)
+                esEscalera = ESCALERA;
         }
         return esEscalera;
     }
@@ -52,7 +56,7 @@ public interface ifJuego extends IObservableRemoto {
         return mismoPalo;
     }
 
-    static ArrayList<Carta> ordenarCartas(ArrayList<Carta> cartas) throws RemoteException { //metodo de insercion
+    static void ordenarCartas(ArrayList<Carta> cartas) throws RemoteException { //metodo de insercion
         cartas.sort(null);
         boolean intercambio = true;
         while (intercambio) {
@@ -61,18 +65,17 @@ public interface ifJuego extends IObservableRemoto {
                 Carta cartaActual = cartas.get(i);
                 if (cartaActual.getNumero() > cartas.get(i + 1).getNumero()) {
                     intercambio = true;
-                    Carta swap = cartaActual;
                     cartas.set(i, cartas.get(i + 1));
-                    cartas.set(i + 1, swap);
+                    cartas.set(i + 1, cartaActual);
                 }
             }
         }
-        return cartas;
     }
 
     static int comprobarTrio(ArrayList<Carta> juego) throws RemoteException {
         int formaTrio = 1;
-        int esTrio = 2; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
+        //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
+        int esTrio = JUEGO_INVALIDO;
         for (int i = 0; i < juego.size() - 1; i++) {
             int numCarta = juego.get(i).getNumero();
             int numCartaSig = juego.get(i + 1).getNumero();
@@ -80,7 +83,7 @@ public interface ifJuego extends IObservableRemoto {
                 formaTrio++;
         }
         if (formaTrio >= 3)
-            esTrio = 0;
+            esTrio = TRIO;
         return esTrio;
     }
 
@@ -112,9 +115,7 @@ public interface ifJuego extends IObservableRemoto {
     ;
 
     static int comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException {
-        int esJuego = 2; //si no es juego entonces queda en 2, si es trio queda en 0, si es escalera queda en 1
-        int trio = -1;
-        int escalera = -1;
+        int esJuego = JUEGO_INVALIDO;
         switch (ronda) {
             case 1:
             case 4:
@@ -123,13 +124,11 @@ public interface ifJuego extends IObservableRemoto {
             case 2:
             case 5:
             case 6:
-                trio = comprobarTrio(juego);
-                if (trio == 0) {
-                    esJuego = trio;
+                if (comprobarTrio(juego) == TRIO) {
+                    esJuego = TRIO;
                 } else {
-                    escalera = comprobarEscalera(juego);
-                    if (escalera == 1) {
-                        esJuego = escalera;
+                    if (comprobarEscalera(juego) == ESCALERA) {
+                        esJuego = ESCALERA;
                     }
                 }
                 break;
@@ -178,6 +177,8 @@ public interface ifJuego extends IObservableRemoto {
     boolean notificarRoboConCastigo(int iJugador, int numJNoPuedeRobar) throws RemoteException;
 
     void notificarHaRobadoConCastigo(int numJ) throws RemoteException;
+
+    void guardarPartida() throws RemoteException;
 
     //GETTERS Y SETTERS
     Jugador getJugador(String nombreJugador) throws RemoteException;

@@ -29,7 +29,7 @@ public interface ifJugador {
     boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException;
     int bajarJuego(ArrayList<Carta> juego) throws RemoteException;
     ArrayList<Carta> getJuego(int[] cartasABajar);
-    void addJuego(ArrayList<Carta> juego);
+    void addJuego(int[] juego);
     void eliminarDeLaMano(ArrayList<Carta> cartasABajar);
     void setPuedeBajar();
     boolean getPuedeBajar();
@@ -38,4 +38,8 @@ public interface ifJugador {
     void moverCartaEnMano(int indCarta, int destino);
     void setPuntosAlFinalizar(int puntos);
     int getPuntosAlFinalizar();
+    int juegoValido(int[] cartasABajar) throws RemoteException;
+    boolean isTurnoActual();
+    void setTurnoActual();
+    boolean isManoEmpty();
 }

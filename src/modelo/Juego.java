@@ -157,6 +157,10 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarSrl(srlRanking, ENVIAR_RANKING);
 	}
 
+	public void guardarPartida() throws RemoteException {
+		srl.addOneObject(partidaActual);
+	}
+
 	//GETTERS Y SETTERS------------------------------------------------------------
 	public Jugador getJugador(String nombreJugador) throws RemoteException {
 		boolean encontrado = false;

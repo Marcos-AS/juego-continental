@@ -27,7 +27,7 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	private ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
-        for (int j : cartasABajar) juego.add(mano.get(j));
+        for (int carta : cartasABajar) juego.add(mano.get(carta));
 		return juego;
 	}
 
@@ -66,17 +66,14 @@ public class jugadorActual extends Jugador implements Serializable {
     public void agregarCarta(Carta c) {
 		mano.add(c);
 	}
-    
-    public int bajarJuego(ArrayList<Carta> juego) throws RemoteException {
-		return ifJuego.comprobarJuego(juego, getPartidaActual().getRonda()); //si tipoJuego es 2, no es juego
+
+	public int juegoValido(int[] cartasABajar) throws RemoteException{
+		ArrayList<Carta> cartasSeleccionadas = seleccionarCartasABajar(cartasABajar);
+		return ifJuego.comprobarJuego(cartasSeleccionadas, getPartidaActual().getRonda());
 	}
 
-	public ArrayList<Carta> getJuego(int[] cartasABajar) {
-		return seleccionarCartasABajar(cartasABajar);
-	}
-
-	public void addJuego(ArrayList<Carta> juego) {
-		juegos.add(juego);
+	public void addJuego(int[] juego) {
+		juegos.add(seleccionarCartasABajar(juego));
 	}
 
 	public void incrementarEscalerasBajadas() {
@@ -186,5 +183,9 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	public void setTurnoActual() {
 		turnoActual = !turnoActual;
+	}
+
+	public boolean isManoEmpty() {
+		return mano.isEmpty();
 	}
 }

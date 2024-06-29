@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Serializador implements Serializable {
-    private String fileName;
+    private final String fileName;
 
     public Serializador(String fileName) {
         super();
