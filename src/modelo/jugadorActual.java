@@ -50,14 +50,14 @@ public class jugadorActual extends Jugador implements Serializable {
 		boolean puedeCortar = false;
 		if(ifJuego.comprobarPosibleCorte(ronda, triosBajados, escalerasBajadas)) {
 			if (!mano.isEmpty()) {
-				Carta c = getCartaParaTirarAlPozo(0);
+				getCartaFromMano(0);
 			}
 			puedeCortar = true;
 		}
 		return puedeCortar;
 	}
 
-    public Carta getCartaParaTirarAlPozo(int indiceCarta) {
+    public Carta getCartaFromMano(int indiceCarta) {
 		Carta cartaATirar = mano.get(indiceCarta);
 		mano.remove(indiceCarta);
 		return cartaATirar;
@@ -181,8 +181,8 @@ public class jugadorActual extends Jugador implements Serializable {
 		return turnoActual;
 	}
 
-	public void setTurnoActual() {
-		turnoActual = !turnoActual;
+	public void setTurnoActual(boolean valor) {
+		turnoActual = valor;
 	}
 
 	public boolean isManoEmpty() {

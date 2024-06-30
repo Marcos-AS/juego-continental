@@ -229,7 +229,7 @@ public interface ifJuego extends IObservableRemoto {
 
     boolean isPozoEmpty() throws RemoteException;
 
-    void setTurno(int numJugador) throws RemoteException;
-    public void notificarDesarrolloTurno() throws RemoteException;
-    public ifJugador getJugadorQueLeToca() throws RemoteException;
+    void notificarDesarrolloTurno(int numJugador) throws RemoteException;
+    void setTurno(int numJugador, boolean valor) throws RemoteException;
+    boolean getTurno(int numJugador) throws RemoteException;
 }

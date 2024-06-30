@@ -17,7 +17,6 @@ public class Controlador implements IControladorRemoto {
     private static final int NOTIFICACION_DESARROLLO_TURNO = 8;
     private static final int NOTIFICACION_NUEVO_JUGADOR = 7;
     private static final int NOTIFICACION_NUEVA_PARTIDA = 6;
-    private static final int NOTIFICACION_RONDA_POZO = 9;
     private static final int NOTIFICACION_NOMBRE_JUGADOR = 10;
     private static final int NOTIFICACION_PUEDE_ROBO_CASTIGO = 11;
     private static final int NOTIFICACION_HUBO_ROBO_CASTIGO = 12;
@@ -72,14 +71,6 @@ public class Controlador implements IControladorRemoto {
         juego.guardarPartida();
     }
 
-    public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
-        juego.finalizoTurno(numJugador, corte);
-    }
-
-    public void tirarAlPozo(ifCarta c) throws RemoteException {
-        juego.getPartidaActual().agregarAlPozo((Carta) c);
-    }
-
     public void bajarse(ifJugador j, int [] cartasABajar) throws RemoteException {
         int tipoJuego = j.juegoValido(cartasABajar);
         if(tipoJuego != JUEGO_INVALIDO) {
@@ -124,26 +115,24 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void tirarAlPozoTurno(ifJugador j, ArrayList<String> mano) throws RemoteException {
-        this.vista.mostrarCartas(mano);
+        vista.mostrarCartas(mano);
         int eleccion = vista.preguntarQueBajarParaPozo(mano.size());
-        ifCarta c = j.getCartaParaTirarAlPozo(eleccion);
-        tirarAlPozo(c);
+        juego.getPartidaActual().agregarAlPozo(j.getCartaFromMano(eleccion));
     }
 
     public void notificarTurno(int numJugador) throws RemoteException {
         juego.notificarObservadores(juego.getPartidaActual().getJugadoresActuales().get(numJugador));
     }
 
-    public void setTurno(int numJugador) throws RemoteException {
-        juego.setTurno(numJugador);
+    public void setTurno(int numJugador, boolean valor) throws RemoteException {
+        juego.setTurno(numJugador, valor);
     }
 
-    public void notificarDesarrolloTurno() throws RemoteException {
-        juego.notificarDesarrolloTurno();
+    public void notificarDesarrolloTurno(int numJugador) throws RemoteException {
+        juego.notificarDesarrolloTurno(numJugador);
     }
     
     public void desarrolloTurno(ifJugador j) throws RemoteException {
-        //System.out.println("Nombre de la vista: " + this.nombreVista);
         vista.mostrarCartas(enviarManoJugador(j));
         int eleccion = vista.menuRobar();
         //1 - robar del mazo
@@ -178,12 +167,12 @@ public class Controlador implements IControladorRemoto {
 
         vista.mostrarCartas(enviarManoJugador(j));
 //-------------------------------------------------------------------------------------------------------
-        while(j.isTurnoActual()) {
+        while(juego.getTurno(numJugador)) {
             eleccion = vista.menuBajar();
             boolean corte;
             switch (eleccion) {
                 case ifVista.ELECCION_ORDENAR_CARTAS:
-                    ordenarCartasTurno(getJugadorPartida(j.getNumeroJugador()), vista.preguntarParaOrdenarCartas());
+                    ordenarCartasTurno(getJugadorPartida(numJugador), vista.preguntarParaOrdenarCartas());
                     break;
                 case ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO:
                     ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(j);
@@ -204,16 +193,17 @@ public class Controlador implements IControladorRemoto {
                     break;
                 case ifVista.ELECCION_TIRAR_AL_POZO:
                     tirarAlPozoTurno(j, enviarManoJugador(j));
+                    juego.setTurno(numJugador, false);
                     break;
             }
             if (j.isManoEmpty()) {
-                j.setTurnoActual();
+                juego.setTurno(numJugador,false);
             } else {
                 vista.mostrarCartas(enviarManoJugador(j));
             }
         }
         System.out.println("Finalizo su turno");
-        //finalizoTurno(j.getNumeroJugador(), corte);
+        //juego.finalizoTurno(numJugador, corte);
     }
 
     public void robarConCastigo(ifJugador j) throws RemoteException {
@@ -340,10 +330,6 @@ public class Controlador implements IControladorRemoto {
                 vista.actualizar(juego.getJugadores(), indice);
             } else if (indice == NOTIFICACION_NUEVA_PARTIDA) {
                 vista.actualizar(juego.getPartidaActual(), NOTIFICACION_NUEVA_PARTIDA);
-            } else if (indice == NOTIFICACION_RONDA_POZO) {
-                vista.actualizar(juego.getPartidaActual(), NOTIFICACION_RONDA_POZO);
-            } else if (indice == NOTIFICACION_DESARROLLO_TURNO) {
-                vista.actualizar(juego.getJugadorQueLeToca(), NOTIFICACION_DESARROLLO_TURNO);
             }
         } else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
@@ -351,6 +337,9 @@ public class Controlador implements IControladorRemoto {
             if ((int)c[1] == NOTIFICACION_RECIBIDA_RANKING) {
                 Object[] jugadores = ((Serializador) c[0]).readObjects();
                 vista.actualizar(jugadores, NOTIFICACION_RANKING);
+            } else if ((int)c[1] == NOTIFICACION_DESARROLLO_TURNO) {
+                ifJugador j = (ifJugador) c[0];
+                vista.actualizar(j, NOTIFICACION_DESARROLLO_TURNO);
             }
         } else if (cambio instanceof String) {
             vista.actualizar(cambio, NOTIFICACION_NOMBRE_JUGADOR);

@@ -96,19 +96,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         notificarObservadores(8);
 	}
 
-    public jugadorActual getJugadorQueLeToca() throws RemoteException {
-        int i = 0;
-        boolean encontrado = false;
-        while (!encontrado) {
-            if (jugadoresActuales.get(i).isTurnoActual()) {
-                encontrado = true;
-            } else {
-                i++;
-            }
-        }
-        return jugadoresActuales.get(i);
-    }
-
     @Override
     public Carta eliminarDelMazo() {
 		Carta c = sacarPrimeraDelMazo();

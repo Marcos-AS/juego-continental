@@ -65,7 +65,7 @@ public class Jugador implements Serializable, ifJugador {
     }
 
     @Override
-    public Carta getCartaParaTirarAlPozo(int eleccion) {
+    public Carta getCartaFromMano(int eleccion) {
     return null;
     }
 
@@ -142,5 +142,19 @@ public class Jugador implements Serializable, ifJugador {
     @Override
     public int juegoValido(int[] cartasABajar) throws RemoteException {
         return -1;
+    }
+
+    @Override
+    public boolean isTurnoActual() {
+        return false;
+    }
+
+    @Override
+    public void setTurnoActual(boolean valor) {
+    }
+
+    @Override
+    public boolean isManoEmpty() {
+        return false;
     }
 }

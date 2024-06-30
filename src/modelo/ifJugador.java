@@ -16,7 +16,7 @@ public interface ifJugador {
 
     int[] comprobarQueFaltaParaCortar(int ronda);
 
-    Carta getCartaParaTirarAlPozo(int eleccion);
+    Carta getCartaFromMano(int eleccion);
 
     ArrayList<ArrayList<Carta>> getJuegos();
 
@@ -40,6 +40,6 @@ public interface ifJugador {
     int getPuntosAlFinalizar();
     int juegoValido(int[] cartasABajar) throws RemoteException;
     boolean isTurnoActual();
-    void setTurnoActual();
+    void setTurnoActual(boolean valor);
     boolean isManoEmpty();
 }

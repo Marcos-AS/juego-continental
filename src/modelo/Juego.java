@@ -65,20 +65,15 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarPuntos();
 	}
 
-	public ifJugador getJugadorQueLeToca() throws RemoteException {
-		return partidaActual.getJugadorQueLeToca();
-	}
-
 	public boolean isPozoEmpty() throws RemoteException {
 		return partidaActual.getPozo().isEmpty();
 	}
 
-	public void setTurno(int numJugador) throws RemoteException {
-		partidaActual.getJugadoresActuales().get(numJugador).setTurnoActual();
-	}
-
-	public void notificarDesarrolloTurno() throws RemoteException {
-		notificarObservadores(NOTIFICAR_DESARROLLO_TURNO);
+	public void notificarDesarrolloTurno(int numJugador) throws RemoteException {
+		Object[] notifYJugador = new Object[2];
+		notifYJugador[0] = partidaActual.getJugadoresActuales().get(numJugador);
+		notifYJugador[1] = NOTIFICAR_DESARROLLO_TURNO;
+		notificarObservadores(notifYJugador);
 	}
 
 	public void determinarGanador() throws RemoteException {
@@ -93,11 +88,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
 		if (corte) partidaActual.setEstadoPartida();
-		if (partidaActual.getEstadoPartida()) {
-			notificarObservadores(NUEVA_PARTIDA);
-		} else {
-			notificarObservadores(ACTUALIZAR_PARTIDA);
-		}
+		notificarObservadores(ACTUALIZAR_PARTIDA);
 	}
 
 	public void notificarRondaFinalizada() throws RemoteException {
@@ -185,6 +176,14 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	@Override
 	public void setPartidaActual(Serializador srl) throws RemoteException {}
+
+	public void setTurno(int numJugador, boolean valor) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).setTurnoActual(valor);
+	}
+
+	public boolean getTurno(int numJugador) throws RemoteException {
+		return partidaActual.getJugadoresActuales().get(numJugador).isTurnoActual();
+	}
 
 	public void setCorteRonda() throws RemoteException{
 		partidaActual.setCorteRonda();

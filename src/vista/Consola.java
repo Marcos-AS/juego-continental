@@ -5,17 +5,14 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import src.controlador.Controlador;
 import src.modelo.ifCarta;
-import src.modelo.ifPartida;
 import src.modelo.ifJugador;
 
 public class Consola implements ifVista{
     private Controlador ctrl;
     private final Scanner s = new Scanner(System.in);
     private String nombreVista;
-    private String nombreJugador;
     private static final int NUEVA_PARTIDA = 6;
     private static final int DESARROLLO_TURNO = 8;
-    private static final int POZO = 9;
     private static final int ROBO_CASTIGO = 11;
     private static final int HUBO_ROBO_CASTIGO = 12;
     private static final int SALIR_DEL_JUEGO = -1;
@@ -343,8 +340,7 @@ public class Consola implements ifVista{
             int i = 0;
             while (!ctrl.getCorteRonda()) {
                 ctrl.notificarTurno(i);
-                ctrl.notificarDesarrolloTurno();
-                //modificar estadoPartida
+                ctrl.notificarDesarrolloTurno(i);
                 i++;
                 if (i>ctrl.getCantJugadoresPartida()-1) {
                     i = 0;
@@ -391,7 +387,7 @@ public class Consola implements ifVista{
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (nombreJugador.equals(nombreVista)) {
-                    ctrl.setTurno(jA.getNumeroJugador());
+                    ctrl.setTurno(jA.getNumeroJugador(), true);
                 }
                 break;
             }
@@ -409,11 +405,6 @@ public class Consola implements ifVista{
                 if (j.getNombre().equals(nombreVista)) {
                     ctrl.desarrolloTurno(j); //aca se modifica la variable corte del while
                 }
-                break;
-            }
-            case 9: {
-                mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
-                mostrarPozo(((ifPartida) actualizacion).sacarPrimeraDelPozo());
                 break;
             }
             case 10: {
