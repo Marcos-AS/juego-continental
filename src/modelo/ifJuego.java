@@ -87,6 +87,31 @@ public interface ifJuego extends IObservableRemoto {
         return esTrio;
     }
 
+    static int comprobarAcomodarEnTrio(ArrayList<Carta> juego) throws RemoteException {
+        int resp = JUEGO_INVALIDO;
+        Carta cartaAcomodar = juego.get(juego.size()-1);
+        if (cartaAcomodar.getNumero() == Juego.COMODIN) {
+            resp = TRIO;
+        } else {
+            boolean continuar = true;
+            int i = 0;
+            Carta c;
+            while (continuar && i < juego.size()) {
+                c = juego.get(i);
+                if (c.getNumero() == Juego.COMODIN) {
+                    i++;
+                }
+                else if (c.getNumero() == cartaAcomodar.getNumero()) {
+                    continuar = false;
+                } else {
+                    i++;
+                }
+            }
+            if (!continuar) resp = TRIO;
+        }
+        return resp;
+    }
+
     static int cartasPorRonda(int ronda) throws RemoteException {
         int cantCartas = Juego.CANT_CARTAS_INICIAL;
         switch (ronda) {
@@ -174,7 +199,7 @@ public interface ifJuego extends IObservableRemoto {
 
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
-    boolean notificarRoboConCastigo(int iJugador, int numJNoPuedeRobar) throws RemoteException;
+    void notificarRoboConCastigo(int iJugador) throws RemoteException;
 
     void notificarHaRobadoConCastigo(int numJ) throws RemoteException;
 
@@ -232,4 +257,13 @@ public interface ifJuego extends IObservableRemoto {
     void notificarDesarrolloTurno(int numJugador) throws RemoteException;
     void setTurno(int numJugador, boolean valor) throws RemoteException;
     boolean getTurno(int numJugador) throws RemoteException;
+    boolean getRoboConCastigo(int numJugador) throws RemoteException;
+    void ordenarCartasEnMano(int numJugador, int[] cartas) throws RemoteException;
+    void robarDelPozo(int numJugador) throws RemoteException;
+    void robarDelMazo(int numJugador) throws RemoteException;
+    boolean getPuedeBajar(int numJugador) throws RemoteException;
+    boolean isManoEmpty(int numJugador) throws RemoteException;
+    void tirarAlPozo(int numJugador, int eleccionCarta) throws RemoteException;
+    void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException;
+    boolean acomodarCartaJuegoPropio(int iCarta, int numJugador, int numJuego, int ronda) throws RemoteException;
 }

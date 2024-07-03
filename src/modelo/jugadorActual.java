@@ -13,6 +13,7 @@ public class jugadorActual extends Jugador implements Serializable {
 	private int triosBajados;
 	private boolean puedeBajar = true;
 	private boolean turnoActual = false;
+	private boolean roboConCastigo = false;
 
 	public jugadorActual() {}
 
@@ -25,7 +26,7 @@ public class jugadorActual extends Jugador implements Serializable {
         return partActual;
     }
 
-	private ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
+	public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
         for (int carta : cartasABajar) juego.add(mano.get(carta));
 		return juego;
@@ -65,11 +66,6 @@ public class jugadorActual extends Jugador implements Serializable {
 
     public void agregarCarta(Carta c) {
 		mano.add(c);
-	}
-
-	public int juegoValido(int[] cartasABajar) throws RemoteException{
-		ArrayList<Carta> cartasSeleccionadas = seleccionarCartasABajar(cartasABajar);
-		return ifJuego.comprobarJuego(cartasSeleccionadas, getPartidaActual().getRonda());
 	}
 
 	public void addJuego(int[] juego) {
@@ -123,9 +119,18 @@ public class jugadorActual extends Jugador implements Serializable {
 		boolean acomodo = false;
 		ArrayList<Carta> juegoElegido = juegos.get(numJuego);
 		juegoElegido.add(mano.get(numCarta));
-		if(ifJuego.comprobarJuego(juegoElegido, ronda) != 2) {
-			acomodo = true;
-			juegos.get(numJuego).add(mano.get(numCarta));
+		int tipoJuego = ifJuego.comprobarJuego(juegoElegido, ronda);
+		if(tipoJuego != ifJuego.JUEGO_INVALIDO) {
+			if (tipoJuego == ifJuego.TRIO) {
+				if (ifJuego.comprobarAcomodarEnTrio(juegoElegido) == ifJuego.TRIO) {
+					acomodo = true;
+				}
+			} else {
+				if (ifJuego.comprobarAcomodarEnEscalera(juegoElegido) == ifJuego.ESCALERA) {
+					acomodo = true;
+				}
+			}
+			if(acomodo) juegos.get(numJuego).add(getCartaFromMano(numCarta)); //hace el acomodo
 		}
 		return acomodo;
 	}
@@ -187,5 +192,13 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	public boolean isManoEmpty() {
 		return mano.isEmpty();
+	}
+
+	public boolean getRoboConCastigo() {
+		return roboConCastigo;
+	}
+
+	public void setRoboConCastigo(boolean valor) {
+		roboConCastigo = valor;
 	}
 }

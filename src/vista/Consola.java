@@ -122,6 +122,7 @@ public class Consola implements ifVista{
   		System.out.println("3 - Ordenar cartas");
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         System.out.println("5 - Acomodar en un juego bajado propio");
+        System.out.println("6 - Ver juegos bajados");
         System.out.println("-1 - Salir y guardar partida");
         int eleccion = s.nextInt();
         System.out.println();
@@ -246,7 +247,7 @@ public class Consola implements ifVista{
 
     public void mostrarNoPuedeBajarJuego(int i) {
         if (i == YA_NO_PUEDE_BAJAR) {
-            System.out.println("No puede volver a bajar juegos en esta ronda.");
+            System.out.println("No puede volver a bajar juegos en esta  (tampoco robar con castigo).");
         } else {
             System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
         }
@@ -292,7 +293,7 @@ public class Consola implements ifVista{
 	}
 
     public void mostrarNoPuedeAcomodarJuegoPropio() {
-        System.out.println("No puede acomodar porque no tiene juegos bajados.");
+        System.out.println("No puede acomodar porque no tiene juegos bajados o porque la carta que desea acomodar no hace juego con el juego elegido.");
     }
 
     public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {
@@ -353,12 +354,12 @@ public class Consola implements ifVista{
         return estadoPartida;
     }
 
-    private boolean preguntarSiQuiereRobarCastigo(ArrayList<String> mano) throws RemoteException {
-        mostrarCartas(mano);
-        if (menuRobarDelPozo() == SALIR_DEL_JUEGO) {
+    private boolean preguntarSiQuiereRobarCastigo() throws RemoteException {
+        int eleccion = menuRobarDelPozo();
+        if (eleccion == SALIR_DEL_JUEGO) {
             ctrl.guardarPartida();
         }
-        return menuRobarDelPozo() == ifVista.getEleccionRobarDelPozo();
+        return eleccion == ifVista.ELECCION_ROBAR_DEL_POZO;
     }
 
     //GETTERS Y SETTERS---------------------------
@@ -403,7 +404,7 @@ public class Consola implements ifVista{
             case DESARROLLO_TURNO: {
                 ifJugador j = (ifJugador) actualizacion;
                 if (j.getNombre().equals(nombreVista)) {
-                    ctrl.desarrolloTurno(j); //aca se modifica la variable corte del while
+                    ctrl.desarrolloTurno(j.getNumeroJugador()); //aca se modifica la variable corte del while
                 }
                 break;
             }
@@ -417,27 +418,14 @@ public class Consola implements ifVista{
                 break;
             }
             case ROBO_CASTIGO: {
-                int[] a = (int[]) actualizacion;
-                int numJugador = a[0];
-                int numJNoPuedeRobar = a[2];
-                boolean robo = false;
-                int contador = 0;
-                ifJugador j = ctrl.getJugadorPartida(numJugador); //obtiene jugador que puede robar
+                ifJugador j = (ifJugador) actualizacion; //obtiene jugador que puede robar
                 mostrarPuedeRobarConCastigo(j.getNombre());
                 if (nombreVista.equals(j.getNombre())) {
-                    //los que pueden robar con castigo son el total - 1
-                    while (contador < ctrl.getCantJugadoresPartida()-1 && !robo) {
-                        if (preguntarSiQuiereRobarCastigo(ctrl.enviarManoJugador(j))) {
-                            robo = true;
-                            ctrl.robarConCastigo(j);
-                            ctrl.haRobadoConCastigo(j.getNumeroJugador());
-                        } else {
-                            contador++;
-                            numJugador++;
-                            if (numJugador == numJNoPuedeRobar) {
-                                numJugador++;
-                            }
-                        }
+                    mostrarCartas(ctrl.enviarManoJugador(j.getNumeroJugador()));
+                    if (preguntarSiQuiereRobarCastigo()) {
+                        ctrl.robarConCastigo(j.getNumeroJugador());
+                        ctrl.haRobadoConCastigo(j.getNumeroJugador());
+                        j.setRoboConCastigo(true);
                     }
                 }
                 break;

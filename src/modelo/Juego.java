@@ -69,11 +69,43 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		return partidaActual.getPozo().isEmpty();
 	}
 
+	public void ordenarCartasEnMano(int numJugador, int[] cartas) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).moverCartaEnMano(cartas[0],cartas[1]);
+	}
+
+	public void robarDelPozo(int numJugador) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).addCarta(partidaActual.eliminarDelPozo());
+	}
+
+	public void robarDelMazo(int numJugador) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).addCarta(partidaActual.eliminarDelMazo());
+	}
+
+	public void tirarAlPozo(int numJugador, int eleccionCarta) throws RemoteException {
+		partidaActual.agregarAlPozo(partidaActual.getJugadoresActuales().get(numJugador).getCartaFromMano(eleccionCarta));
+	}
+
+	public void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException {
+		ifJugador j = partidaActual.getJugadoresActuales().get(numJugador);
+		j.addJuego(cartasABajar);
+		j.eliminarDeLaMano(j.getJuegos().get(j.getJuegos().size() - 1));
+		j.setPuedeBajar();
+		if (tipoJuego == TRIO) {
+			j.incrementarTriosBajados();
+		} else if (tipoJuego == ESCALERA) {
+			j.incrementarEscalerasBajadas();
+		}
+	}
+
+	public boolean acomodarCartaJuegoPropio(int iCarta, int numJugador, int numJuego, int ronda) throws RemoteException {
+		return partidaActual.getJugadoresActuales().get(numJugador).acomodarCartaJuegoPropio(iCarta,numJuego,ronda);
+	}
+
 	public void notificarDesarrolloTurno(int numJugador) throws RemoteException {
-		Object[] notifYJugador = new Object[2];
-		notifYJugador[0] = partidaActual.getJugadoresActuales().get(numJugador);
-		notifYJugador[1] = NOTIFICAR_DESARROLLO_TURNO;
-		notificarObservadores(notifYJugador);
+		int[] numJugadorYNotif = new int[2];
+		numJugadorYNotif[0] = numJugador;
+		numJugadorYNotif[1] = NOTIFICAR_DESARROLLO_TURNO;
+		notificarObservadores(numJugadorYNotif);
 	}
 
 	public void determinarGanador() throws RemoteException {
@@ -111,17 +143,11 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	}
 
-	public boolean notificarRoboConCastigo(int iJugador, int numJNoPuedeRobar) throws RemoteException{
-		boolean puedeBajar = false;
-		if (partidaActual.getJugadoresActuales().get(iJugador).getPuedeBajar()) { //si no puede bajar es porque ya bajo por lo que no puede robar con castigo
-			puedeBajar = true;
-			int[] cambio = new int[3];
-			cambio[0] = iJugador;
-			cambio[1] = NOTIFICAR_PUEDE_ROBO_CASTIGO;
-			cambio[2] = numJNoPuedeRobar;
-			notificarObservadores(cambio); //notifica a la vista que i que puede robar con castigo
-		}
-		return puedeBajar;
+	public void notificarRoboConCastigo(int iJugador) throws RemoteException{
+		Object[] cambio = new Object[2];
+		cambio[0] = getPartidaActual().getJugadoresActuales().get(iJugador);
+		cambio[1] = NOTIFICAR_PUEDE_ROBO_CASTIGO;
+		notificarObservadores(cambio);
 	}
 
 	public void notificarHaRobadoConCastigo(int numJ) throws RemoteException {
@@ -195,5 +221,17 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public int getCantJugadoresPartida() throws RemoteException {
 		return partidaActual.getNumJugadores();
+	}
+
+	public boolean getRoboConCastigo(int numJugador) throws RemoteException {
+		return partidaActual.getJugadoresActuales().get(numJugador).getRoboConCastigo();
+	}
+
+	public boolean getPuedeBajar(int numJugador) throws RemoteException {
+		return partidaActual.getJugadoresActuales().get(numJugador).getPuedeBajar();
+	}
+
+	public boolean isManoEmpty(int numJugador) throws RemoteException {
+		return partidaActual.getJugadoresActuales().get(numJugador).isManoEmpty();
 	}
 }

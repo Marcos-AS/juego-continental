@@ -157,4 +157,18 @@ public class Jugador implements Serializable, ifJugador {
     public boolean isManoEmpty() {
         return false;
     }
+
+    @Override
+    public boolean getRoboConCastigo() {
+        return false;
+    }
+
+    @Override
+    public void setRoboConCastigo(boolean valor) {
+    }
+
+    @Override
+    public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
+        return null;
+    }
 }

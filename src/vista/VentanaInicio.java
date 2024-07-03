@@ -248,7 +248,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (this.nombreVista.equals(nombreJugador)) {
-                    ctrl.desarrolloTurno(jA);
+                    ctrl.desarrolloTurno(jA.getNumeroJugador());
                 }
                 break;
             }

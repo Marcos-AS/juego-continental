@@ -12,6 +12,7 @@ public interface ifVista {
     int ELECCION_ORDENAR_CARTAS = 3;
     int ELECCION_CORTAR = 4;
     int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
+    int ELECCION_VER_JUEGOS_BAJADOS = 6;
     int ELECCION_ROBAR_DEL_MAZO = 1;
     int ELECCION_ROBAR_DEL_POZO = 2;
 

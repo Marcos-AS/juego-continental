@@ -33,9 +33,10 @@ public class Controlador implements IControladorRemoto {
     }
 
     //jugador---------------------------
-    public ArrayList<String> enviarManoJugador(ifJugador jA) throws RemoteException {
+    public ArrayList<String> enviarManoJugador(int numJugador) throws RemoteException {
         ArrayList<String> manoString = new ArrayList<>();
         try {
+            ifJugador jA = getJugadorPartida(numJugador);
             ArrayList<ifCarta> cs = new ArrayList<>(jA.getMano());
             manoString = ifVista.cartasToStringArray(cs);
         } catch (Exception e) {
@@ -44,7 +45,8 @@ public class Controlador implements IControladorRemoto {
         return manoString;
     }
 
-    public ArrayList<ArrayList<String>> enviarJuegosJugador(ifJugador j) {
+    public ArrayList<ArrayList<String>> enviarJuegosJugador(int numJugador) throws RemoteException {
+        ifJugador j = getJugadorPartida(numJugador);
         ArrayList<ArrayList<Carta>> juegos = j.getJuegos();
         ArrayList<ArrayList<String>> juegosString = new ArrayList<>();
         for (ArrayList<Carta> juego : juegos) {
@@ -71,35 +73,28 @@ public class Controlador implements IControladorRemoto {
         juego.guardarPartida();
     }
 
-    public void bajarse(ifJugador j, int [] cartasABajar) throws RemoteException {
-        int tipoJuego = j.juegoValido(cartasABajar);
+    public void bajarse(int numJugador, int [] cartasABajar) throws RemoteException {
+        int tipoJuego =
+        ifJuego.comprobarJuego(getJugadorPartida(numJugador).seleccionarCartasABajar(cartasABajar),getRonda());
         if(tipoJuego != JUEGO_INVALIDO) {
-            j.addJuego(cartasABajar);
-            j.eliminarDeLaMano(j.getJuegos().get(j.getJuegos().size() - 1));
-            j.setPuedeBajar();
-            if (tipoJuego == TRIO) {
-                j.incrementarTriosBajados();
-            } else if (tipoJuego == ESCALERA) {
-                j.incrementarEscalerasBajadas();
-            }
-            vista.mostrarJuegos(enviarJuegosJugador(j));
+            juego.bajarJuego(numJugador, cartasABajar, tipoJuego);
+            vista.mostrarNoPuedeBajarJuego(YA_NO_PUEDE_BAJAR);
+            vista.mostrarJuegos(enviarJuegosJugador(numJugador));
         } else {
              vista.mostrarNoPuedeBajarJuego(JUEGO_INVALIDO);
         }
     }
 
-    public void acomodarEnJuegoPropio(int iCarta, ifJugador j, ArrayList<ArrayList<String>> juegos, int numJuego) throws RemoteException {
-        vista.mostrarJuegos(juegos);
-        if(j.acomodarCartaJuegoPropio(iCarta, numJuego, getRonda())) {
-            juegos = enviarJuegosJugador(j);
-            ArrayList<String> juego = juegos.get(numJuego);
-            vista.mostrarCartas(juego);
+    public void acomodarEnJuegoPropio(int iCarta, int numJugador, ArrayList<ArrayList<String>> juegos, int numJuego) throws RemoteException {
+        if(juego.acomodarCartaJuegoPropio(iCarta, numJugador, numJuego, getRonda())) {
+            vista.mostrarCartas(enviarJuegosJugador(numJugador).get(numJuego));
         } else {
             vista.mostrarNoPuedeAcomodarJuegoPropio();
         }
     }
 
-    public boolean cortarTurno(ifJugador j, int ronda, boolean corte) throws RemoteException {
+    public boolean cortarTurno(int numJugador, int ronda, boolean corte) throws RemoteException {
+        ifJugador j = getJugadorPartida(numJugador);
         if (!corte) {
             int[] triosYEscalerasQueFaltan = j.comprobarQueFaltaParaCortar(ronda);
             vista.mostrarLoQueFaltaParaCortar(triosYEscalerasQueFaltan);
@@ -107,17 +102,9 @@ public class Controlador implements IControladorRemoto {
         return corte;
     }
 
-    public int ordenarCartasTurno(ifJugador j, int[] ordenar) throws RemoteException {
-        ordenarCartasEnMano(j, ordenar);
-        ArrayList<String> mano = enviarManoJugador(j);
-        vista.mostrarCartas(mano);
-        return vista.menuBajar();
-    }
-
-    public void tirarAlPozoTurno(ifJugador j, ArrayList<String> mano) throws RemoteException {
-        vista.mostrarCartas(mano);
+    public void tirarAlPozoTurno(int numJugador, ArrayList<String> mano) throws RemoteException {
         int eleccion = vista.preguntarQueBajarParaPozo(mano.size());
-        juego.getPartidaActual().agregarAlPozo(j.getCartaFromMano(eleccion));
+        juego.tirarAlPozo(numJugador, eleccion);
     }
 
     public void notificarTurno(int numJugador) throws RemoteException {
@@ -132,95 +119,107 @@ public class Controlador implements IControladorRemoto {
         juego.notificarDesarrolloTurno(numJugador);
     }
     
-    public void desarrolloTurno(ifJugador j) throws RemoteException {
-        vista.mostrarCartas(enviarManoJugador(j));
+    public void desarrolloTurno(int numJugador) throws RemoteException {
+        vista.mostrarCartas(enviarManoJugador(numJugador));
         int eleccion = vista.menuRobar();
         //1 - robar del mazo
         //2 - robar del pozo
-        int numJugador = j.getNumeroJugador();
 
         //si no roba del pozo, los demas pueden hacerlo, con "castigo"
         if (!juego.isPozoEmpty()) {
-            if (eleccion != ifVista.getEleccionRobarDelPozo()) {
-                boolean puedeRobar;
-                int i = 0;
-                if (i == numJugador) {
-                    i++;
+            if (eleccion != ifVista.ELECCION_ROBAR_DEL_POZO) {
+                int numJugadorRoboCastigo = numJugador+1;
+                if (numJugadorRoboCastigo > getCantJugadoresPartida()-1) {
+                    numJugadorRoboCastigo = 0;
                 }
-                do {
-                    puedeRobar = juego.notificarRoboConCastigo(i, numJugador);
-                    i++;
-                } while (!puedeRobar && i<getCantJugadoresPartida());
+                boolean continuarRoboCastigo = true;
+                int cantJugadoresRoboCastigo = 0;
+                while (cantJugadoresRoboCastigo < getCantJugadoresPartida()-1 && continuarRoboCastigo) {
+                    if (getJugadorPartida(numJugadorRoboCastigo).getPuedeBajar()) {
+                       juego.notificarRoboConCastigo(numJugadorRoboCastigo);
+                    }
+                    continuarRoboCastigo = !juego.getRoboConCastigo(numJugadorRoboCastigo);
+                    if (continuarRoboCastigo) {
+                        cantJugadoresRoboCastigo++;
+                        numJugadorRoboCastigo++;
+                        if (numJugadorRoboCastigo > getCantJugadoresPartida()-1) {
+                            numJugadorRoboCastigo = 0;
+                        }
+                    }
+                }
             }
         }
 
         if (eleccion == ifVista.getEleccionRobarDelPozo()) {
-            if(robarDelPozo(j)) {
+            if(robarDelPozo(numJugador)) {
                 vista.mostrarNoPuedeRobarDelPozo();
             }
         }
 
         //si el pozo esta vacio, se roba del mazo. Si se eligio robar del mazo en un principio tambien sucede aca
         if(eleccion == ifVista.getEleccionRobarDelMazo()) {
-            robarDelMazo(j);
+            juego.robarDelMazo(numJugador);
         }
 
-        vista.mostrarCartas(enviarManoJugador(j));
+        vista.mostrarCartas(enviarManoJugador(numJugador));
 //-------------------------------------------------------------------------------------------------------
         while(juego.getTurno(numJugador)) {
             eleccion = vista.menuBajar();
             boolean corte;
             switch (eleccion) {
                 case ifVista.ELECCION_ORDENAR_CARTAS:
-                    ordenarCartasTurno(getJugadorPartida(numJugador), vista.preguntarParaOrdenarCartas());
+                    juego.ordenarCartasEnMano(numJugador, vista.preguntarParaOrdenarCartas());
                     break;
                 case ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO:
-                    ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(j);
+                    ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(numJugador);
                     if (!juegos.isEmpty()) {
-                        acomodarEnJuegoPropio(vista.preguntarCartaParaAcomodar(), j, juegos, vista.preguntarEnQueJuegoQuiereAcomodar());
+                        int cartaAcomodar = vista.preguntarCartaParaAcomodar();
+                        vista.mostrarJuegos(juegos);
+                        acomodarEnJuegoPropio(cartaAcomodar, numJugador, juegos, vista.preguntarEnQueJuegoQuiereAcomodar()-1);
+                    } else {
+                        vista.mostrarNoPuedeAcomodarJuegoPropio();
                     }
                     break;
                 case ifVista.ELECCION_BAJARSE:
-                    if (j.getPuedeBajar()) {
-                        bajarse(j, vista.preguntarQueBajarParaJuego(vista.preguntarCantParaBajar()));
+                    if (juego.getPuedeBajar(numJugador)) {
+                        bajarse(numJugador, vista.preguntarQueBajarParaJuego(vista.preguntarCantParaBajar()));
                     } else {
                         vista.mostrarNoPuedeBajarJuego(YA_NO_PUEDE_BAJAR);
                     }
                     break;
                 case ifVista.ELECCION_CORTAR:
-                    corte = cortarTurno(j, getRonda(), j.cortar(getRonda()));
+                    corte = cortarTurno(numJugador, getRonda(), getJugadorPartida(numJugador).cortar(getRonda()));
                     if (corte) juego.setCorteRonda();
                     break;
                 case ifVista.ELECCION_TIRAR_AL_POZO:
-                    tirarAlPozoTurno(j, enviarManoJugador(j));
+                    tirarAlPozoTurno(numJugador, enviarManoJugador(numJugador));
                     juego.setTurno(numJugador, false);
                     break;
+                case ifVista.ELECCION_VER_JUEGOS_BAJADOS:
+                    vista.mostrarJuegos(enviarJuegosJugador(numJugador));
+                    break;
             }
-            if (j.isManoEmpty()) {
+            if (juego.isManoEmpty(numJugador)) {
                 juego.setTurno(numJugador,false);
             } else {
-                vista.mostrarCartas(enviarManoJugador(j));
+                vista.mostrarCartas(enviarManoJugador(numJugador));
             }
         }
         System.out.println("Finalizo su turno");
         //juego.finalizoTurno(numJugador, corte);
     }
 
-    public void robarConCastigo(ifJugador j) throws RemoteException {
-        robarDelPozo(j);
-        robarDelMazo(j);
+    public void robarConCastigo(int numJugador) throws RemoteException {
+        juego.robarDelPozo(numJugador);
+        juego.robarDelMazo(numJugador);
     }
 
-    public boolean robarDelPozo(ifJugador j) throws RemoteException {
+    public boolean robarDelPozo(int numJugador) throws RemoteException {
         boolean pozoVacio = juego.isPozoEmpty();
         if (!pozoVacio) {
-            j.addCarta(juego.getPartidaActual().eliminarDelPozo());
+            juego.robarDelPozo(numJugador);
         }
         return pozoVacio;
-    }
-
-    public void robarDelMazo(ifJugador j) throws RemoteException {
-        j.addCarta(juego.getPartidaActual().eliminarDelMazo());
     }
 
     public void haRobadoConCastigo(int numJugador) throws RemoteException {
@@ -300,10 +299,6 @@ public class Controlador implements IControladorRemoto {
         return juego.getPartidaActual().getEstadoPartida();
     }
 
-    public void ordenarCartasEnMano(ifJugador j, int[] ordenar) {
-        j.moverCartaEnMano(ordenar[0], ordenar[1]);
-    }
-
     public void getRanking() throws RemoteException {
         juego.getRanking();
     }
@@ -331,26 +326,35 @@ public class Controlador implements IControladorRemoto {
             } else if (indice == NOTIFICACION_NUEVA_PARTIDA) {
                 vista.actualizar(juego.getPartidaActual(), NOTIFICACION_NUEVA_PARTIDA);
             }
-        } else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
+        }
+
+        else if (cambio instanceof jugadorActual) { //cuando es el turno de un jugador x
             vista.actualizar(cambio, ((jugadorActual) cambio).getNumeroJugador());
-        } else if (cambio instanceof Object[] c) { //serializador
+        }
+
+        else if (cambio instanceof Object[] c) { //serializador
             if ((int)c[1] == NOTIFICACION_RECIBIDA_RANKING) {
                 Object[] jugadores = ((Serializador) c[0]).readObjects();
                 vista.actualizar(jugadores, NOTIFICACION_RANKING);
-            } else if ((int)c[1] == NOTIFICACION_DESARROLLO_TURNO) {
+            } else if ((int)c[1] == NOTIFICACION_PUEDE_ROBO_CASTIGO) {
                 ifJugador j = (ifJugador) c[0];
-                vista.actualizar(j, NOTIFICACION_DESARROLLO_TURNO);
+                vista.actualizar(j, NOTIFICACION_PUEDE_ROBO_CASTIGO);
             }
-        } else if (cambio instanceof String) {
+        }
+
+        else if (cambio instanceof String) {
             vista.actualizar(cambio, NOTIFICACION_NOMBRE_JUGADOR);
-        } else if (cambio instanceof int[] cambioA) { //robo con castigo
+        }
+
+        else if (cambio instanceof int[] cambioA) { //robo con castigo
             if (cambioA[0] == -1) { //para mostrar los puntos de la ronda finalizada
                 vista.actualizar(cambio, NOTIFICACION_PUNTOS);
             }
-            if (cambioA[1] == NOTIFICACION_PUEDE_ROBO_CASTIGO) {
-                vista.actualizar(cambioA, cambioA[1]);
-            } else if (cambioA[1] == NOTIFICACION_HUBO_ROBO_CASTIGO) {
+            else if (cambioA[1] == NOTIFICACION_HUBO_ROBO_CASTIGO) {
                 vista.actualizar(cambioA[0], cambioA[1]);
+            } else if (cambioA[1] == NOTIFICACION_DESARROLLO_TURNO) {
+                ifJugador j = getJugadorPartida(cambioA[0]);
+                vista.actualizar(j, NOTIFICACION_DESARROLLO_TURNO);
             }
         }
     }

@@ -42,4 +42,7 @@ public interface ifJugador {
     boolean isTurnoActual();
     void setTurnoActual(boolean valor);
     boolean isManoEmpty();
+    boolean getRoboConCastigo();
+    void setRoboConCastigo(boolean valor);
+    ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar);
 }
