@@ -41,7 +41,6 @@ public interface ifPartida {
     ArrayList<jugadorActual> getJugadoresActuales();
 
     int getRonda();
-    void setRonda(int i);
     void incrementarRonda();
     jugadorActual getJugador(String nombreJugador);
 

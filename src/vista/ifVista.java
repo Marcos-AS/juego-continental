@@ -104,6 +104,10 @@ public interface ifVista {
     int preguntarEnQueJuegoQuiereAcomodar();
     int[] preguntarQueBajarParaJuego(int cantCartas);
     void mostrarPuedeRobarConCastigo(String nombreJugador);
+    void mostrarAdvertenciaBajarse();
+    void mostrarFinalizoTurno();
+    void mostrarCorto(String nombreJugador);
+    boolean preguntarSiQuiereSeguirBajandoJuegos();
     int menuRobarDelPozo();
     void nuevaVentana();
     int[] preguntarParaOrdenarCartas();

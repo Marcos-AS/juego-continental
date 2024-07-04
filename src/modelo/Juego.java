@@ -14,6 +14,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	protected static final int CANT_CARTAS_INICIAL = 6;
 	private static final int NOTIFICAR_NUEVO_JUGADOR = 7;
 	private static final int NOTIFICAR_DESARROLLO_TURNO = 8;
+	private static final int NOTIFICAR_GANADOR = 10;
 	private static final int NOTIFICAR_PUEDE_ROBO_CASTIGO = 11;
 	private static final int NOTIFICAR_HUBO_ROBO_CASTIGO = 12;
 	private static final int NOTIFICAR_RONDA_FINALIZADA = 14;
@@ -37,8 +38,8 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private Juego() {
 	}
 
-	public void agregarJugador(Jugador j) throws RemoteException {
-		jugadores.add(j);
+	public void agregarJugador(String nombreJugador) throws RemoteException {
+		jugadores.add(new Jugador(nombreJugador));
 		notificarObservadores(NOTIFICAR_NUEVO_JUGADOR);
 	}
 
@@ -55,13 +56,13 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		partidaActual.crearMazo();
 		partidaActual.repartirCartas();
 		partidaActual.iniciarPozo();
-		partidaActual.setRonda(1);
 	}
 
 	public void partidaFinRonda() throws RemoteException {
 		partidaActual.incrementarRonda();
 		partidaActual.resetearJuegosJugadores();
 		partidaActual.sumarPuntos();
+		partidaActual.setCorteRonda();
 		notificarPuntos();
 	}
 
@@ -89,7 +90,6 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		ifJugador j = partidaActual.getJugadoresActuales().get(numJugador);
 		j.addJuego(cartasABajar);
 		j.eliminarDeLaMano(j.getJuegos().get(j.getJuegos().size() - 1));
-		j.setPuedeBajar();
 		if (tipoJuego == TRIO) {
 			j.incrementarTriosBajados();
 		} else if (tipoJuego == ESCALERA) {
@@ -120,16 +120,14 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	public void determinarGanador() throws RemoteException {
 		jugadorActual ganador = partidaActual.determinarGanador();
 		ganador.setPuntosAlFinalizar(ganador.getPuntos());
-		notificarGanador(ganador.getNombre());
+		Object[] notif = new Object[2];
+		notif[0] = ganador.getNombre();
+		notif[1] = NOTIFICAR_GANADOR;
+		notificarGanador(notif);
 	}
 
 	public void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException {
 		partidaActual.agregarJugador(nombreJugador);
-	}
-
-	public void finalizoTurno(int numJugador, boolean corte) throws RemoteException {
-		if (corte) partidaActual.setEstadoPartida();
-		notificarObservadores(ACTUALIZAR_PARTIDA);
 	}
 
 	public void notificarRondaFinalizada() throws RemoteException {
@@ -142,12 +140,12 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarObservadores();
 	}
 
-	public void notificarGanador(String nombreGanador) throws RemoteException {
-		notificarObservadores(nombreGanador);
+	private void notificarGanador(Object[] notif) throws RemoteException {
+		notificarObservadores(notif);
 		if (srlRanking.readFirstObject()==null) {
-			srlRanking.writeOneObject(nombreGanador);
+			srlRanking.writeOneObject((String)notif[0]);
 		} else {
-			srlRanking.addOneObject(nombreGanador); //revisar tema cabecera
+			srlRanking.addOneObject((String)notif[0]); //revisar tema cabecera
 		}
 
 	}
@@ -226,6 +224,10 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public boolean getCorteRonda() throws RemoteException {
 		return partidaActual.getCorteRonda();
+	}
+
+	public void setPuedeBajar(int numJugador) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).setPuedeBajar();
 	}
 
 	public int getCantJugadoresPartida() throws RemoteException {

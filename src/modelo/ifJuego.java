@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public interface ifJuego extends IObservableRemoto {
 
-    static final int TRIO = 0;
-    static final int ESCALERA = 1;
-    static final int JUEGO_INVALIDO = 2;
+    int TRIO = 0;
+    int ESCALERA = 1;
+    int JUEGO_INVALIDO = 2;
 
     //PRIVATE-----------------------------------------------------
     static int comprobarEscalera(ArrayList<Carta> juego) throws RemoteException {
@@ -219,7 +219,7 @@ public interface ifJuego extends IObservableRemoto {
         return puedeCortar;
     }
 
-    void agregarJugador(Jugador j) throws RemoteException;
+    void agregarJugador(String nombreJugador) throws RemoteException;
 
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
@@ -252,8 +252,6 @@ public interface ifJuego extends IObservableRemoto {
 
     void crearPartida(String nombreVista, int cantJugadores) throws RemoteException;
 
-    void finalizoTurno(int numJugador, boolean corte) throws RemoteException;
-
     void nuevaVentana() throws RemoteException;
 
     void getRanking() throws RemoteException;
@@ -261,8 +259,6 @@ public interface ifJuego extends IObservableRemoto {
     void notificarRondaFinalizada() throws RemoteException;
 
     void notificarPuntos() throws RemoteException;
-
-    void notificarGanador(String nombreGanador) throws RemoteException;
 
     void iniciarCartasPartida() throws RemoteException;
 
@@ -285,6 +281,7 @@ public interface ifJuego extends IObservableRemoto {
     void ordenarCartasEnMano(int numJugador, int[] cartas) throws RemoteException;
     void robarDelPozo(int numJugador) throws RemoteException;
     void robarDelMazo(int numJugador) throws RemoteException;
+    void setPuedeBajar(int numJugador) throws RemoteException;
     boolean getPuedeBajar(int numJugador) throws RemoteException;
     boolean isManoEmpty(int numJugador) throws RemoteException;
     void tirarAlPozo(int numJugador, int eleccionCarta) throws RemoteException;

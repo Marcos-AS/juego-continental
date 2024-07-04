@@ -600,4 +600,19 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void mostrarAcomodoCarta() {};
+
+    @Override
+    public void mostrarAdvertenciaBajarse() {
+    }
+
+    @Override
+    public boolean preguntarSiQuiereSeguirBajandoJuegos() {
+        return false;
+    }
+
+    @Override
+    public void mostrarFinalizoTurno(){}
+
+    @Override
+    public void mostrarCorto(String nombreJugador){}
 }

@@ -12,9 +12,14 @@ public class Consola implements ifVista{
     private final Scanner s = new Scanner(System.in);
     private String nombreVista;
     private static final int NUEVA_PARTIDA = 6;
+    private static final int NUEVO_JUGADOR = 7;
     private static final int DESARROLLO_TURNO = 8;
+    private static final int GANADOR = 10;
     private static final int ROBO_CASTIGO = 11;
     private static final int HUBO_ROBO_CASTIGO = 12;
+    private static final int RONDA_FINALIZADA = 14;
+    private static final int PUNTOS_RONDA = 15;
+    private static final int JUGADOR_INICIO_PARTIDA = 17;
     private static final int SALIR_DEL_JUEGO = -1;
     private static final int YA_NO_PUEDE_BAJAR = 1;
 
@@ -108,6 +113,16 @@ public class Consola implements ifVista{
         String nombreJugador = s.nextLine();
         System.out.println("Jugador agregado.");
         return nombreJugador;
+    }
+
+    public void mostrarAdvertenciaBajarse() {
+        System.out.println("Recuerda que sólo puedes bajar tus juegos una vez durante la ronda");
+    }
+    
+    public boolean preguntarSiQuiereSeguirBajandoJuegos() {
+        System.out.println("Desea bajar un juego? (Si/No)");
+        String resp = s.next();
+        return resp.equalsIgnoreCase("Si") || resp.equalsIgnoreCase("S");
     }
 
     //MENUS-------------------------------
@@ -238,12 +253,18 @@ public class Consola implements ifVista{
     }
 
     public void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar) {
+        System.out.println("Para cortar: ");
         System.out.println("Faltan " + faltaParaCortar[0] + " trios");
         System.out.println("Faltan " + faltaParaCortar[1] + " escaleras");
+        System.out.println("-----------------------------");
     }
 
     public void mostrarNoPuedeCortar() {
         System.out.println("No puede cortar");
+    }
+
+    public void mostrarCorto(String nombreJugador) {
+        System.out.println("El jugador " + nombreJugador + " ha cortado.");
     }
 
     public void mostrarAcomodoCarta() {
@@ -259,7 +280,7 @@ public class Consola implements ifVista{
     }
     
     public void mostrarPozo(ifCarta c) {
-        System.out.println("Pozo: ");
+        System.out.println("\nPozo: ");
         mostrarCarta(ifVista.cartaToString(c));
     }
 
@@ -303,6 +324,8 @@ public class Consola implements ifVista{
     }
 
 	public void mostrarGanador(String nombre) {
+        System.out.println("--------------------------------");
+        System.out.println("--------------------------------");
 		System.out.println("El jugador " + nombre + " es el ganador!");// con " + puntos + " puntos!");
 	}
 
@@ -314,8 +337,8 @@ public class Consola implements ifVista{
         System.out.println("No puede acomodar porque no tiene o no hay juegos bajados o porque la carta que desea acomodar no hace juego con el juego elegido.");
     }
 
-    public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {
-        System.out.println("El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.");
+    private void mostrarUltimoJugadorAgregado(String nombreJugador) {
+        System.out.println("El jugador " + nombreJugador + " ha ingresado.");
     }
 
     public void noSePuedeIniciarPartida(int i) {
@@ -331,10 +354,20 @@ public class Consola implements ifVista{
         for (int i = 1; i < puntos.length; i++) {
             mostrarPuntosJugador(ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
         }
+        System.out.println("--------------------------------");
+        System.out.println();
+    }
+
+    public void mostrarFinalizoTurno() {
+        System.out.println("Finalizo su turno");
     }
 
     public void mostrarFinalizoPartida() {
         System.out.println("La partida ha finalizado.");
+    }
+
+    private void mostrarComienzoRonda(int ronda) {
+        System.out.println("Comienza la ronda " + ronda);
     }
 
     public int preguntarCantJugadores() {
@@ -355,8 +388,10 @@ public class Consola implements ifVista{
     public boolean partida() throws RemoteException {
         boolean estadoPartida = true;
         while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
+            mostrarComienzoRonda(ctrl.getRonda());
             ctrl.iniciarCartasPartida();
             int i = 0;
+
             while (!ctrl.getCorteRonda()) {
                 ctrl.notificarTurno(i);
                 ctrl.notificarDesarrolloTurno(i);
@@ -368,7 +403,8 @@ public class Consola implements ifVista{
             ctrl.notificarRondaFinalizada();
             ctrl.partidaFinRonda();
         }
-        ctrl.determinarGanador();
+        ctrl.determinarGanador(); //al finalizar las rondas
+        mostrarFinalizoPartida();
         return estadoPartida;
     }
 
@@ -414,9 +450,9 @@ public class Consola implements ifVista{
                 mostrarInicioPartida();
                 break;
             }
-            case 7: {
-                ArrayList<ifJugador> js = (ArrayList<ifJugador>) actualizacion;
-                mostrarUltimoJugadorAgregado(js);
+            case NUEVO_JUGADOR: {
+                ifJugador js = (ifJugador) actualizacion;
+                mostrarUltimoJugadorAgregado(js.getNombre());
                 break;
             }
             case DESARROLLO_TURNO: {
@@ -426,13 +462,9 @@ public class Consola implements ifVista{
                 }
                 break;
             }
-            case 10: {
+            case GANADOR: {
                 String s = (String) actualizacion;
-                if (!ctrl.getEstadoPartida()) {
-                    mostrarGanador(s);
-                } else if (!s.equalsIgnoreCase(nombreVista)) {
-                    System.out.println("El jugador " + s + " ha iniciado una partida nueva");
-                }
+                mostrarGanador(s);
                 break;
             }
             case ROBO_CASTIGO: {
@@ -453,12 +485,13 @@ public class Consola implements ifVista{
                 jugadorHaRobadoConCastigo(nombreJugador);
                 break;
             }
-            case 14: {
-                System.out.println("Esta ronda ha finalizado.");
+            case RONDA_FINALIZADA: {
+                int ronda = (int) actualizacion;
+                System.out.println("La ronda " + ronda + " ha finalizado.");
                 System.out.println("--------------------------");
                 break;
             }
-            case 15: {
+            case PUNTOS_RONDA: {
                 int[] puntos = (int[]) actualizacion;
                 mostrarPuntosRonda(puntos);
                 break;
@@ -467,6 +500,13 @@ public class Consola implements ifVista{
                 mostrarRanking((Object[]) actualizacion);
                 break;
             }
+            case JUGADOR_INICIO_PARTIDA: {
+                String s = (String) actualizacion;
+                if (!s.equalsIgnoreCase(nombreVista)) {
+                    System.out.println("El jugador " + s + " ha iniciado una partida nueva");
+                }
+                break;
+        }
         }
 
     }

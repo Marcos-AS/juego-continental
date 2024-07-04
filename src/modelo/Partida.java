@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
-    private int ronda;
+    private int ronda = 1;
     private final ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo;
     private ArrayList<Carta> pozo;
@@ -17,7 +17,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
     //private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
-    private static final int CANT_TOTAL_RONDAS = 1; //para probar
+    private static final int CANT_TOTAL_RONDAS = 2; //para probar
     private boolean enCurso = false;
     private boolean corteRonda = false;
     @Serial
@@ -123,25 +123,25 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
 	@Override
     public void repartirCartas() throws RemoteException {
-//		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
-//		for(jugadorActual j: this.jugadoresActuales) {
-//			for(int i = 0; i < numCartasARepartir; i++) {
-//			    Carta c = this.eliminarDelMazo();
-//			 	j.agregarCarta(c);
-//			}
-//        }
-             jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
-             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
-             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
-             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
-             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
-             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
-             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
-             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
-             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
-             jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
-             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
-             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
+		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
+		for(jugadorActual j: this.jugadoresActuales) {
+			for(int i = 0; i < numCartasARepartir; i++) {
+			    Carta c = this.eliminarDelMazo();
+			 	j.agregarCarta(c);
+			}
+        }
+//             jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
+//             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
+//             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
+//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
+//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
+//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
+//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
+//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
+//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
+//             jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
+//             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
+//             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
 	}
 
     @Override
@@ -221,10 +221,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public int getRonda() {
         return ronda;
-    }
-
-    public void setRonda(int i) {
-        ronda = i;
     }
 
     public void incrementarRonda() {
