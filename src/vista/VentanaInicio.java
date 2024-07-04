@@ -588,4 +588,16 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
+
+    @Override
+    public int preguntarEnLosJuegosDeQueJugadorAcomodar() {
+        return 0;
+    };
+
+    @Override
+    public void mostrarJuegosJugador(int numJugador) {
+    };
+
+    @Override
+    public void mostrarAcomodoCarta() {};
 }

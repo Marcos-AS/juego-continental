@@ -56,6 +56,29 @@ public class Controlador implements IControladorRemoto {
         return juegosString;
     }
 
+    public void enviarJuegosEnMesa(int numJugador) throws RemoteException {
+        if (numJugador>getCantJugadoresPartida()-1) {
+            numJugador = 0;
+        }
+        for (int j = 0; j < getCantJugadoresPartida()-1; j++) {
+            vista.mostrarJuegosJugador(numJugador);
+            vista.mostrarJuegos(enviarJuegosJugador(numJugador));
+        }
+    }
+
+    private boolean hayJuegosEnMesa(int numJugador) throws RemoteException {
+        boolean hay = false;
+        int i = 0;
+        if (numJugador > getCantJugadoresPartida()-1) {
+            numJugador = 0;
+        }
+        while (!hay && i < getCantJugadoresPartida()-1) {
+            hay = !getJugadorPartida(numJugador).getPuedeBajar();
+            i++;
+        }
+        return hay;
+    }
+
     public void agregarNuevoJugador(String nombreJugador) throws RemoteException {
         vista.setNombreVista(nombreJugador);
         juego.agregarJugador(new Jugador(nombreJugador));
@@ -87,7 +110,18 @@ public class Controlador implements IControladorRemoto {
 
     public void acomodarEnJuegoPropio(int iCarta, int numJugador, ArrayList<ArrayList<String>> juegos, int numJuego) throws RemoteException {
         if(juego.acomodarCartaJuegoPropio(iCarta, numJugador, numJuego, getRonda())) {
+            vista.mostrarAcomodoCarta();
             vista.mostrarCartas(enviarJuegosJugador(numJugador).get(numJuego));
+        } else {
+            vista.mostrarNoPuedeAcomodarJuegoPropio();
+        }
+    }
+
+    public void acomodarEnJuegoAjeno(int iCarta, int numCarta, Palo paloCarta, int numJugador, int numJugadorAcomodar, int numJuego) throws RemoteException {
+        if (juego.acomodarCartaJuegoAjeno(iCarta, numCarta, paloCarta, numJugador, numJugadorAcomodar, numJuego, getRonda())) {
+            vista.mostrarAcomodoCarta();
+            vista.mostrarJuegosJugador(numJugadorAcomodar);
+            vista.mostrarJuegos(enviarJuegosJugador(numJugadorAcomodar));
         } else {
             vista.mostrarNoPuedeAcomodarJuegoPropio();
         }
@@ -180,6 +214,16 @@ public class Controlador implements IControladorRemoto {
                         vista.mostrarNoPuedeAcomodarJuegoPropio();
                     }
                     break;
+                case ifVista.ELECCION_ACOMODAR_JUEGO_AJENO:
+                    if (hayJuegosEnMesa(numJugador+1)) {
+                        enviarJuegosEnMesa(numJugador+1);
+                        int iCartaAcomodar = vista.preguntarCartaParaAcomodar();
+                        ifCarta c = getJugadorPartida(numJugador).getMano().get(iCartaAcomodar);
+                        int numJugadorAcomodar = vista.preguntarEnLosJuegosDeQueJugadorAcomodar();
+                        vista.mostrarJuegos(enviarJuegosJugador(numJugadorAcomodar));
+                        acomodarEnJuegoAjeno(iCartaAcomodar, c.getNumero(), c.getPalo(), numJugador, numJugadorAcomodar, vista.preguntarEnQueJuegoQuiereAcomodar()-1);
+                    }
+                    break;
                 case ifVista.ELECCION_BAJARSE:
                     if (juego.getPuedeBajar(numJugador)) {
                         bajarse(numJugador, vista.preguntarQueBajarParaJuego(vista.preguntarCantParaBajar()));
@@ -197,6 +241,9 @@ public class Controlador implements IControladorRemoto {
                     break;
                 case ifVista.ELECCION_VER_JUEGOS_BAJADOS:
                     vista.mostrarJuegos(enviarJuegosJugador(numJugador));
+                    break;
+                case ifVista.ELECCION_VER_JUEGOS_BAJADOS_MESA:
+                    enviarJuegosEnMesa(numJugador+1);
                     break;
             }
             if (juego.isManoEmpty(numJugador)) {

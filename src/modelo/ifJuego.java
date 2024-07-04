@@ -76,11 +76,21 @@ public interface ifJuego extends IObservableRemoto {
         int formaTrio = 1;
         //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         int esTrio = JUEGO_INVALIDO;
-        for (int i = 0; i < juego.size() - 1; i++) {
-            int numCarta = juego.get(i).getNumero();
-            int numCartaSig = juego.get(i + 1).getNumero();
-            if ((numCarta == numCartaSig) || numCarta == Juego.COMODIN || numCartaSig == Juego.COMODIN)
+        int i = 0;
+        int numCarta = juego.get(i).getNumero();
+        while (numCarta == Juego.COMODIN) {
+            i++;
+            formaTrio++;
+            numCarta = juego.get(i).getNumero();
+        }
+        while (i < juego.size()) {
+            int numCartaSig = juego.get(i).getNumero();
+            if (numCarta == numCartaSig || numCartaSig == Juego.COMODIN) {
                 formaTrio++;
+            } else {
+                formaTrio = 0;
+            }
+            i++;
         }
         if (formaTrio >= 3)
             esTrio = TRIO;
@@ -101,13 +111,27 @@ public interface ifJuego extends IObservableRemoto {
                 if (c.getNumero() == Juego.COMODIN) {
                     i++;
                 }
-                else if (c.getNumero() == cartaAcomodar.getNumero()) {
+                else if (c.getNumero() != cartaAcomodar.getNumero()) {
                     continuar = false;
                 } else {
                     i++;
                 }
             }
             if (!continuar) resp = TRIO;
+        }
+        return resp;
+    }
+
+    static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego) throws RemoteException {
+        int resp = JUEGO_INVALIDO;
+        if (comprobarMismoPalo(juego)) {
+            Carta cartaAcomodar = juego.get(juego.size()-1);
+            Carta ultimaCarta = juego.get(juego.size()-2);
+            Carta primeraCarta = juego.get(0);
+            if (cartaAcomodar.getNumero() == ultimaCarta.getNumero()+1 ||
+            cartaAcomodar.getNumero() == primeraCarta.getNumero()-1) {
+                resp = ESCALERA;
+            }
         }
         return resp;
     }
@@ -266,4 +290,5 @@ public interface ifJuego extends IObservableRemoto {
     void tirarAlPozo(int numJugador, int eleccionCarta) throws RemoteException;
     void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException;
     boolean acomodarCartaJuegoPropio(int iCarta, int numJugador, int numJuego, int ronda) throws RemoteException;
+    boolean acomodarCartaJuegoAjeno(int iCarta, int numCarta,  Palo paloCarta, int numJugador, int numJugadorAcomodar, int numJuego, int ronda) throws RemoteException;
 }

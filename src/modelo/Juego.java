@@ -101,6 +101,15 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		return partidaActual.getJugadoresActuales().get(numJugador).acomodarCartaJuegoPropio(iCarta,numJuego,ronda);
 	}
 
+	public boolean acomodarCartaJuegoAjeno(int iCarta, int numCarta, Palo paloCarta, int numJugador, int numJugadorAcomodar, int numJuego, int ronda) throws RemoteException {
+		boolean acomodo = partidaActual.getJugadoresActuales().get(numJugadorAcomodar).comprobarAcomodarCarta(numCarta,paloCarta,numJuego,ronda);
+		if (acomodo) {
+			Carta c = partidaActual.getJugadoresActuales().get(numJugador).getCartaFromMano(iCarta);
+			partidaActual.getJugadoresActuales().get(numJugadorAcomodar).getJuegos().get(numJuego).add(c);
+		}
+		return acomodo;
+	}
+
 	public void notificarDesarrolloTurno(int numJugador) throws RemoteException {
 		int[] numJugadorYNotif = new int[2];
 		numJugadorYNotif[0] = numJugador;

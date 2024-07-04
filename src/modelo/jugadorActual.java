@@ -115,9 +115,29 @@ public class jugadorActual extends Jugador implements Serializable {
 		return faltante;
 	}
 
+	public boolean comprobarAcomodarCarta(int numCarta, Palo paloCarta, int numJuego, int ronda) throws RemoteException {
+		boolean acomodo = false;
+		ArrayList<Carta> juegoElegido = (ArrayList<Carta>) juegos.get(numJuego).clone();
+		Carta c = new Carta(numCarta, paloCarta);
+		juegoElegido.add(c);
+		int tipoJuego = ifJuego.comprobarJuego(juegoElegido, ronda);
+		if(tipoJuego != ifJuego.JUEGO_INVALIDO) {
+			if (tipoJuego == ifJuego.TRIO) {
+				if (ifJuego.comprobarAcomodarEnTrio(juegoElegido) == ifJuego.TRIO) {
+					acomodo = true;
+				}
+			} else {
+				if (ifJuego.comprobarAcomodarEnEscalera(juegoElegido) == ifJuego.ESCALERA) {
+					acomodo = true;
+				}
+			}
+		}
+		return acomodo;
+	}
+
 	public boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException {
 		boolean acomodo = false;
-		ArrayList<Carta> juegoElegido = juegos.get(numJuego);
+		ArrayList<Carta> juegoElegido = (ArrayList<Carta>) juegos.get(numJuego).clone();
 		juegoElegido.add(mano.get(numCarta));
 		int tipoJuego = ifJuego.comprobarJuego(juegoElegido, ronda);
 		if(tipoJuego != ifJuego.JUEGO_INVALIDO) {

@@ -37,6 +37,7 @@ public class Consola implements ifVista{
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
         int numJuego = 1;
+        if (juegos.isEmpty()) System.out.println("No hay juegos bajados.");
         for (ArrayList<String> juego : juegos) {
             mostrarJuego(numJuego);
             mostrarCartas(juego);
@@ -94,6 +95,13 @@ public class Consola implements ifVista{
         return eleccion;
     }
 
+    public int preguntarEnLosJuegosDeQueJugadorAcomodar() {
+        System.out.println("Ingrese el número de jugador en cuyo juegos bajados quiere acomodar: ");
+        int eleccion = s.nextInt();
+        System.out.println();
+        return eleccion;
+    }
+
     @Override
     public String preguntarNombreNuevoJugador() {
         System.out.println("Indique su nombre:");
@@ -122,7 +130,9 @@ public class Consola implements ifVista{
   		System.out.println("3 - Ordenar cartas");
         System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
         System.out.println("5 - Acomodar en un juego bajado propio");
-        System.out.println("6 - Ver juegos bajados");
+        System.out.println("6 - Ver juegos bajados propios");
+        System.out.println("7 - Acomodar en un juego bajado ajeno");
+        System.out.println("8 - Ver juegos bajados de todos los jugadores");
         System.out.println("-1 - Salir y guardar partida");
         int eleccion = s.nextInt();
         System.out.println();
@@ -236,6 +246,14 @@ public class Consola implements ifVista{
         System.out.println("No puede cortar");
     }
 
+    public void mostrarAcomodoCarta() {
+        System.out.println("Se acomodó la carta en el juego.");
+    }
+
+    public void mostrarJuegosJugador(int numJugador) {
+        System.out.println("Juegos del jugador " + numJugador + ": ");
+    }
+
     public void mostrarCarta(String carta) {
         System.out.println(carta);
     }
@@ -247,7 +265,7 @@ public class Consola implements ifVista{
 
     public void mostrarNoPuedeBajarJuego(int i) {
         if (i == YA_NO_PUEDE_BAJAR) {
-            System.out.println("No puede volver a bajar juegos en esta  (tampoco robar con castigo).");
+            System.out.println("No puede volver a bajar juegos en esta ronda (tampoco robar con castigo).");
         } else {
             System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
         }
@@ -293,7 +311,7 @@ public class Consola implements ifVista{
 	}
 
     public void mostrarNoPuedeAcomodarJuegoPropio() {
-        System.out.println("No puede acomodar porque no tiene juegos bajados o porque la carta que desea acomodar no hace juego con el juego elegido.");
+        System.out.println("No puede acomodar porque no tiene o no hay juegos bajados o porque la carta que desea acomodar no hace juego con el juego elegido.");
     }
 
     public void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {

@@ -13,6 +13,8 @@ public interface ifVista {
     int ELECCION_CORTAR = 4;
     int ELECCION_ACOMODAR_JUEGO_PROPIO = 5;
     int ELECCION_VER_JUEGOS_BAJADOS = 6;
+    int ELECCION_ACOMODAR_JUEGO_AJENO = 7;
+    int ELECCION_VER_JUEGOS_BAJADOS_MESA = 8;
     int ELECCION_ROBAR_DEL_MAZO = 1;
     int ELECCION_ROBAR_DEL_POZO = 2;
 
@@ -86,6 +88,8 @@ public interface ifVista {
     void mostrarNoPuedeBajarJuego(int i);
     void mostrarNoPuedeAcomodarJuegoPropio();
     void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar);
+    void mostrarAcomodoCarta();
+    void mostrarJuegosJugador(int numJugador);
     int menuBajar();
     int preguntarQueBajarParaPozo(int cantCartas);
     static int getEleccionRobarDelMazo() {
@@ -105,5 +109,6 @@ public interface ifVista {
     int[] preguntarParaOrdenarCartas();
 
     int preguntarCantParaBajar();
+    int preguntarEnLosJuegosDeQueJugadorAcomodar();
     boolean partida() throws RemoteException;
 }
