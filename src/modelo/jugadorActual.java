@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class jugadorActual extends Jugador implements Serializable {
-	private int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
     private ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
@@ -14,17 +13,9 @@ public class jugadorActual extends Jugador implements Serializable {
 	private boolean puedeBajar = true;
 	private boolean turnoActual = false;
 	private boolean roboConCastigo = false;
+	private boolean roboDelMazo = false;
 
 	public jugadorActual() {}
-
-    //PRIVATE -------------------------------------------------------------
-    private Partida getPartidaActual() {
-        Partida partActual = null;
-        if (!partidas.isEmpty()) {
-            partActual = partidas.get(partidas.size()-1);
-        }
-        return partActual;
-    }
 
 	public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
 		ArrayList<Carta> juego = new ArrayList<>();
@@ -165,10 +156,6 @@ public class jugadorActual extends Jugador implements Serializable {
         this.nombre = nombre;
     }
 
-	public int getNumeroJugador() {
-		return numeroJugador;
-	}
-
     public void setNumeroJugador(int num) {
         numeroJugador = num;
     }
@@ -220,5 +207,11 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	public void setRoboConCastigo(boolean valor) {
 		roboConCastigo = valor;
+	}
+
+	public boolean getRoboDelMazo() { return roboDelMazo; }
+
+	public void setRoboDelMazo(boolean valor) {
+		roboDelMazo = valor;
 	}
 }

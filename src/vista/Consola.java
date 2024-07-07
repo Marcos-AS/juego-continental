@@ -20,10 +20,22 @@ public class Consola implements ifVista{
     private static final int RONDA_FINALIZADA = 14;
     private static final int PUNTOS_RONDA = 15;
     private static final int JUGADOR_INICIO_PARTIDA = 17;
+    private static final int ROBO = 18;
+    private static final int COMIENZA_PARTIDA = 19;
     private static final int SALIR_DEL_JUEGO = -1;
     private static final int YA_NO_PUEDE_BAJAR = 1;
 
     public Consola(){}
+
+    public void mostrarComienzaPartida(ArrayList<ifJugador> jugadores) {
+        System.out.println("\n*******************\nCOMIENZA LA PARTIDA\nJugadores:\n");
+        int i = 1;
+        for (ifJugador j : jugadores) {
+            System.out.println(i + "- " + j.getNombre());
+            i++;
+        }
+        System.out.println("\n*******************\n");
+    }
 
     public int preguntarCantParaBajar() {
         int numCartas;
@@ -63,12 +75,21 @@ public class Consola implements ifVista{
         return cartasABajar;
 	}
 
-    public int[] preguntarParaOrdenarCartas() {
+    public int[] preguntarParaOrdenarCartas(int cantCartas) {
         int[] elecciones = new int[2];
-        System.out.println("Elija el número de carta que quiere mover: ");
-        elecciones[0] = s.nextInt();
-        System.out.println("Elija el número de destino al que quiere mover la carta: ");
-        elecciones[1] = s.nextInt();
+        int cartaSeleccion = -1;
+        while (cartaSeleccion < 0 || cartaSeleccion > cantCartas-1) {
+            System.out.println("Elija el número de carta que quiere mover: ");
+            cartaSeleccion = s.nextInt();
+        }
+        elecciones[0] = cartaSeleccion;
+
+        cartaSeleccion = -1;
+        while (cartaSeleccion < 0 || cartaSeleccion > cantCartas-1) {
+            System.out.println("Elija el número de destino al que quiere mover la carta: ");
+            cartaSeleccion = s.nextInt();
+        }
+        elecciones[1] = cartaSeleccion;
         System.out.println();
         return elecciones;
     }
@@ -128,7 +149,7 @@ public class Consola implements ifVista{
     //MENUS-------------------------------
     public int menuRobar() {
 		System.out.println("----------------------------------------");
-		System.out.println("Quiere robar del pozo o robar del mazo?");
+		System.out.println("Quiere robar del mazo o robar del pozo?");
 		System.out.println("1 - Robar del mazo");
 		System.out.println("2 - Robar del pozo");
         System.out.println("-1 - Salir y guardar partida");
@@ -312,7 +333,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarPuedeRobarConCastigo(String nombreJugador) {
-        System.out.println("El jugador " + nombreJugador + " puede robar con castigo.");
+        System.out.println("----------\nEl jugador " + nombreJugador + " puede robar con castigo.\n----------");
     }
 
     public void jugadorHaRobadoConCastigo(String nombreJugador) {
@@ -385,8 +406,17 @@ public class Consola implements ifVista{
         }
     }
 
+    private boolean preguntarSiQuiereRobarCastigo() throws RemoteException {
+        int eleccion = menuRobarDelPozo();
+        if (eleccion == SALIR_DEL_JUEGO) {
+            ctrl.guardarPartida();
+        }
+        return eleccion == ifVista.ELECCION_ROBAR_DEL_POZO;
+    }
+
     public boolean partida() throws RemoteException {
         boolean estadoPartida = true;
+        ctrl.notificarComienzoPartida();
         while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
             mostrarComienzoRonda(ctrl.getRonda());
             ctrl.iniciarCartasPartida();
@@ -394,6 +424,11 @@ public class Consola implements ifVista{
 
             while (!ctrl.getCorteRonda()) {
                 ctrl.notificarTurno(i);
+                ctrl.notificarRobo(i);
+                if (ctrl.getRoboDelMazo(i)) {
+                  ctrl.notificarRoboConCastigo(i);
+                  ctrl.resetearRoboConCastigo();
+                }
                 ctrl.notificarDesarrolloTurno(i);
                 i++;
                 if (i>ctrl.getCantJugadoresPartida()-1) {
@@ -406,24 +441,6 @@ public class Consola implements ifVista{
         ctrl.determinarGanador(); //al finalizar las rondas
         mostrarFinalizoPartida();
         return estadoPartida;
-    }
-
-    private boolean preguntarSiQuiereRobarCastigo() throws RemoteException {
-        int eleccion = menuRobarDelPozo();
-        if (eleccion == SALIR_DEL_JUEGO) {
-            ctrl.guardarPartida();
-        }
-        return eleccion == ifVista.ELECCION_ROBAR_DEL_POZO;
-    }
-
-    //GETTERS Y SETTERS---------------------------
-
-    public String getNombreVista() {
-        return nombreVista;
-    }
-
-    public void setNombreVista(String i) {
-        nombreVista = i;
     }
 
     //la invoca el metodo actualizar del controlador
@@ -442,7 +459,7 @@ public class Consola implements ifVista{
                 String nombreJugador = jA.getNombre();
                 mostrarTurnoJugador(nombreJugador);
                 if (nombreJugador.equals(nombreVista)) {
-                    ctrl.setTurno(jA.getNumeroJugador(), true);
+                    ctrl.setTurno(indice, true);
                 }
                 break;
             }
@@ -453,6 +470,13 @@ public class Consola implements ifVista{
             case NUEVO_JUGADOR: {
                 ifJugador js = (ifJugador) actualizacion;
                 mostrarUltimoJugadorAgregado(js.getNombre());
+                break;
+            }
+            case ROBO: {
+                ifJugador j = (ifJugador) actualizacion;
+                if (j.getNombre().equals(nombreVista)) {
+                    ctrl.desarrolloRobo(j.getNumeroJugador());
+                }
                 break;
             }
             case DESARROLLO_TURNO: {
@@ -468,14 +492,27 @@ public class Consola implements ifVista{
                 break;
             }
             case ROBO_CASTIGO: {
-                ifJugador j = (ifJugador) actualizacion; //obtiene jugador que puede robar
-                mostrarPuedeRobarConCastigo(j.getNombre());
-                if (nombreVista.equals(j.getNombre())) {
-                    mostrarCartas(ctrl.enviarManoJugador(j.getNumeroJugador()));
-                    if (preguntarSiQuiereRobarCastigo()) {
-                        ctrl.robarConCastigo(j.getNumeroJugador());
-                        ctrl.haRobadoConCastigo(j.getNumeroJugador());
-                        j.setRoboConCastigo(true);
+                int numJugadorRoboCastigo = ctrl.getNumJugadorRoboCastigo();
+                if (!ctrl.getRoboConCastigo(numJugadorRoboCastigo)) {
+                    boolean roboConCastigo = false;
+                    ifJugador j = ctrl.getJugadorPartida(numJugadorRoboCastigo);
+                    mostrarPuedeRobarConCastigo(j.getNombre());
+                    if (nombreVista.equals(j.getNombre())) {
+                        if (ctrl.getPuedeBajar(numJugadorRoboCastigo)) {
+                            mostrarCartas(ctrl.enviarManoJugador(numJugadorRoboCastigo));
+                            if (preguntarSiQuiereRobarCastigo()) {
+                                ctrl.robarConCastigo(numJugadorRoboCastigo);
+                                ctrl.notificarHaRobadoConCastigo(numJugadorRoboCastigo);
+                                ctrl.setRoboConCastigo(numJugadorRoboCastigo, true);
+                                roboConCastigo = true;
+                            }
+                        }
+                        if (!roboConCastigo) {
+                            numJugadorRoboCastigo++;
+                            if (numJugadorRoboCastigo > ctrl.getCantJugadoresPartida() - 1)
+                                numJugadorRoboCastigo = 0;
+                            ctrl.setNumJugadorRoboCastigo(numJugadorRoboCastigo);
+                        }
                     }
                 }
                 break;
@@ -506,13 +543,26 @@ public class Consola implements ifVista{
                     System.out.println("El jugador " + s + " ha iniciado una partida nueva");
                 }
                 break;
+            }
+            case COMIENZA_PARTIDA: {
+                ArrayList<ifJugador> jugadores = (ArrayList<ifJugador>) actualizacion;
+                mostrarComienzaPartida(jugadores);
+                break;
+            }
         }
-        }
-
     }
+
 
     @Override
     public void setControlador(Controlador ctrl) {
         this.ctrl = ctrl;
+    }
+
+    public String getNombreVista() {
+        return nombreVista;
+    }
+
+    public void setNombreVista(String i) {
+        nombreVista = i;
     }
 }

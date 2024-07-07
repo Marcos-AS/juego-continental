@@ -18,6 +18,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private static final int NOTIFICAR_PUEDE_ROBO_CASTIGO = 11;
 	private static final int NOTIFICAR_HUBO_ROBO_CASTIGO = 12;
 	private static final int NOTIFICAR_RONDA_FINALIZADA = 14;
+	private static final int NOTIFICAR_ROBO = 18;
 	private static final int NOTIFICAR_VENTANA_NUEVA_PARTIDA = 27;
 	private static final int NUEVA_PARTIDA = 6;
 	private static final int ACTUALIZAR_PARTIDA = 2;
@@ -28,6 +29,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private Partida partidaActual;
 	private final Serializador srl = new Serializador("partidas.dat");
 	private final Serializador srlRanking = new Serializador("jugadores.dat");
+	private int numJugadorRoboCastigo;
 
 	//singleton
 	public static Juego getInstancia() throws RemoteException {
@@ -111,7 +113,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	public void notificarDesarrolloTurno(int numJugador) throws RemoteException {
-		int[] numJugadorYNotif = new int[2];
+		Object[] numJugadorYNotif = new Object[2];
 		numJugadorYNotif[0] = numJugador;
 		numJugadorYNotif[1] = NOTIFICAR_DESARROLLO_TURNO;
 		notificarObservadores(numJugadorYNotif);
@@ -136,7 +138,8 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void notificarPuntos() throws RemoteException {
 		int[] puntos = partidaActual.getPuntosJugadores();
-		notificarObservadores(puntos);
+		Object cambio = puntos;
+		notificarObservadores(cambio);
 		notificarObservadores();
 	}
 
@@ -150,15 +153,15 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	}
 
-	public void notificarRoboConCastigo(int iJugador) throws RemoteException{
-		Object[] cambio = new Object[2];
-		cambio[0] = getPartidaActual().getJugadoresActuales().get(iJugador);
-		cambio[1] = NOTIFICAR_PUEDE_ROBO_CASTIGO;
-		notificarObservadores(cambio);
+	public void notificarRobo(int numJugador) throws RemoteException {
+		Object[] notif = new Object[2];
+		notif[0] = numJugador;
+		notif[1] = NOTIFICAR_ROBO;
+		notificarObservadores(notif);
 	}
 
 	public void notificarHaRobadoConCastigo(int numJ) throws RemoteException {
-		int[] cambio = new int[2];
+		Object[] cambio = new Object[2];
 		cambio[0] = numJ;
 		cambio[1] = NOTIFICAR_HUBO_ROBO_CASTIGO;
 		notificarObservadores(cambio); //notifica que la vista i robo con castigo
@@ -230,6 +233,16 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		partidaActual.getJugadoresActuales().get(numJugador).setPuedeBajar();
 	}
 
+	public void setRoboConCastigo(int numJugador, boolean valor) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).setRoboConCastigo(valor);
+	}
+
+	public void resetearRoboConCastigo() throws RemoteException {
+		for (jugadorActual j : partidaActual.getJugadoresActuales()) {
+			j.setRoboConCastigo(false);
+		}
+	}
+
 	public int getCantJugadoresPartida() throws RemoteException {
 		return partidaActual.getNumJugadores();
 	}
@@ -244,5 +257,21 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public boolean isManoEmpty(int numJugador) throws RemoteException {
 		return partidaActual.getJugadoresActuales().get(numJugador).isManoEmpty();
+	}
+
+	public void setRoboDelMazo(int numJugador, boolean valor) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).setRoboDelMazo(valor);
+	}
+
+	public boolean getRoboDelMazo(int numJugador) throws RemoteException {
+		return partidaActual.getJugadoresActuales().get(numJugador).getRoboDelMazo();
+	}
+
+	public int getNumJugadorRoboCastigo() throws RemoteException {
+		return numJugadorRoboCastigo;
+	}
+
+	public void setNumJugadorRoboCastigo(int numJugador) throws RemoteException {
+		numJugadorRoboCastigo = numJugador;
 	}
 }

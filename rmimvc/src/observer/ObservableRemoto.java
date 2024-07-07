@@ -38,4 +38,12 @@ public abstract class ObservableRemoto implements Remote, IObservableRemoto {
 	public void notificarObservadores() throws RemoteException {
 		this.notificarObservadores(null);
 	}
+
+	@Override
+	public void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo) throws RemoteException {
+		for (int i = 0; i < observadores.size()-1; i++) {
+			observadores.get(jugadoresQuePuedenRobarConCastigo[i]).actualizar(this, jugadoresQuePuedenRobarConCastigo);
+		}
+	}
+
 }

@@ -110,7 +110,7 @@ public interface ifVista {
     boolean preguntarSiQuiereSeguirBajandoJuegos();
     int menuRobarDelPozo();
     void nuevaVentana();
-    int[] preguntarParaOrdenarCartas();
+    int[] preguntarParaOrdenarCartas(int cantCartas);
 
     int preguntarCantParaBajar();
     int preguntarEnLosJuegosDeQueJugadorAcomodar();

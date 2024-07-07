@@ -38,7 +38,7 @@ public interface IObservableRemoto extends Remote {
 	 * @see Remote
 	 * @see RemoteException
 	 */
-	public void notificarObservadores(Object obj) throws RemoteException;
+	void notificarObservadores(Object obj) throws RemoteException;
 
 	/**
 	 * Notifica a cada uno de los observadores de un cambio de estado.
@@ -47,7 +47,8 @@ public interface IObservableRemoto extends Remote {
 	 * @see Remote
 	 * @see RemoteException
 	 */
-	public void notificarObservadores() throws RemoteException;
+	void notificarObservadores() throws RemoteException;
+	void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo) throws RemoteException;
 
 
 }

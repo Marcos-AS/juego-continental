@@ -365,7 +365,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     }
 
     @Override
-    public int[] preguntarParaOrdenarCartas() {
+    public int[] preguntarParaOrdenarCartas(int cantCartas) {
         return new int[0];
     }
 

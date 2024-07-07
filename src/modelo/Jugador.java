@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class Jugador implements Serializable, ifJugador {
     protected String nombre;
+    protected int numeroJugador;
     protected ArrayList<Partida> partidas = new ArrayList<>();
     private int puntosAlFinalizar;
 
@@ -81,7 +82,7 @@ public class Jugador implements Serializable, ifJugador {
 
     @Override
     public int getNumeroJugador() {
-        return 0;
+        return numeroJugador;
     }
 
     @Override

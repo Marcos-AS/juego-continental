@@ -17,7 +17,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
     //private static final int BARAJAS_MAS_6_JUGADORES = 4;
     private static final int NUM_COMODINES_POR_BARAJA = 2;
-    private static final int CANT_TOTAL_RONDAS = 2; //para probar
+    private static final int CANT_TOTAL_RONDAS = 1; //para probar
     private boolean enCurso = false;
     private boolean corteRonda = false;
     @Serial
@@ -26,9 +26,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     public Partida() {}
 
-//PRIVATE ----------------------------------------------------
-
-    //PUBLIC ----------------------------------------------------
     @Override
     public int determinarNumBarajas() {
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
@@ -93,7 +90,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         nuevoJugador.sumarPartida(this);
         nuevoJugador.setNumeroJugador(jugadoresActuales.size());
 		jugadoresActuales.add(nuevoJugador);
-        notificarObservadores(8);
 	}
 
     @Override

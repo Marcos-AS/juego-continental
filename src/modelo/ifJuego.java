@@ -223,8 +223,6 @@ public interface ifJuego extends IObservableRemoto {
 
     void agregarJugadorAPartidaActual(String nombreJugador) throws RemoteException;
 
-    void notificarRoboConCastigo(int iJugador) throws RemoteException;
-
     void notificarHaRobadoConCastigo(int numJ) throws RemoteException;
 
     void guardarPartida() throws RemoteException;
@@ -249,6 +247,8 @@ public interface ifJuego extends IObservableRemoto {
     Partida getPartidaActual() throws RemoteException;
 
     void setPartidaActual(Serializador srl) throws RemoteException;
+
+    void setRoboConCastigo(int numJugador, boolean valor) throws RemoteException;
 
     void crearPartida(String nombreVista, int cantJugadores) throws RemoteException;
 
@@ -278,6 +278,7 @@ public interface ifJuego extends IObservableRemoto {
     void setTurno(int numJugador, boolean valor) throws RemoteException;
     boolean getTurno(int numJugador) throws RemoteException;
     boolean getRoboConCastigo(int numJugador) throws RemoteException;
+    void resetearRoboConCastigo() throws RemoteException;
     void ordenarCartasEnMano(int numJugador, int[] cartas) throws RemoteException;
     void robarDelPozo(int numJugador) throws RemoteException;
     void robarDelMazo(int numJugador) throws RemoteException;
@@ -288,4 +289,9 @@ public interface ifJuego extends IObservableRemoto {
     void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException;
     boolean acomodarCartaJuegoPropio(int iCarta, int numJugador, int numJuego, int ronda) throws RemoteException;
     boolean acomodarCartaJuegoAjeno(int iCarta, int numCarta,  Palo paloCarta, int numJugador, int numJugadorAcomodar, int numJuego, int ronda) throws RemoteException;
+    void notificarRobo(int numJugador) throws RemoteException;
+    void setRoboDelMazo(int numJugador, boolean valor) throws RemoteException;
+    boolean getRoboDelMazo(int numJugador) throws RemoteException;
+    int getNumJugadorRoboCastigo() throws RemoteException;
+    void setNumJugadorRoboCastigo(int numJugador) throws RemoteException;
 }
