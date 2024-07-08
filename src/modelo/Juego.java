@@ -208,6 +208,23 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		srl.addOneObject(partidaActual);
 	}
 
+	public void ponerJugadoresEnOrden() throws RemoteException {
+		ArrayList<jugadorActual> jugadores = partidaActual.getJugadoresActuales();
+		ArrayList<jugadorActual> jugadoresNuevo = new ArrayList<>();
+		int[] numJugadores = new int[getCantJugadoresPartida()];
+		int i = 0;
+		for (jugadorActual j : jugadores) {
+			int numJugador = j.getNumeroJugador();
+			numJugadores[i] = numJugador;
+			i++;
+		}
+
+		for (int num : numJugadores) {
+			jugadoresNuevo.add(jugadores.get(num));
+		}
+		partidaActual.setJugadoresActuales(jugadoresNuevo);
+	}
+
 	//GETTERS Y SETTERS------------------------------------------------------------
 	public Jugador getJugador(String nombreJugador) throws RemoteException {
 		boolean encontrado = false;

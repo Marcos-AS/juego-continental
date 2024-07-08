@@ -302,4 +302,5 @@ public interface ifJuego extends IObservableRemoto {
     int getNumJugadorQueEmpiezaRonda() throws RemoteException;
     void setNumJugadorQueEmpiezaRonda(int num) throws RemoteException;
     void incNumJugadorQueEmpiezaRonda() throws RemoteException;
+    void ponerJugadoresEnOrden() throws RemoteException;
 }

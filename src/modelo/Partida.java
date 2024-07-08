@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     private int ronda = 1;
-    private final ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
+    private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private ArrayList<Carta> mazo;
     private ArrayList<Carta> pozo;
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
@@ -142,12 +142,12 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
              jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
              jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
              jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
-             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.PICAS));
-             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.DIAMANTES));
-             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.CORAZONES));
-             jugadoresActuales.get(2).agregarCarta(new Carta(-1, Palo.COMODIN));
-             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.PICAS));
-             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.TREBOL));
+//             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.PICAS));
+//             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.DIAMANTES));
+//             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.CORAZONES));
+//             jugadoresActuales.get(2).agregarCarta(new Carta(-1, Palo.COMODIN));
+//             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.PICAS));
+//             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.TREBOL));
 	}
 
     @Override
@@ -223,6 +223,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public ArrayList<jugadorActual> getJugadoresActuales() {
         return jugadoresActuales;
+    }
+
+    public void setJugadoresActuales(ArrayList<jugadorActual> jugadores) {
+        jugadoresActuales = jugadores;
     }
 
     @Override
