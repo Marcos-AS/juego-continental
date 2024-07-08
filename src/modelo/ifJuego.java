@@ -1,6 +1,7 @@
 package src.modelo;
 
 import rmimvc.src.observer.IObservableRemoto;
+import rmimvc.src.observer.IObservadorRemoto;
 import src.serializacion.Serializador;
 
 import java.rmi.RemoteException;
@@ -295,4 +296,10 @@ public interface ifJuego extends IObservableRemoto {
     int getNumJugadorRoboCastigo() throws RemoteException;
     void setNumJugadorRoboCastigo(int numJugador) throws RemoteException;
     void notificarCorteRonda(int numJugador) throws RemoteException;
+    void removerObservadores() throws RemoteException;
+    int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
+    void setNumJugador(int numJugadorActual, int numJugadorNuevo) throws RemoteException;
+    int getNumJugadorQueEmpiezaRonda() throws RemoteException;
+    void setNumJugadorQueEmpiezaRonda(int num) throws RemoteException;
+    void incNumJugadorQueEmpiezaRonda() throws RemoteException;
 }

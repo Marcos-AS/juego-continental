@@ -1,8 +1,8 @@
 package src.modelo;
 
+import rmimvc.src.observer.IObservadorRemoto;
 import rmimvc.src.observer.ObservableRemoto;
 import src.serializacion.Serializador;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -29,6 +29,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private final Serializador srl = new Serializador("partidas.dat");
 	private final Serializador srlRanking = new Serializador("jugadores.dat");
 	private int numJugadorRoboCastigo;
+	private int numJugadorQueEmpiezaRonda;
 
 	//singleton
 	public static Juego getInstancia() throws RemoteException {
@@ -37,6 +38,21 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	private Juego() {
+	}
+
+	public void removerObservadores() throws RemoteException {
+		int cantObservadores = getObservadores().size();
+		for (int i = cantObservadores-1; i >= 0; i--) {
+			removerObservador(getObservadores().get(i));
+		}
+	}
+
+	public int getObservadorIndex(IObservadorRemoto o) throws RemoteException {
+		return getObservadores().indexOf(o);
+	}
+
+	public void setNumJugador(int numJugadorActual, int numJugadorNuevo) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugadorActual).setNumeroJugador(numJugadorNuevo);
 	}
 
 	public void agregarJugador(String nombreJugador) throws RemoteException {
@@ -277,5 +293,19 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void setNumJugadorRoboCastigo(int numJugador) throws RemoteException {
 		numJugadorRoboCastigo = numJugador;
+	}
+
+	public int getNumJugadorQueEmpiezaRonda() throws RemoteException {
+		return numJugadorQueEmpiezaRonda;
+	}
+
+	public void setNumJugadorQueEmpiezaRonda(int num) throws RemoteException {
+		numJugadorQueEmpiezaRonda = num;
+	}
+
+	public void incNumJugadorQueEmpiezaRonda() throws RemoteException {
+		int num = numJugadorQueEmpiezaRonda+1;
+		if (num>getCantJugadoresPartida()-1) num = 0;
+		numJugadorQueEmpiezaRonda = num;
 	}
 }

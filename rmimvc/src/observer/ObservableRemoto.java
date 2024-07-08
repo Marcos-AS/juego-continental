@@ -12,32 +12,37 @@ import java.util.ArrayList;
  *
  */
 public abstract class ObservableRemoto implements Remote, IObservableRemoto {
-	private ArrayList<IObservadorRemoto> observadores;
+	private ArrayList<IObservadorRemoto> observadores;// = new ArrayList<>();
 	
 	public ObservableRemoto() {
-		this.observadores = new ArrayList<>();
+		observadores = new ArrayList<>();
 	}
 
 	@Override
 	public void agregarObservador(IObservadorRemoto o) throws RemoteException {
-		this.observadores.add(o);
+		observadores.add(o);
 	}
 
 	@Override
 	public void removerObservador(IObservadorRemoto o) throws RemoteException {
-		this.observadores.remove(o);
+		observadores.remove(o);
+	}
+
+	protected ArrayList<IObservadorRemoto> getObservadores() throws RemoteException {
+		return observadores;
 	}
 
 	@Override
 	public void notificarObservadores(Object obj) throws RemoteException {
-		for (IObservadorRemoto o: this.observadores)
+		for (IObservadorRemoto o: observadores)
 			o.actualizar(this, obj);
 	}
 
 	@Override
 	public void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo) throws RemoteException {
 		for (int i = 0; i < observadores.size()-1; i++) {
-			observadores.get(jugadoresQuePuedenRobarConCastigo[i]).actualizar(this, jugadoresQuePuedenRobarConCastigo);
+			IObservadorRemoto o = observadores.get(jugadoresQuePuedenRobarConCastigo[i]);
+			o.actualizar(this, jugadoresQuePuedenRobarConCastigo);
 		}
 	}
 

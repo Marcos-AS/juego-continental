@@ -33,10 +33,12 @@ public class Controlador implements IControladorRemoto {
     private static final int NOTIFICACION_COMIENZO_PARTIDA = 19;
     private static final int NOTIFICACION_COMIENZO_RONDA = 20;
     private static final int NOTIFICACION_CORTE_RONDA = 21;
+    private static final int NOTIFICACION_AGREGAR_OBSERVADOR = 22;
     private static final int JUEGO_INVALIDO = 2;
     private static final int YA_NO_PUEDE_BAJAR = 1;
     private static final int CANT_MIN_JUGADORES = 0;
     private static final int CANT_MAX_JUGADORES = 5;
+    private int partidasJugadas = 0;
 
 
     public Controlador(ifVista vista) {
@@ -68,10 +70,10 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void enviarJuegosEnMesa(int numJugador) throws RemoteException {
-        if (numJugador>getCantJugadoresPartida()-1) {
-            numJugador = 0;
-        }
         for (int j = 0; j < getCantJugadoresPartida()-1; j++) {
+            if (numJugador>getCantJugadoresPartida()-1) {
+                numJugador = 0;
+            }
             vista.mostrarJuegosJugador(numJugador);
             vista.mostrarJuegos(enviarJuegosJugador(numJugador));
             numJugador++;
@@ -99,7 +101,19 @@ public class Controlador implements IControladorRemoto {
 
     //crea la partida y la inicia si hay al menos 2 jugadores
     public void crearPartida(ifVista vista, int cantJugadores) throws RemoteException {
+        if (partidasJugadas>0)
+            juego.agregarObservador(this); //porque al terminar la partida se remueven los observadores
+        int observadorIndex = juego.getObservadorIndex(this);
+        juego.setNumJugadorQueEmpiezaRonda(observadorIndex);
         juego.crearPartida(vista.getNombreVista(), cantJugadores); //setea partida en juego y en ctrl
+    }
+
+    public int getNumJugadorQueEmpiezaRonda() throws RemoteException {
+        return juego.getNumJugadorQueEmpiezaRonda();
+    }
+
+    public void incNumJugadorQueEmpiezaRonda() throws RemoteException {
+        juego.incNumJugadorQueEmpiezaRonda();
     }
 
     public void guardarPartida() throws RemoteException {
@@ -119,7 +133,8 @@ public class Controlador implements IControladorRemoto {
         }
         if (puedeCortar) {
             if(getJugadorPartida(numJugador).getMano().size() <= 1) {
-                juego.tirarAlPozo(numJugador,0);
+                if (getJugadorPartida(numJugador).getMano().size() == 1)
+                    juego.tirarAlPozo(numJugador,0);
                 juego.setCorteRonda();
                 getJugadorPartida(numJugador).setPuedeBajar(0);
             } else {
@@ -171,7 +186,8 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void notificarTurno(int numJugador) throws RemoteException {
-        juego.notificarObservadores(juego.getPartidaActual().getJugadoresActuales().get(numJugador).getNumeroJugador());
+        int numJ = juego.getPartidaActual().getJugadoresActuales().get(numJugador).getNumeroJugador();
+        juego.notificarObservadores(numJ);
     }
 
     public void setTurno(int numJugador, boolean valor) throws RemoteException {
@@ -191,6 +207,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void notificarComienzoPartida() throws RemoteException {
+        juego.notificarObservadores(NOTIFICACION_AGREGAR_OBSERVADOR);
         juego.notificarObservadores(NOTIFICACION_COMIENZO_PARTIDA);
     }
 
@@ -341,6 +358,13 @@ public class Controlador implements IControladorRemoto {
                 case NOTIFICACION_COMIENZO_PARTIDA:
                     vista.actualizar(juego.getPartidaActual().getJugadoresActuales(), indice);
                     break;
+                case NOTIFICACION_AGREGAR_OBSERVADOR:
+                    int observadorIndex = juego.getObservadorIndex(this);
+                    int numJugador = getJugadorPartida(observadorIndex).getNumeroJugador();
+                    if (numJugador != observadorIndex) {
+                        juego.setNumJugador(numJugador, observadorIndex);
+                    }
+                    break;
             }
         }
 
@@ -408,6 +432,10 @@ public class Controlador implements IControladorRemoto {
 
     public void determinarGanador() throws RemoteException {
         juego.determinarGanador();
+    }
+
+    public void removerObservadores() throws RemoteException {
+        juego.removerObservadores();
     }
 
     public int jugarPartidaRecienIniciada() throws RemoteException {
@@ -496,5 +524,9 @@ public class Controlador implements IControladorRemoto {
 
     public int getPuedeBajar(int numJugador) throws RemoteException {
         return juego.getPuedeBajar(numJugador);
+    }
+
+    public void sumarPartida() {
+        partidasJugadas++;
     }
 }

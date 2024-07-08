@@ -441,7 +441,7 @@ public class Consola implements ifVista{
         while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
             ctrl.notificarComienzoRonda();
             ctrl.iniciarCartasPartida();
-            int i = 0;
+            int i = ctrl.getNumJugadorQueEmpiezaRonda();
 
             while (!ctrl.getCorteRonda()) {
                 ctrl.notificarTurno(i);
@@ -460,9 +460,13 @@ public class Consola implements ifVista{
             ctrl.notificarCorteRonda();
             ctrl.notificarRondaFinalizada();
             ctrl.partidaFinRonda(); //incrementa ronda
+            ctrl.incNumJugadorQueEmpiezaRonda();
         }
         ctrl.determinarGanador(); //al finalizar las rondas
         mostrarFinalizoPartida();
+        //lo siguiente es para poder seguir jugando otras partidas
+        ctrl.removerObservadores();
+        ctrl.sumarPartida();
         return false;
     }
 

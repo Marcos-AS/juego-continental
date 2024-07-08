@@ -1,7 +1,6 @@
 package src.modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -143,6 +142,12 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
              jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
              jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
              jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
+             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.PICAS));
+             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.DIAMANTES));
+             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.CORAZONES));
+             jugadoresActuales.get(2).agregarCarta(new Carta(-1, Palo.COMODIN));
+             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.PICAS));
+             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.TREBOL));
 	}
 
     @Override
