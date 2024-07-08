@@ -33,7 +33,7 @@ public interface ifPartida {
 
     jugadorActual determinarGanador();
 
-    int[] getPuntosJugadores();
+    Object[] getPuntosJugadores();
 
     //SETTERS Y GETTERS------------
     int getNumJugadores();
@@ -57,4 +57,6 @@ public interface ifPartida {
     //void partidaIniciada() throws RemoteException;
 
     int getCantJugadoresDeseada();
+    int getNumJugadorCorte();
+    void setNumJugadorCorte(int num);
 }

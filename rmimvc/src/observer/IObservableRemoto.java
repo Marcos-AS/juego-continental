@@ -47,7 +47,6 @@ public interface IObservableRemoto extends Remote {
 	 * @see Remote
 	 * @see RemoteException
 	 */
-	void notificarObservadores() throws RemoteException;
 	void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo) throws RemoteException;
 
 

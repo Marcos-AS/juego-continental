@@ -22,24 +22,26 @@ public class Consola implements ifVista{
     private static final int JUGADOR_INICIO_PARTIDA = 17;
     private static final int ROBO = 18;
     private static final int COMIENZA_PARTIDA = 19;
+    private static final int COMIENZA_RONDA = 20;
+    private static final int CORTE_RONDA = 21;
     private static final int SALIR_DEL_JUEGO = -1;
     private static final int YA_NO_PUEDE_BAJAR = 1;
 
     public Consola(){}
 
     public void mostrarComienzaPartida(ArrayList<ifJugador> jugadores) {
-        System.out.println("\n*******************\nCOMIENZA LA PARTIDA\nJugadores:\n");
+        System.out.println("\n*******************\nCOMIENZA LA PARTIDA\nJugadores:");
         int i = 1;
         for (ifJugador j : jugadores) {
             System.out.println(i + "- " + j.getNombre());
             i++;
         }
-        System.out.println("\n*******************\n");
+        System.out.println("*******************\n");
     }
 
     public int preguntarCantParaBajar() {
         int numCartas;
-		System.out.println("Cuantas cartas quiere bajar para el juego?");
+		System.out.println("Cuantas cartas quieres bajar para el juego?");
         numCartas = s.nextInt();
         s.nextLine();
         while (numCartas > 4 || numCartas < 3) {
@@ -50,25 +52,25 @@ public class Consola implements ifVista{
         return numCartas;
 	}
 
-    //PUBLIC-----------------------------------------------------------
+    private void mostrarTurnoPropio() {
+        System.out.println("************\nEs tu turno.\n************");
+    }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
         int numJuego = 1;
-        if (juegos.isEmpty()) System.out.println("No hay juegos bajados.");
+        if (juegos.isEmpty()) System.out.println("No tiene juegos bajados.");
         for (ArrayList<String> juego : juegos) {
             mostrarJuego(numJuego);
             mostrarCartas(juego);
             numJuego++;
         }
     }
-	
-    //preguntar-------------------------------------
 
 	public int[] preguntarQueBajarParaJuego(int cantCartas) {
         int[] cartasABajar = new int[cantCartas];
         for (int i = 0; i < cartasABajar.length; i++) {
             System.out.println("Carta " + (i + 1) + ": ");
-            System.out.println("Indique el indice de la carta que quiere bajar: ");
+            System.out.println("Indica el índice de la carta que quieres bajar: ");
             cartasABajar[i] = s.nextInt();
             System.out.println();
         }
@@ -79,14 +81,14 @@ public class Consola implements ifVista{
         int[] elecciones = new int[2];
         int cartaSeleccion = -1;
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas-1) {
-            System.out.println("Elija el número de carta que quiere mover: ");
+            System.out.println("Elije el número de carta que quieres mover: ");
             cartaSeleccion = s.nextInt();
         }
         elecciones[0] = cartaSeleccion;
 
         cartaSeleccion = -1;
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas-1) {
-            System.out.println("Elija el número de destino al que quiere mover la carta: ");
+            System.out.println("Elije el número de destino al que quieres mover la carta: ");
             cartaSeleccion = s.nextInt();
         }
         elecciones[1] = cartaSeleccion;
@@ -96,11 +98,11 @@ public class Consola implements ifVista{
 
     public int preguntarQueBajarParaPozo(int cantCartas) {
         int eleccion;
-        System.out.println("Indique el indice de carta para tirar al pozo: ");
+        System.out.println("Indica el índice de carta para tirar al pozo: ");
         eleccion = s.nextInt();
         System.out.println();
         while (eleccion < 0 || eleccion >= cantCartas) {
-            System.out.println("Vuelva a ingresar un indice de carta");
+            System.out.println("Vuelve a ingresar un índice de carta");
             eleccion = s.nextInt();
             System.out.println();
         }
@@ -108,21 +110,21 @@ public class Consola implements ifVista{
     }
 
 	public int preguntarCartaParaAcomodar() {
-		System.out.println("Indique el numero de carta que quiere acomodar en un juego");
+		System.out.println("Indica el número de carta que quieres acomodar en un juego");
 		int numCarta = s.nextInt();
         System.out.println();
 		return numCarta;
 	}
 
     public int preguntarEnQueJuegoQuiereAcomodar() {
-        System.out.println("En que numero de juego quiere acomodar su carta?");
+        System.out.println("En qué número de juego quieres acomodar tu carta?");
         int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
     }
 
     public int preguntarEnLosJuegosDeQueJugadorAcomodar() {
-        System.out.println("Ingrese el número de jugador en cuyo juegos bajados quiere acomodar: ");
+        System.out.println("Ingresa el número de jugador en cuyo juegos bajados quieres acomodar: ");
         int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
@@ -130,56 +132,67 @@ public class Consola implements ifVista{
 
     @Override
     public String preguntarNombreNuevoJugador() {
-        System.out.println("Indique su nombre:");
+        System.out.println("Indica tu nombre:");
         String nombreJugador = s.nextLine();
         System.out.println("Jugador agregado.");
         return nombreJugador;
     }
 
     public void mostrarAdvertenciaBajarse() {
-        System.out.println("Recuerda que sólo puedes bajar tus juegos una vez durante la ronda");
+        System.out.println("Recuerda que sólo puedes bajar tus juegos dos veces durante la ronda, una en cualquier turno y otra si se procede a cortar.");
+    }
+
+    public void mostrarCortoPropio() {
+        System.out.println("Has cortado. Felicitaciones!");
     }
     
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {
-        System.out.println("Desea bajar un juego? (Si/No)");
+        System.out.println("Deseas bajar un juego? (Si/No)");
         String resp = s.next();
         return resp.equalsIgnoreCase("Si") || resp.equalsIgnoreCase("S");
     }
 
+    public void mostrarDebeCortar() {
+        System.out.println("Debes tener los juegos requeridos para la ronda y cortar si deseas bajar ahora.");
+    }
+
+    public void mostrarDebeQuedarle1o0Cartas() {
+        System.out.println("Para cortar debe quedarte en la mano 1 o 0 cartas");
+    }
+
     //MENUS-------------------------------
     public int menuRobar() {
-		System.out.println("----------------------------------------");
-		System.out.println("Quiere robar del mazo o robar del pozo?");
+		System.out.println("Quieres robar del mazo o robar del pozo?");
 		System.out.println("1 - Robar del mazo");
 		System.out.println("2 - Robar del pozo");
-        System.out.println("-1 - Salir y guardar partida");
-		System.out.println("Elija una opcion: ");
+		System.out.println("Elije una opción: ");
 		int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
 	}
 
     public int menuBajar() {
-        System.out.println("Elija una opcion: ");
-        System.out.println("1 - Bajar algún juego");
-   		System.out.println("2 - Ir a tirar");
-  		System.out.println("3 - Ordenar cartas");
-        System.out.println("4 - Cortar (para cortar debe tener ya los juegos bajados)");
-        System.out.println("5 - Acomodar en un juego bajado propio");
-        System.out.println("6 - Ver juegos bajados propios");
-        System.out.println("7 - Acomodar en un juego bajado ajeno");
-        System.out.println("8 - Ver juegos bajados de todos los jugadores");
-        System.out.println("-1 - Salir y guardar partida");
-        int eleccion = s.nextInt();
-        System.out.println();
+        int eleccion = 0;
+        while (eleccion < 1 || eleccion > 8) {
+            System.out.println("Elije una opción: ");
+            System.out.println("1 - Bajar uno o más juegos");
+            System.out.println("2 - Tirar al pozo");
+            System.out.println("3 - Ordenar cartas");
+            System.out.println("4 - Acomodar en un juego bajado propio");
+            System.out.println("5 - Ver juegos bajados propios");
+            System.out.println("6 - Acomodar en un juego bajado ajeno");
+            System.out.println("7 - Ver juegos bajados de todos los jugadores");
+            System.out.println("8 - Ver pozo");
+            eleccion = s.nextInt();
+            System.out.println();
+        }
         return eleccion;
     }
 
     public int menuRobarDelPozo() {
-		System.out.println("Quiere robar del pozo?");
+		System.out.println("Quieres robar del pozo?");
         System.out.println("1 - No");
         System.out.println("2 - Si");
-        System.out.println("-1 - Salir y guardar partida");
         int eleccion = s.nextInt();
         System.out.println();
         return eleccion;
@@ -189,8 +202,8 @@ public class Consola implements ifVista{
     public void nuevaVentana() {}
 
     public int menuBienvenida() {
-        System.out.println("Bienvenido al juego Continental.");
-        System.out.println("Elija una opcion: ");
+        System.out.println("\nBienvenido al juego Continental. <---------\n");
+        System.out.println("Elije una opción: ");
         System.out.println("1 - Crear partida");
         System.out.println("2 - Ver ranking mejores jugadores");
         System.out.println("3 - Ver reglas de juego");
@@ -202,8 +215,15 @@ public class Consola implements ifVista{
         return eleccion;
     }
 
+    private int menuRobarConCastigo() {
+        System.out.println("Quieres robar con castigo? (robar del pozo y robar del mazo)");
+        System.out.println("1 - No");
+        System.out.println("2 - Si");
+        int eleccion = s.nextInt();
+        System.out.println();
+        return eleccion;
+    }
 
-    //MOSTRAR---------------------------------------------------------
     public void mostrarReglas() {
         System.out.println("""
                 OBJETIVO\r
@@ -259,6 +279,7 @@ public class Consola implements ifVista{
 
     public void mostrarCartas(ArrayList<String> cartas) {
         int i = 0;
+        System.out.println();
         for (String carta : cartas) {
             System.out.println(i + " - " + carta);
             i++;
@@ -268,9 +289,9 @@ public class Consola implements ifVista{
     }
 
     public void mostrarTurnoJugador(String nombreJugador) {
-        System.out.println("*****************************************");
+        System.out.println("--------------------------");
         System.out.println("Es el turno del jugador: " + nombreJugador);
-        System.out.println("*****************************************");
+        System.out.println("--------------------------");
     }
 
     public void mostrarLoQueFaltaParaCortar(int[] faltaParaCortar) {
@@ -281,7 +302,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarNoPuedeCortar() {
-        System.out.println("No puede cortar");
+        System.out.println("No puedes cortar");
     }
 
     public void mostrarCorto(String nombreJugador) {
@@ -302,14 +323,18 @@ public class Consola implements ifVista{
     
     public void mostrarPozo(ifCarta c) {
         System.out.println("\nPozo: ");
-        mostrarCarta(ifVista.cartaToString(c));
+        if (c != null) {
+            mostrarCarta(ifVista.cartaToString(c));
+        } else {
+            System.out.println("Pozo vacío");
+        }
     }
 
     public void mostrarNoPuedeBajarJuego(int i) {
         if (i == YA_NO_PUEDE_BAJAR) {
-            System.out.println("No puede volver a bajar juegos en esta ronda (tampoco robar con castigo).");
+            System.out.println("No puedes volver a bajar juegos en esta ronda (tampoco robar con castigo).");
         } else {
-            System.out.println("No puede bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
+            System.out.println("No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n");
         }
     }
 
@@ -318,15 +343,15 @@ public class Consola implements ifVista{
     }
 
     public static void mostrarCombinacionRequerida(int ronda) {
-        System.out.print("Para esta ronda deben bajarse: ");
+        System.out.print("******************************\nPara esta ronda deben bajarse: ");
         String s = switch (ronda) {
-            case 1 -> "Ronda 1: 2 tríos";
-            case 2 -> "Ronda 2: 1 trío y 1 escalera";
-            case 3 -> "Ronda 3: 2 escaleras";
-            case 4 -> "Ronda 4: 3 tríos";
-            case 5 -> "Ronda 5: 2 tríos y 1 escalera";
-            case 6 -> "Ronda 6: 1 tríos y 2 escaleras";
-            case 7 -> "Ronda 7: 3 escaleras";
+            case 1 -> "2 tríos";
+            case 2 -> "1 trío y 1 escalera";
+            case 3 -> "2 escaleras";
+            case 4 -> "3 tríos";
+            case 5 -> "2 tríos y 1 escalera";
+            case 6 -> "1 tríos y 2 escaleras";
+            case 7 -> "3 escaleras";
             default -> "";
         };
         System.out.println(s);
@@ -341,12 +366,10 @@ public class Consola implements ifVista{
     }
 
     public void mostrarNoPuedeRobarDelPozo() {
-        System.out.println("No puede robar del pozo porque no tiene cartas");
+        System.out.println("No puedes robar del pozo porque no tiene cartas");
     }
 
 	public void mostrarGanador(String nombre) {
-        System.out.println("--------------------------------");
-        System.out.println("--------------------------------");
 		System.out.println("El jugador " + nombre + " es el ganador!");// con " + puntos + " puntos!");
 	}
 
@@ -355,7 +378,7 @@ public class Consola implements ifVista{
 	}
 
     public void mostrarNoPuedeAcomodarJuegoPropio() {
-        System.out.println("No puede acomodar porque no tiene o no hay juegos bajados o porque la carta que desea acomodar no hace juego con el juego elegido.");
+        System.out.println("No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.");
     }
 
     private void mostrarUltimoJugadorAgregado(String nombreJugador) {
@@ -364,23 +387,22 @@ public class Consola implements ifVista{
 
     public void noSePuedeIniciarPartida(int i) {
         if (i == 0) {
-            System.out.println("La partida aun no ha sido creada. Seleccione la opcion 1: 'Crear partida' ");
+            System.out.println("La partida aun no ha sido creada. Seleccione la opción 1: 'Crear partida' ");
         } else if (i == 1) {
-            System.out.println("No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.");
+            System.out.println("Esperando que ingresen más jugadores...");
         }
     }
 
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
-        System.out.println("Puntuacion: ");
-        for (int i = 1; i < puntos.length; i++) {
-            mostrarPuntosJugador(ctrl.getJugadorPartida(i-1).getNombre(), puntos[i]);
+        System.out.println("Puntuación: ");
+        for (int i = 0; i < puntos.length; i++) {
+            mostrarPuntosJugador(ctrl.getJugadorPartida(i).getNombre(), puntos[i]);
         }
-        System.out.println("--------------------------------");
-        System.out.println();
+        System.out.println("--------------------------------\n");
     }
 
     public void mostrarFinalizoTurno() {
-        System.out.println("Finalizo su turno");
+        System.out.println("Finalizó su turno");
     }
 
     public void mostrarFinalizoPartida() {
@@ -388,11 +410,11 @@ public class Consola implements ifVista{
     }
 
     private void mostrarComienzoRonda(int ronda) {
-        System.out.println("Comienza la ronda " + ronda);
+        System.out.println("-------------------|\nComienza la ronda " + ronda+"|\n-------------------|");
     }
 
     public int preguntarCantJugadores() {
-        System.out.println("Cuantos jugadores desea para la nueva partida?");
+        System.out.println("Cuántos jugadores deseas para la nueva partida?");
         int cantJugadores = s.nextInt();
         System.out.println();
         return cantJugadores;
@@ -407,7 +429,7 @@ public class Consola implements ifVista{
     }
 
     private boolean preguntarSiQuiereRobarCastigo() throws RemoteException {
-        int eleccion = menuRobarDelPozo();
+        int eleccion = menuRobarConCastigo();
         if (eleccion == SALIR_DEL_JUEGO) {
             ctrl.guardarPartida();
         }
@@ -415,10 +437,9 @@ public class Consola implements ifVista{
     }
 
     public boolean partida() throws RemoteException {
-        boolean estadoPartida = true;
         ctrl.notificarComienzoPartida();
         while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
-            mostrarComienzoRonda(ctrl.getRonda());
+            ctrl.notificarComienzoRonda();
             ctrl.iniciarCartasPartida();
             int i = 0;
 
@@ -426,8 +447,9 @@ public class Consola implements ifVista{
                 ctrl.notificarTurno(i);
                 ctrl.notificarRobo(i);
                 if (ctrl.getRoboDelMazo(i)) {
-                  ctrl.notificarRoboConCastigo(i);
-                  ctrl.resetearRoboConCastigo();
+                    ctrl.setRoboDelMazo(i, false);
+                    ctrl.notificarRoboConCastigo(i);
+                    ctrl.resetearRoboConCastigo();
                 }
                 ctrl.notificarDesarrolloTurno(i);
                 i++;
@@ -435,12 +457,13 @@ public class Consola implements ifVista{
                     i = 0;
                 }
             }
+            ctrl.notificarCorteRonda();
             ctrl.notificarRondaFinalizada();
-            ctrl.partidaFinRonda();
+            ctrl.partidaFinRonda(); //incrementa ronda
         }
         ctrl.determinarGanador(); //al finalizar las rondas
         mostrarFinalizoPartida();
-        return estadoPartida;
+        return false;
     }
 
     //la invoca el metodo actualizar del controlador
@@ -452,13 +475,16 @@ public class Consola implements ifVista{
             case 2:
             case 3:
             case 4:
-            case 5: { //lo que se tiene que mostrar en ambas vistas
+            case 5: {
                 mostrarPozo(ctrl.getPozo());
                 mostrarCombinacionRequerida(ctrl.getRonda());
                 ifJugador jA = (ifJugador) actualizacion;
                 String nombreJugador = jA.getNombre();
-                mostrarTurnoJugador(nombreJugador);
+                if (!nombreJugador.equals(nombreVista)) {
+                    mostrarTurnoJugador(nombreJugador);
+                }
                 if (nombreJugador.equals(nombreVista)) {
+                    mostrarTurnoPropio();
                     ctrl.setTurno(indice, true);
                 }
                 break;
@@ -468,8 +494,8 @@ public class Consola implements ifVista{
                 break;
             }
             case NUEVO_JUGADOR: {
-                ifJugador js = (ifJugador) actualizacion;
-                mostrarUltimoJugadorAgregado(js.getNombre());
+                String nombreJugador = (String) actualizacion;
+                mostrarUltimoJugadorAgregado(nombreJugador);
                 break;
             }
             case ROBO: {
@@ -498,7 +524,7 @@ public class Consola implements ifVista{
                     ifJugador j = ctrl.getJugadorPartida(numJugadorRoboCastigo);
                     mostrarPuedeRobarConCastigo(j.getNombre());
                     if (nombreVista.equals(j.getNombre())) {
-                        if (ctrl.getPuedeBajar(numJugadorRoboCastigo)) {
+                        if (ctrl.getPuedeBajar(numJugadorRoboCastigo)==0) {
                             mostrarCartas(ctrl.enviarManoJugador(numJugadorRoboCastigo));
                             if (preguntarSiQuiereRobarCastigo()) {
                                 ctrl.robarConCastigo(numJugadorRoboCastigo);
@@ -547,6 +573,19 @@ public class Consola implements ifVista{
             case COMIENZA_PARTIDA: {
                 ArrayList<ifJugador> jugadores = (ArrayList<ifJugador>) actualizacion;
                 mostrarComienzaPartida(jugadores);
+                break;
+            }
+            case COMIENZA_RONDA: {
+                mostrarComienzoRonda((int)actualizacion);
+                break;
+            }
+            case CORTE_RONDA: {
+                String nombreJugador = (String)actualizacion;
+                if (!nombreJugador.equals(nombreVista)) {
+                    mostrarCorto((String) actualizacion);
+                } else {
+                    mostrarCortoPropio();
+                }
                 break;
             }
         }

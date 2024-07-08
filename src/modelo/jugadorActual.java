@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class jugadorActual extends Jugador implements Serializable {
+public class jugadorActual extends Jugador implements Serializable, ifJugador {
+	protected int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
     private int puntosPartida;
     private ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
 	private int escalerasBajadas;
 	private int triosBajados;
-	private boolean puedeBajar = true;
+	private int puedeBajar = 0;
 	private boolean turnoActual = false;
 	private boolean roboConCastigo = false;
 	private boolean roboDelMazo = false;
@@ -34,19 +35,6 @@ public class jugadorActual extends Jugador implements Serializable {
 		Carta c = mano.get(indCarta);
 		mano.remove(indCarta);
 		mano.add(destino, c);
-	}
-
-	//PUBLIC-----------------------------------------------------------------
-
-	public boolean cortar(int ronda) throws RemoteException {
-		boolean puedeCortar = false;
-		if(ifJuego.comprobarPosibleCorte(ronda, triosBajados, escalerasBajadas)) {
-			if (!mano.isEmpty()) {
-				getCartaFromMano(0);
-			}
-			puedeCortar = true;
-		}
-		return puedeCortar;
 	}
 
     public Carta getCartaFromMano(int indiceCarta) {
@@ -168,17 +156,29 @@ public class jugadorActual extends Jugador implements Serializable {
 		return juegos;
 	}
 
-	public void setPuedeBajar() {
-		puedeBajar = !puedeBajar;
+	public void incrementarPuedeBajar() {
+		puedeBajar++;
 	}
-	public boolean getPuedeBajar() { return puedeBajar;}
+	public int getPuedeBajar() { return puedeBajar;}
+
+	public void setPuedeBajar(int valor) {
+		puedeBajar = valor;
+	}
 
 	public void setTriosBajados(int trios) {
 		triosBajados = trios;
 	}
 
+	public int getTriosBajados() {
+		return triosBajados;
+	}
+
 	public void setEscalerasBajadas(int escaleras) {
 		escalerasBajadas = escaleras;
+	}
+
+	public int getEscalerasBajadas() {
+		return escalerasBajadas;
 	}
 
 	public void setPuntos(int puntos) {
@@ -213,5 +213,9 @@ public class jugadorActual extends Jugador implements Serializable {
 
 	public void setRoboDelMazo(boolean valor) {
 		roboDelMazo = valor;
+	}
+
+	public int getNumeroJugador() {
+		return numeroJugador;
 	}
 }

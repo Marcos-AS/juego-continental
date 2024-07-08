@@ -108,13 +108,14 @@ public class AppClienteConsola {
                         partidaIniciada = true;
                         pVista.noSePuedeIniciarPartida(1); //faltan jugadores para la cant deseada
                     } else if (inicioPartida == 2) {
-                        partidaIniciada = true;
+                        partidaIniciada = true; //esto inicia el funcionamiento del juego
                         pVista.mostrarInicioPartida();
                         if (!pVista.partida()) {
-                            //partida pausada, guardar
-                        } else {
+                            partidaIniciada = false;
                             //partida finalizada
-                        }; //esto inicia el funcionamiento del juego
+                        } //else {
+                            //partida pausada, guardar
+                        //}
                     }
                     break;
                 }

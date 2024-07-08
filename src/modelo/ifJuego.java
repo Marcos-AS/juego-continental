@@ -282,8 +282,8 @@ public interface ifJuego extends IObservableRemoto {
     void ordenarCartasEnMano(int numJugador, int[] cartas) throws RemoteException;
     void robarDelPozo(int numJugador) throws RemoteException;
     void robarDelMazo(int numJugador) throws RemoteException;
-    void setPuedeBajar(int numJugador) throws RemoteException;
-    boolean getPuedeBajar(int numJugador) throws RemoteException;
+    void incrementarPuedeBajar(int numJugador) throws RemoteException;
+    int getPuedeBajar(int numJugador) throws RemoteException;
     boolean isManoEmpty(int numJugador) throws RemoteException;
     void tirarAlPozo(int numJugador, int eleccionCarta) throws RemoteException;
     void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException;
@@ -294,4 +294,5 @@ public interface ifJuego extends IObservableRemoto {
     boolean getRoboDelMazo(int numJugador) throws RemoteException;
     int getNumJugadorRoboCastigo() throws RemoteException;
     void setNumJugadorRoboCastigo(int numJugador) throws RemoteException;
+    void notificarCorteRonda(int numJugador) throws RemoteException;
 }

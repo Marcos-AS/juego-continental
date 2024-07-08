@@ -20,11 +20,16 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private static final int CANT_TOTAL_RONDAS = 1; //para probar
     private boolean enCurso = false;
     private boolean corteRonda = false;
+    private int numJugadorCorte;
     @Serial
     private static final long serialVersionUID = 1L;
     private int cantJugadoresDeseada;
 
-    public Partida() {}
+    private static final int NOTIFICAR_PUNTOS = 15;
+
+    public Partida(int cantJugadoresDeseada) {
+        this.cantJugadoresDeseada = cantJugadoresDeseada;
+    }
 
     @Override
     public int determinarNumBarajas() {
@@ -119,25 +124,25 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
 	@Override
     public void repartirCartas() throws RemoteException {
-		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
-		for(jugadorActual j: this.jugadoresActuales) {
-			for(int i = 0; i < numCartasARepartir; i++) {
-			    Carta c = this.eliminarDelMazo();
-			 	j.agregarCarta(c);
-			}
-        }
-//             jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
+//		int numCartasARepartir = ifJuego.cartasPorRonda(this.ronda);
+//		for(jugadorActual j: this.jugadoresActuales) {
+//			for(int i = 0; i < numCartasARepartir; i++) {
+//			    Carta c = this.eliminarDelMazo();
+//			 	j.agregarCarta(c);
+//			}
+//        }
+             jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
+             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
+             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
+             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
+             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
+             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
+             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
+             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
+             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
+             jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
+             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
+             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
 	}
 
     @Override
@@ -145,7 +150,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         for (jugadorActual jugadorActual : jugadoresActuales) {
             jugadorActual.setTriosBajados(0);
             jugadorActual.setEscalerasBajadas(0);
-            jugadorActual.setPuedeBajar();
+            jugadorActual.setPuedeBajar(0);
         }
     }
 
@@ -191,15 +196,16 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 	}
 
     @Override
-    public int[] getPuntosJugadores() {
-        int[] puntos = new int[jugadoresActuales.size()+1];
+    public Object[] getPuntosJugadores() {
+        Object[] puntos = new Object[2];
+        int[] arrayPuntos = new int[jugadoresActuales.size()];
         int i = 0;
-        puntos[i] = -1;
-        i++;
         for (jugadorActual jugadorActual : jugadoresActuales) {
-            puntos[i] = jugadorActual.getPuntos();
+            arrayPuntos[i] = jugadorActual.getPuntos();
             i++;
         }
+        puntos[0] = arrayPuntos;
+        puntos[1] = NOTIFICAR_PUNTOS;
         return puntos;
     }
 
@@ -273,5 +279,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     public boolean getCorteRonda() {
         return corteRonda;
+    }
+
+    public int getNumJugadorCorte() {
+        return numJugadorCorte;
+    }
+
+    public void setNumJugadorCorte(int num) {
+        numJugadorCorte = num;
     }
 }

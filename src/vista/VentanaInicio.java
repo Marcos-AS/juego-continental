@@ -615,4 +615,10 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void mostrarCorto(String nombreJugador){}
+
+    @Override
+    public void mostrarDebeQuedarle1o0Cartas() {}
+
+    @Override
+    public void mostrarDebeCortar() {}
 }

@@ -15,13 +15,12 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private static final int NOTIFICAR_NUEVO_JUGADOR = 7;
 	private static final int NOTIFICAR_DESARROLLO_TURNO = 8;
 	private static final int NOTIFICAR_GANADOR = 10;
-	private static final int NOTIFICAR_PUEDE_ROBO_CASTIGO = 11;
 	private static final int NOTIFICAR_HUBO_ROBO_CASTIGO = 12;
 	private static final int NOTIFICAR_RONDA_FINALIZADA = 14;
 	private static final int NOTIFICAR_ROBO = 18;
+	private static final int NOTIFICAR_CORTE_RONDA = 21;
 	private static final int NOTIFICAR_VENTANA_NUEVA_PARTIDA = 27;
 	private static final int NUEVA_PARTIDA = 6;
-	private static final int ACTUALIZAR_PARTIDA = 2;
 	private static final int ENVIAR_RANKING = 3;
 
 	private ArrayList<Jugador> jugadores = new ArrayList<>();
@@ -46,10 +45,10 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	public void crearPartida(String nombreVista, int cantJugadores) throws RemoteException{
-		partidaActual = new Partida(); //creacion de partida
+		partidaActual = new Partida(cantJugadores); //creacion de partida
 		partidaActual.agregarJugador(nombreVista);
 		partidaActual.setEstadoPartida();
-		partidaActual.setCantJugadoresDeseada(cantJugadores);
+		//partidaActual.setCantJugadoresDeseada(cantJugadores);
 		notificarObservadores(NUEVA_PARTIDA); //el ctrl setea la partida
 		notificarObservadores(nombreVista); //avisa que el jugador x creo una partida
 	}
@@ -66,6 +65,13 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		partidaActual.sumarPuntos();
 		partidaActual.setCorteRonda();
 		notificarPuntos();
+	}
+
+	public void notificarCorteRonda(int numJugador) throws RemoteException {
+		Object[] cambio = new Object[2];
+		cambio[0] = numJugador;
+		cambio[1] = NOTIFICAR_CORTE_RONDA;
+		notificarObservadores(cambio);
 	}
 
 	public boolean isPozoEmpty() throws RemoteException {
@@ -137,10 +143,8 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	public void notificarPuntos() throws RemoteException {
-		int[] puntos = partidaActual.getPuntosJugadores();
-		Object cambio = puntos;
-		notificarObservadores(cambio);
-		notificarObservadores();
+		Object[] puntos = partidaActual.getPuntosJugadores();
+		notificarObservadores(puntos);
 	}
 
 	private void notificarGanador(Object[] notif) throws RemoteException {
@@ -229,8 +233,8 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		return partidaActual.getCorteRonda();
 	}
 
-	public void setPuedeBajar(int numJugador) throws RemoteException {
-		partidaActual.getJugadoresActuales().get(numJugador).setPuedeBajar();
+	public void incrementarPuedeBajar(int numJugador) throws RemoteException {
+		partidaActual.getJugadoresActuales().get(numJugador).incrementarPuedeBajar();
 	}
 
 	public void setRoboConCastigo(int numJugador, boolean valor) throws RemoteException {
@@ -251,7 +255,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		return partidaActual.getJugadoresActuales().get(numJugador).getRoboConCastigo();
 	}
 
-	public boolean getPuedeBajar(int numJugador) throws RemoteException {
+	public int getPuedeBajar(int numJugador) throws RemoteException {
 		return partidaActual.getJugadoresActuales().get(numJugador).getPuedeBajar();
 	}
 

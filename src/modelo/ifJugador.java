@@ -11,8 +11,9 @@ public interface ifJugador {
     String getNombre();
 
     Partida getPartidaActiva();
-
-    boolean cortar(int ronda) throws RemoteException;
+    void setPuedeBajar(int valor);
+    int getTriosBajados();
+    int getEscalerasBajadas();
 
     int[] comprobarQueFaltaParaCortar(int ronda);
 
@@ -24,21 +25,16 @@ public interface ifJugador {
 
     int getNumeroJugador();
 
-    void robarConCastigo();
-
     boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException;
-    int bajarJuego(ArrayList<Carta> juego) throws RemoteException;
-    ArrayList<Carta> getJuego(int[] cartasABajar);
     void addJuego(int[] juego);
     void eliminarDeLaMano(ArrayList<Carta> cartasABajar);
-    void setPuedeBajar();
-    boolean getPuedeBajar();
+    void incrementarPuedeBajar();
+    int getPuedeBajar();
     void incrementarEscalerasBajadas();
     void incrementarTriosBajados();
     void moverCartaEnMano(int indCarta, int destino);
     void setPuntosAlFinalizar(int puntos);
     int getPuntosAlFinalizar();
-    int juegoValido(int[] cartasABajar) throws RemoteException;
     boolean isTurnoActual();
     void setTurnoActual(boolean valor);
     boolean isManoEmpty();
