@@ -6,26 +6,21 @@ import javax.swing.border.*;
 import src.controlador.Controlador;
 import src.modelo.ifCarta;
 import src.modelo.ifJugador;
-import src.modelo.ifPartida;
-import src.serializacion.Serializador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class VentanaInicio extends JFrame implements ifVista, ActionListener {
-    private VentanaJuego ventanaJuego;
     private Controlador ctrl;
     private String nombreVista;
-    private int numJugadores;
-    private JPanel panel;
+    private final JPanel panel;
     private JPanel panelCartas;
-    private static final int VENTANA_NUEVA_PARTIDA = 27;
 
-    //PUBLIC------------------------------------------------
     public VentanaInicio(int ancho, int alto) {
         setSize(ancho, alto);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cerrar ventana cuando se selecciona la X
@@ -36,8 +31,6 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         agregarMenuBarra();
         setVisible(true); 
     }
-
-    public VentanaInicio() {}
 
     public JPanel crearPanel() { //lo que se ve en la pantalla inicial
         JPanel panel = new JPanel();                              
@@ -50,21 +43,22 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         panel.add(agregarTitulo()); //continental en grande
         
         // LABEL -------------------------------------------------
-        panel.add(crearLabel());
+        panel.add(crearLabel()); //ingrese su nombre
         panel.add(Box.createRigidArea(new Dimension(0, 0))); // Espacio entre la etiqueta y el campo
 
         // FIELD -------------------------------------------------
         JTextField campoNombre = crearInputField();
         panel.add(campoNombre);
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Espacio entre el icono y el campo
+
         // BOTON ingresar texto
-        JButton botonIngresarTexto = crearBoton("Ingresar texto", Component.CENTER_ALIGNMENT, 100, 30, 10);
+        JButton botonIngresarTexto = crearBoton("Ingresar nombre", Component.CENTER_ALIGNMENT, 150, 30, 15);
         panel.add(botonIngresarTexto);
 
         botonIngresarTexto.addActionListener(e -> {
             String nombreJugador = campoNombre.getText();
             try {
-                this.ctrl.agregarNuevoJugador(nombreJugador); //setea nombre vista en ctrl y agrega jugador a juego
+                ctrl.agregarNuevoJugador(nombreJugador); //setea nombre vista en ctrl y agrega jugador a juego
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
@@ -92,7 +86,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         panel.add(Box.createVerticalGlue());          // agregar espacio vertical antes del botón
         panel.add(botonCrear);
 
-        JButton botonJugar = crearBoton("Iniciar partida", Component.RIGHT_ALIGNMENT, 200, 50, 25);
+        JButton botonJugar = crearBoton("Iniciar partida", Component.CENTER_ALIGNMENT, 200, 50, 25);
         panel.add(Box.createVerticalGlue());          // agregar espacio vertical antes del botón
         panel.add(botonJugar);
         botonJugar.addActionListener(e -> {
@@ -211,105 +205,192 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     public void accionarBotonCrearPartida(ActionEvent e) {
         if(e.getActionCommand().equals("Crear")) {
             String input = JOptionPane.showInputDialog(this, "¿Cuántos jugadores quieres para la partida?", "Número de jugadores", JOptionPane.QUESTION_MESSAGE);
-            numJugadores = Integer.parseInt(input);
-            //try {
-                //if (!this.ctrl.crearPartida(this, numJugadores)) { //crea partida y agrega al jugador, setea part. actual en ctrl
-                  //  noSePuedeIniciarPartida(1);
-                //}
-            //} catch (RemoteException ex) {
-              //  throw new RuntimeException(ex);
-            //}
-
+            int numJugadores = Integer.parseInt(input);
+            try {
+                ctrl.crearPartida(this, numJugadores); //crea partida y agrega al jugador, setea part. actual en ctrl
+                    //noSePuedeIniciarPartida(1);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
             //setPartidaIniciada();
         }
     }
 
     public void accionarBotonIniciarPartida() throws RemoteException {
         int inicioPartida = ctrl.jugarPartidaRecienIniciada();
-        if(inicioPartida == 0) {
-            noSePuedeIniciarPartida(2);
-        } else if (inicioPartida == 1){
-            noSePuedeIniciarPartida(3);
-        } else if (inicioPartida == 2) {
+        if(inicioPartida == PARTIDA_AUN_NO_CREADA) {
+            noSePuedeIniciarPartida(PARTIDA_AUN_NO_CREADA);
+        } else if (inicioPartida == FALTAN_JUGADORES){
+            noSePuedeIniciarPartida(FALTAN_JUGADORES);
+        } else if (inicioPartida == ifVista.INICIAR_PARTIDA) {
+            //mostrarInicioPartida();
+            partida();
             mostrarFinalizoPartida();
         }
     }
 
     @Override
+    public boolean partida() throws RemoteException {
+        ctrl.notificarComienzoPartida();
+        while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
+            ctrl.notificarNuevaVentana(); //prepara la ventana para la partida
+            ctrl.notificarComienzoRonda();
+            ctrl.iniciarCartasPartida();
+            int i = ctrl.getNumJugadorQueEmpiezaRonda();
+
+            while (!ctrl.getCorteRonda()) {
+                ctrl.notificarTurno(i);
+                ctrl.notificarRobo(i);
+                if (ctrl.getRoboDelMazo(i)) {
+                    ctrl.setRoboDelMazo(i, false);
+                    ctrl.notificarRoboConCastigo(i);
+                    ctrl.resetearRoboConCastigo();
+                }
+                ctrl.notificarDesarrolloTurno(i);
+                i++;
+                if (i>ctrl.getCantJugadoresPartida()-1) {
+                    i = 0;
+                }
+            }
+            ctrl.notificarCorteRonda();
+            ctrl.notificarRondaFinalizada();
+            ctrl.partidaFinRonda(); //incrementa ronda
+            ctrl.incNumJugadorQueEmpiezaRonda();
+        }
+        ctrl.determinarGanador(); //al finalizar las rondas
+        mostrarFinalizoPartida();
+        //lo siguiente es para poder seguir jugando otras partidas
+        ctrl.removerObservadores();
+        ctrl.sumarPartida();
+        return false;
+    }
+
+    @Override
     public void actualizar(Object actualizacion, int indice) throws RemoteException {
-        switch (indice) {
+        switch (indice) {//del 0 al 5 porque como maximo 6 jugadores
             case 0:
             case 1:
             case 2:
             case 3:
             case 4:
             case 5: {
+                mostrarPozo(ctrl.getPozo());
+                mostrarCombinacionRequerida(ctrl.getRonda());
                 ifJugador jA = (ifJugador) actualizacion;
                 String nombreJugador = jA.getNombre();
-                mostrarTurnoJugador(nombreJugador);
-                if (this.nombreVista.equals(nombreJugador)) {
-                    ctrl.desarrolloTurno(jA.getNumeroJugador());
+                if (!nombreJugador.equals(nombreVista)) {
+                    mostrarTurnoJugador(nombreJugador);
+                }
+                if (nombreJugador.equals(nombreVista)) {
+                    mostrarTurnoPropio();
+                    ctrl.setTurno(indice, true);
                 }
                 break;
             }
-            case 6: {
-                //mostrarInicioPartida();
+            case NUEVA_PARTIDA: {
+                mostrarInicioPartida();
                 break;
             }
-            case 7: {
-                ArrayList<ifJugador> js = (ArrayList<ifJugador>) actualizacion;
-                mostrarUltimoJugadorAgregado(js);
+            case NUEVO_JUGADOR: {
+                String nombreJugador = (String) actualizacion;
+                mostrarUltimoJugadorAgregado(nombreJugador);
                 break;
             }
-            case 9: {
-                String combinacion = mostrarCombinacionRequerida(((ifPartida) actualizacion).getRonda());
-                SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(this, combinacion, "Mensaje", JOptionPane.INFORMATION_MESSAGE));
-                mostrarPozo(((ifPartida) actualizacion).sacarPrimeraDelPozo());
+            case ROBO: {
+                ifJugador j = (ifJugador) actualizacion;
+                if (j.getNombre().equals(nombreVista)) {
+                    ctrl.desarrolloRobo(j.getNumeroJugador());
+                }
                 break;
             }
-            case 10: {
+            case DESARROLLO_TURNO: {
+                ifJugador j = (ifJugador) actualizacion;
+                if (j.getNombre().equals(nombreVista)) {
+                    ctrl.desarrolloTurno(j.getNumeroJugador()); //aca se modifica la variable corte del while
+                }
+                break;
+            }
+            case GANADOR: {
                 String s = (String) actualizacion;
-                if (!this.ctrl.getEstadoPartida()) {
-                    mostrarGanador(s);
-                } else if (!s.equalsIgnoreCase(this.nombreVista)) {
-                    String mensaje = "El jugador " + s + " ha iniciado una partida nueva.";
-                    JOptionPane.showMessageDialog(this, mensaje, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                mostrarGanador(s);
+                break;
+            }
+            case ROBO_CASTIGO: {
+                int numJugadorRoboCastigo = ctrl.getNumJugadorRoboCastigo();
+                if (!ctrl.getRoboConCastigo(numJugadorRoboCastigo)) {
+                    boolean roboConCastigo = false;
+                    ifJugador j = ctrl.getJugadorPartida(numJugadorRoboCastigo);
+                    mostrarPuedeRobarConCastigo(j.getNombre());
+                    if (nombreVista.equals(j.getNombre())) {
+                        if (ctrl.getPuedeBajar(numJugadorRoboCastigo)==0) {
+                            mostrarCartas(ctrl.enviarManoJugador(numJugadorRoboCastigo));
+                            if (preguntarSiQuiereRobarCastigo()) {
+                                ctrl.robarConCastigo(numJugadorRoboCastigo);
+                                ctrl.notificarHaRobadoConCastigo(numJugadorRoboCastigo);
+                                ctrl.setRoboConCastigo(numJugadorRoboCastigo, true);
+                                roboConCastigo = true;
+                            }
+                        }
+                        if (!roboConCastigo) {
+                            numJugadorRoboCastigo++;
+                            if (numJugadorRoboCastigo > ctrl.getCantJugadoresPartida() - 1)
+                                numJugadorRoboCastigo = 0;
+                            ctrl.setNumJugadorRoboCastigo(numJugadorRoboCastigo);
+                        }
+                    }
                 }
                 break;
             }
-            case 11: { //un jugador puede robar con castigo
-                int[] a = (int[]) actualizacion;
-                ifJugador j = this.ctrl.getJugadorPartida(a[0]);
-                if (this.nombreVista.equals(j.getNombre())) {
-                    //ctrl.desarrolloRoboConCastigo(ctrl.enviarManoJugador(j), j, a[2]);
-                }
-                break;
-            }
-            case 12: {
-                String nombreJugador = this.ctrl.getJugadorPartida((int)actualizacion).getNombre();
+            case HUBO_ROBO_CASTIGO: {
+                String nombreJugador = ctrl.getJugadorPartida((int)actualizacion).getNombre();
                 jugadorHaRobadoConCastigo(nombreJugador);
                 break;
             }
-            case 14: {
-                JOptionPane.showMessageDialog(null, "Esta ronda ha finalizado.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+            case RONDA_FINALIZADA: {
+                int ronda = (int) actualizacion;
+                System.out.println("La ronda " + ronda + " ha finalizado.");
+                System.out.println("--------------------------");
                 break;
             }
-            case 15: {
+            case PUNTOS_RONDA: {
                 int[] puntos = (int[]) actualizacion;
                 mostrarPuntosRonda(puntos);
                 break;
             }
             case 16: {
-                mostrarRanking(((Serializador) actualizacion).readObjects());
+                mostrarRanking((Object[]) actualizacion);
                 break;
             }
-            case VENTANA_NUEVA_PARTIDA: {
+            case JUGADOR_INICIO_PARTIDA: {
+                String s = (String) actualizacion;
+                if (!s.equalsIgnoreCase(nombreVista)) {
+                    JOptionPane.showMessageDialog(this, "El jugador " + s + " ha iniciado una partida nueva", "Aviso creación partida", JOptionPane.INFORMATION_MESSAGE);
+                }
+                break;
+            }
+            case COMIENZA_PARTIDA: {
+                ArrayList<ifJugador> jugadores = (ArrayList<ifJugador>) actualizacion;
+                mostrarComienzaPartida(jugadores);
+                break;
+            }
+            case COMIENZA_RONDA: {
+                mostrarComienzoRonda((int)actualizacion);
+                break;
+            }
+            case CORTE_RONDA: {
+                String nombreJugador = (String)actualizacion;
+                if (!nombreJugador.equals(nombreVista)) {
+                    mostrarCorto((String) actualizacion);
+                } else {
+                    mostrarCortoPropio();
+                }
+                break;
+            }
+            case NUEVA_VENTANA: {
                 nuevaVentana();
                 break;
             }
         }
-
     }
 
     private void mostrarRanking(Object[] rankingJugadores) {
@@ -323,24 +404,22 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
             JOptionPane.showMessageDialog(this, finalS, "Ranking", JOptionPane.INFORMATION_MESSAGE));
     }
 
-    //GETTERS Y SETTERS, OBSERVER-----------------
-    // public void setPartidaIniciada() {
-    //     this.partidaIniciada = !partidaIniciada;
-    //     //firePartidaIniciadaEvent();
-    // }
-
-    // public boolean getPartidaIniciada() {
-    //     return this.partidaIniciada;
-    // }
-
     public void nuevaVentana() {
-        //this.setVisible(false);
-        this.panel.removeAll();
-        revalidate();
-        repaint();
-        //this.getContentPane().removeAll();
-        //this.ventanaJuego = new VentanaJuego();
-        //this.ventanaJuego.setVisible(true);
+        Runnable runner = new Runnable() {
+            @Override
+            public void run() {
+                panel.removeAll();
+            }
+        };
+        try {
+            EventQueue.invokeAndWait(runner);
+            revalidate();
+            repaint();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String asociarRuta(String carta) {
@@ -374,21 +453,16 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
         return 0;
     }
 
-    @Override
-    public boolean partida() throws RemoteException {
-    return false;
-    }
-
     private void jugadorHaRobadoConCastigo(String nombreJugador) {
     }
 
     private void mostrarPuntosRonda(int[] puntos) {
     }
 
-    private void mostrarUltimoJugadorAgregado(ArrayList<ifJugador> js) {
-        String s = "El jugador " + js.get(js.size()-1).getNombre() + " ha ingresado.";
+    private void mostrarUltimoJugadorAgregado(String nombreJugador) {
+        String s = "El jugador " + nombreJugador + " ha ingresado.";
         SwingUtilities.invokeLater(() ->
-                JOptionPane.showMessageDialog(this, s, "Mensaje", JOptionPane.INFORMATION_MESSAGE));
+                JOptionPane.showMessageDialog(this, s, "Nuevo jugador", JOptionPane.INFORMATION_MESSAGE));
     }
 
     public int preguntarEnQueJuegoQuiereAcomodar() {
@@ -412,11 +486,6 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     @Override
     public void mostrarPuedeRobarConCastigo(String nombreJugador) {
 
-    }
-
-    @Override
-    public int menuRobarDelPozo() {
-        return 0;
     }
 
     public int menuBajar() {
@@ -455,9 +524,11 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void mostrarInicioPartida() {
+        SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(this, "Se ha creado una partida", "Inicio partida", JOptionPane.INFORMATION_MESSAGE));
     }
 
-    public static String mostrarCombinacionRequerida(int ronda) {
+    public void mostrarCombinacionRequerida(int ronda) {
         String s = "Para esta ronda deben bajarse: ";
         switch (ronda) {
             case 1:
@@ -482,7 +553,6 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
                 s += "Ronda 7: 3 escaleras";
                 break;
         }
-        return s;
     }
 
     @Override
@@ -496,7 +566,7 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
     @Override
     public void mostrarTurnoJugador(String nombreJugador) {
         String s = "Es el turno del jugador: " + nombreJugador;
-        JOptionPane.showMessageDialog(this, s, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, s, "Turno del jugador", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
@@ -567,21 +637,11 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void noSePuedeIniciarPartida(int i) {
-        if (i == 1) {
-            JOptionPane.showMessageDialog(this, "No se puede iniciar la partida porque faltan jugadores para la cantidad deseada.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
-        } else if (i == 2) {
-            JOptionPane.showMessageDialog(this, "La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva'", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
-        } else if (i == 3) {
-            JOptionPane.showMessageDialog(this, "No se puede iniciar la partida porque faltan jugadores (minimo 2)", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+        if (i == PARTIDA_AUN_NO_CREADA) {
+            JOptionPane.showMessageDialog(this, "La partida aun no ha sido creada. Seleccione la opcion 1: 'Iniciar partida nueva'", "Partida aún no creada", JOptionPane.INFORMATION_MESSAGE);
+        } else if (i == FALTAN_JUGADORES) {
+            JOptionPane.showMessageDialog(this, "Esperando que ingresen más jugadores...", "Esperando jugadores", JOptionPane.INFORMATION_MESSAGE);
         }
-    }
-
-    public void setVentanaJuego(VentanaJuego ventanaJuego) {
-        this.ventanaJuego = ventanaJuego;
-    }
-
-    public VentanaJuego getVentanaJuego() {
-        return this.ventanaJuego;
     }
 
     @Override
@@ -621,4 +681,42 @@ public class VentanaInicio extends JFrame implements ifVista, ActionListener {
 
     @Override
     public void mostrarDebeCortar() {}
+
+    public void mostrarTurnoPropio() {
+        JOptionPane.showMessageDialog(this, "Es tu turno.", "Tu turno", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public boolean preguntarSiQuiereRobarCastigo() {
+        int eleccion = menuRobarConCastigo();
+        return eleccion == ifVista.ELECCION_ROBAR_DEL_POZO;
+    }
+
+    @Override
+    public void mostrarComienzaPartida(ArrayList<ifJugador> jugadores) {
+        StringBuilder s = new StringBuilder("\nCOMIENZA LA PARTIDA\nJugadores:\n");
+        int i = 1;
+        for (ifJugador j : jugadores) {
+            s.append(i).append(" - ").append(j.getNombre()).append("\n");
+            i++;
+        }
+        SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(this, s, "Comienza partida", JOptionPane.INFORMATION_MESSAGE));
+    }
+
+    @Override
+    public void mostrarComienzoRonda(int ronda) {
+        //SwingUtilities.invokeLater(() ->
+            JOptionPane.showMessageDialog(this, "Comienza la ronda " + ronda, "Comienza ronda", JOptionPane.INFORMATION_MESSAGE);//);
+    }
+
+    @Override
+    public void mostrarCortoPropio() {
+        JOptionPane.showMessageDialog(this,"Has cortado. Felicitaciones!", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public int menuRobarConCastigo() {
+        return Integer.parseInt(JOptionPane.showInputDialog(null, "Quieres robar con castigo? (robar del pozo y robar del mazo)\n1 - No\n2 - Si\n", "Robo con castigo", JOptionPane.QUESTION_MESSAGE));
+    }
 }

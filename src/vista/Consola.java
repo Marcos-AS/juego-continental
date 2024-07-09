@@ -11,21 +11,6 @@ public class Consola implements ifVista{
     private Controlador ctrl;
     private final Scanner s = new Scanner(System.in);
     private String nombreVista;
-    private static final int NUEVA_PARTIDA = 6;
-    private static final int NUEVO_JUGADOR = 7;
-    private static final int DESARROLLO_TURNO = 8;
-    private static final int GANADOR = 10;
-    private static final int ROBO_CASTIGO = 11;
-    private static final int HUBO_ROBO_CASTIGO = 12;
-    private static final int RONDA_FINALIZADA = 14;
-    private static final int PUNTOS_RONDA = 15;
-    private static final int JUGADOR_INICIO_PARTIDA = 17;
-    private static final int ROBO = 18;
-    private static final int COMIENZA_PARTIDA = 19;
-    private static final int COMIENZA_RONDA = 20;
-    private static final int CORTE_RONDA = 21;
-    private static final int SALIR_DEL_JUEGO = -1;
-    private static final int YA_NO_PUEDE_BAJAR = 1;
 
     public Consola(){}
 
@@ -52,7 +37,7 @@ public class Consola implements ifVista{
         return numCartas;
 	}
 
-    private void mostrarTurnoPropio() {
+    public void mostrarTurnoPropio() {
         System.out.println("************\nEs tu turno.\n************");
     }
 
@@ -189,15 +174,6 @@ public class Consola implements ifVista{
         return eleccion;
     }
 
-    public int menuRobarDelPozo() {
-		System.out.println("Quieres robar del pozo?");
-        System.out.println("1 - No");
-        System.out.println("2 - Si");
-        int eleccion = s.nextInt();
-        System.out.println();
-        return eleccion;
-    }
-
     @Override
     public void nuevaVentana() {}
 
@@ -215,7 +191,7 @@ public class Consola implements ifVista{
         return eleccion;
     }
 
-    private int menuRobarConCastigo() {
+    public int menuRobarConCastigo() {
         System.out.println("Quieres robar con castigo? (robar del pozo y robar del mazo)");
         System.out.println("1 - No");
         System.out.println("2 - Si");
@@ -274,7 +250,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarInicioPartida() {
-        System.out.println("Se ha iniciado la partida.");
+        System.out.println("Se ha iniciado una partida.");
     }
 
     public void mostrarCartas(ArrayList<String> cartas) {
@@ -342,7 +318,7 @@ public class Consola implements ifVista{
         System.out.println("Juego N° " + numJuego+":\n");
     }
 
-    public static void mostrarCombinacionRequerida(int ronda) {
+    public void mostrarCombinacionRequerida(int ronda) {
         System.out.print("******************************\nPara esta ronda deben bajarse: ");
         String s = switch (ronda) {
             case 1 -> "2 tríos";
@@ -409,7 +385,7 @@ public class Consola implements ifVista{
         System.out.println("La partida ha finalizado.");
     }
 
-    private void mostrarComienzoRonda(int ronda) {
+    public void mostrarComienzoRonda(int ronda) {
         System.out.println("-------------------|\nComienza la ronda " + ronda+"|\n-------------------|");
     }
 
@@ -428,11 +404,11 @@ public class Consola implements ifVista{
         }
     }
 
-    private boolean preguntarSiQuiereRobarCastigo() throws RemoteException {
+    public boolean preguntarSiQuiereRobarCastigo() {
         int eleccion = menuRobarConCastigo();
-        if (eleccion == SALIR_DEL_JUEGO) {
-            ctrl.guardarPartida();
-        }
+//        if (eleccion == SALIR_DEL_JUEGO) {
+//            ctrl.guardarPartida();
+//        }
         return eleccion == ifVista.ELECCION_ROBAR_DEL_POZO;
     }
 

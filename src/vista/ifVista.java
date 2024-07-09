@@ -2,6 +2,7 @@ package src.vista;
 
 import src.controlador.Controlador;
 import src.modelo.ifCarta;
+import src.modelo.ifJugador;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,6 +18,24 @@ public interface ifVista {
     int ELECCION_VER_POZO = 8;
     int ELECCION_ROBAR_DEL_MAZO = 1;
     int ELECCION_ROBAR_DEL_POZO = 2;
+    int NUEVA_PARTIDA = 6;
+    int NUEVO_JUGADOR = 7;
+    int DESARROLLO_TURNO = 8;
+    int GANADOR = 10;
+    int ROBO_CASTIGO = 11;
+    int HUBO_ROBO_CASTIGO = 12;
+    int RONDA_FINALIZADA = 14;
+    int PUNTOS_RONDA = 15;
+    int JUGADOR_INICIO_PARTIDA = 17;
+    int ROBO = 18;
+    int COMIENZA_PARTIDA = 19;
+    int COMIENZA_RONDA = 20;
+    int CORTE_RONDA = 21;
+    int NUEVA_VENTANA = 23;
+    int YA_NO_PUEDE_BAJAR = 1;
+    int PARTIDA_AUN_NO_CREADA = 0;
+    int FALTAN_JUGADORES = 1;
+    int INICIAR_PARTIDA = 2;
 
     static String transformarNumCarta(int numCarta) {
         String num = ((Integer) numCarta).toString();
@@ -63,9 +82,7 @@ public interface ifVista {
 
     void mostrarInicioPartida();
 
-    static void mostrarCombinacionRequerida(int ronda) {
-
-    }
+    void mostrarCombinacionRequerida(int ronda);
 
     void mostrarPozo(ifCarta c);
 
@@ -92,12 +109,6 @@ public interface ifVista {
     void mostrarJuegosJugador(int numJugador);
     int menuBajar();
     int preguntarQueBajarParaPozo(int cantCartas);
-    static int getEleccionRobarDelMazo() {
-        return ELECCION_ROBAR_DEL_MAZO;
-    }
-    static int getEleccionRobarDelPozo() {
-        return ELECCION_ROBAR_DEL_POZO;
-    }
     void mostrarNoPuedeRobarDelPozo();
     int menuRobar();
     int preguntarCartaParaAcomodar();
@@ -108,13 +119,17 @@ public interface ifVista {
     void mostrarFinalizoTurno();
     void mostrarCorto(String nombreJugador);
     boolean preguntarSiQuiereSeguirBajandoJuegos();
-    int menuRobarDelPozo();
     void nuevaVentana();
     int[] preguntarParaOrdenarCartas(int cantCartas);
-
     int preguntarCantParaBajar();
     int preguntarEnLosJuegosDeQueJugadorAcomodar();
     boolean partida() throws RemoteException;
     void mostrarDebeCortar();
     void mostrarDebeQuedarle1o0Cartas();
+    void mostrarTurnoPropio();
+    boolean preguntarSiQuiereRobarCastigo();
+    void mostrarComienzaPartida(ArrayList<ifJugador> jugadores);
+    void mostrarComienzoRonda(int ronda);
+    void mostrarCortoPropio();
+    int menuRobarConCastigo();
 }

@@ -34,10 +34,14 @@ public class Controlador implements IControladorRemoto {
     private static final int NOTIFICACION_COMIENZO_RONDA = 20;
     private static final int NOTIFICACION_CORTE_RONDA = 21;
     private static final int NOTIFICACION_AGREGAR_OBSERVADOR = 22;
+    private static final int NOTIFICACION_NUEVA_VENTANA = 23;
     private static final int JUEGO_INVALIDO = 2;
     private static final int YA_NO_PUEDE_BAJAR = 1;
     private static final int CANT_MIN_JUGADORES = 0;
     private static final int CANT_MAX_JUGADORES = 5;
+    private static final int FALTAN_JUGADORES = 1;
+    private static final int INICIAR_PARTIDA = 2;
+    private static final int PARTIDA_AUN_NO_CREADA = 0;
     private int partidasJugadas = 0;
 
 
@@ -366,6 +370,9 @@ public class Controlador implements IControladorRemoto {
                         juego.setNumJugador(numJugador, observadorIndex);
                     }
                     break;
+                case NOTIFICACION_NUEVA_VENTANA:
+                    vista.actualizar(null, indice);
+                    break;
             }
         }
 
@@ -441,7 +448,7 @@ public class Controlador implements IControladorRemoto {
 
     public int jugarPartidaRecienIniciada() throws RemoteException {
         int i = 0;
-        int inicio = 0;
+        int inicio = PARTIDA_AUN_NO_CREADA;
         boolean encontrado = false;
         ifPartida p = juego.getPartidaActual();
         if (p != null) { //si ya se llamo a crearPartida()
@@ -454,22 +461,22 @@ public class Controlador implements IControladorRemoto {
             while (i < cantJugadoresActuales && !encontrado) {
                 if (p.getJugadoresActuales().get(i).getNombre().equals(vista.getNombreVista())) {
                     encontrado = true; //significa que el creo la partida, llamo a esta funcion
-                    inicio = 1;
+                    inicio = FALTAN_JUGADORES;
                 }
                 i++;
             }
             if (encontrado && cantJugadoresActuales == cantDeseadaJugadores) {
                 p.setEstadoPartida();
-                inicio = 2;
+                inicio = INICIAR_PARTIDA;
             }
             if (!encontrado) { //significa que la vista llamo a esta funcion pero no creo la partida
                 juego.agregarJugadorAPartidaActual(vista.getNombreVista());
                 p = juego.getPartidaActual();
                 if (p.getJugadoresActuales().size() == p.getCantJugadoresDeseada()) {
                     p.setEstadoPartida();
-                    inicio = 2;
+                    inicio = INICIAR_PARTIDA;
                 } else {
-                    inicio = 1;
+                    inicio = FALTAN_JUGADORES;
                 }
             }
         }
@@ -529,5 +536,9 @@ public class Controlador implements IControladorRemoto {
 
     public void sumarPartida() {
         partidasJugadas++;
+    }
+
+    public void notificarNuevaVentana() throws RemoteException {
+        juego.notificarObservadores(NOTIFICACION_NUEVA_VENTANA);
     }
 }
