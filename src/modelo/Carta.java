@@ -16,11 +16,6 @@ public final class Carta implements ifCarta, Serializable {
 
     //SETTERS Y GETTERS
     @Override
-    public int getComodin() {
-        return COMODIN;
-    }
-
-    @Override
     public Palo getPalo() {
         return palo;
     }

@@ -26,7 +26,7 @@ public interface ifJugador {
     int getNumeroJugador();
 
     boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException;
-    void addJuego(int[] juego);
+    void addJuego(int[] juego, int tipoJuego) throws RemoteException;
     void eliminarDeLaMano(ArrayList<Carta> cartasABajar);
     void incrementarPuedeBajar();
     int getPuedeBajar();

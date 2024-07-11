@@ -507,8 +507,8 @@ public class Controlador implements IControladorRemoto {
         return juego.getPartidaActual().getEstadoPartida();
     }
 
-    public void getRanking() throws RemoteException {
-        juego.getRanking();
+    public Object[] getRanking() throws RemoteException {
+        return juego.getRanking().readObjects();
     }
 
     public ifCarta getPozo() throws RemoteException {

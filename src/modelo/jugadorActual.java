@@ -47,8 +47,12 @@ public class jugadorActual extends Jugador implements Serializable, ifJugador {
 		mano.add(c);
 	}
 
-	public void addJuego(int[] juego) {
-		juegos.add(seleccionarCartasABajar(juego));
+	public void addJuego(int[] juego, int tipoJuego) throws RemoteException {
+		if (tipoJuego == ifJuego.ESCALERA) {
+			juegos.add(ifJuego.ordenarJuego(seleccionarCartasABajar(juego)));
+		} else {
+			juegos.add(seleccionarCartasABajar(juego));
+		}
 	}
 
 	public void incrementarEscalerasBajadas() {

@@ -22,12 +22,13 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	private static final int NOTIFICAR_VENTANA_NUEVA_PARTIDA = 27;
 	private static final int NUEVA_PARTIDA = 6;
 	private static final int ENVIAR_RANKING = 3;
+	private static final String NOMBRE_ARCHIVO = "ranking.dat";
 
 	private ArrayList<Jugador> jugadores = new ArrayList<>();
 	private static Juego instancia;
 	private Partida partidaActual;
 	private final Serializador srl = new Serializador("partidas.dat");
-	private final Serializador srlRanking = new Serializador("jugadores.dat");
+	private final Serializador srlRanking = new Serializador(NOMBRE_ARCHIVO);
 	private int numJugadorRoboCastigo;
 	private int numJugadorQueEmpiezaRonda;
 
@@ -112,7 +113,7 @@ public class Juego extends ObservableRemoto implements ifJuego {
 
 	public void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException {
 		ifJugador j = partidaActual.getJugadoresActuales().get(numJugador);
-		j.addJuego(cartasABajar);
+		j.addJuego(cartasABajar, tipoJuego);
 		j.eliminarDeLaMano(j.getJuegos().get(j.getJuegos().size() - 1));
 		if (tipoJuego == TRIO) {
 			j.incrementarTriosBajados();
@@ -144,9 +145,10 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	public void determinarGanador() throws RemoteException {
 		jugadorActual ganador = partidaActual.determinarGanador();
 		ganador.setPuntosAlFinalizar(ganador.getPuntos());
-		Object[] notif = new Object[2];
+		Object[] notif = new Object[3];
 		notif[0] = ganador.getNombre();
 		notif[1] = NOTIFICAR_GANADOR;
+		notif[2] = ganador.getPuntos();
 		notificarGanador(notif);
 	}
 
@@ -164,13 +166,32 @@ public class Juego extends ObservableRemoto implements ifJuego {
 	}
 
 	private void notificarGanador(Object[] notif) throws RemoteException {
-		notificarObservadores(notif);
+		Object guardar = notif[0] + " --- puntos: " + notif[2];
 		if (srlRanking.readFirstObject()==null) {
-			srlRanking.writeOneObject((String)notif[0]);
+			srlRanking.writeOneObject(guardar);
 		} else {
-			srlRanking.addOneObject((String)notif[0]); //revisar tema cabecera
+			Object[] jugadores = srlRanking.readObjects();
+			ArrayList<String> listaJugadores = new ArrayList<>();
+
+			for (Object jugador : jugadores) {
+				listaJugadores.add(jugador.toString());
+			}
+			listaJugadores.add(guardar.toString());
+
+			listaJugadores.sort((j1, j2) -> {
+				int puntos1 = Integer.parseInt(j1.split(" --- puntos: ")[1]);
+				int puntos2 = Integer.parseInt(j2.split(" --- puntos: ")[1]);
+				return Integer.compare(puntos2, puntos1); // Orden descendente
+			});
+
+			int i = 0;
+			srlRanking.writeOneObject(listaJugadores.get(i));
+			for (i = 1; i < listaJugadores.size(); i++) {
+				srlRanking.addOneObject(listaJugadores.get(i)); //revisar tema cabecera
+			}
 		}
 
+		notificarObservadores(notif);
 	}
 
 	public void notificarRobo(int numJugador) throws RemoteException {
@@ -200,8 +221,9 @@ public class Juego extends ObservableRemoto implements ifJuego {
 		notificarObservadores(NOTIFICAR_VENTANA_NUEVA_PARTIDA);
 	}
 
-	public void getRanking() throws RemoteException {
-		notificarSrl(srlRanking, ENVIAR_RANKING);
+	public Serializador getRanking() throws RemoteException {
+		//notificarSrl(srlRanking, ENVIAR_RANKING);
+		return srlRanking;
 	}
 
 	public void guardarPartida() throws RemoteException {

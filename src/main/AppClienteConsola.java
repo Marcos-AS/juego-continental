@@ -12,6 +12,7 @@ import src.vista.ifVista;
 import javax.swing.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 public class AppClienteConsola {
     public static void main(String[] args) {
@@ -86,50 +87,54 @@ public class AppClienteConsola {
             //3 - ver reglas de juego
             //4 - jugar partida recien creada
             //5 - cargar partida
-            switch (eleccion) {
-                case 1: {
-                    cantJugadores = pVista.preguntarCantJugadores();
-                    pCtrl.crearPartida(pVista, cantJugadores);
-                    break;
-                }
-                case 2: {
-                    ranking(pCtrl);
-                    break;
-                }
-                case 3: {
-                    pVista.mostrarReglas();
-                    break;
-                }
-                case 4: {
-                    int inicioPartida = pCtrl.jugarPartidaRecienIniciada();
-                    if(inicioPartida == 0) {
-                        pVista.noSePuedeIniciarPartida(0); // partida aun no creada
-                    } else if (inicioPartida == 1){
-                        partidaIniciada = true;
-                        pVista.noSePuedeIniciarPartida(1); //faltan jugadores para la cant deseada
-                    } else if (inicioPartida == 2) {
-                        partidaIniciada = true; //esto inicia el funcionamiento del juego
-                        pVista.mostrarInicioPartida();
-                        if (!pVista.partida()) {
-                            partidaIniciada = false;
-                            //partida finalizada
-                        } //else {
+            try {
+                switch (eleccion) {
+                    case 1: {
+                        cantJugadores = pVista.preguntarCantJugadores();
+                        pCtrl.crearPartida(pVista, cantJugadores);
+                        break;
+                    }
+                    case 2: {
+                        ranking(pCtrl);
+                        break;
+                    }
+                    case 3: {
+                        pVista.mostrarReglas();
+                        break;
+                    }
+                    case 4: {
+                        int inicioPartida = pCtrl.jugarPartidaRecienIniciada();
+                        if (inicioPartida == 0) {
+                            pVista.noSePuedeIniciarPartida(0); // partida aun no creada
+                        } else if (inicioPartida == 1) {
+                            partidaIniciada = true;
+                            pVista.noSePuedeIniciarPartida(1); //faltan jugadores para la cant deseada
+                        } else if (inicioPartida == 2) {
+                            partidaIniciada = true; //esto inicia el funcionamiento del juego
+                            pVista.mostrarInicioPartida();
+                            if (!pVista.partida()) {
+                                partidaIniciada = false;
+                                //partida finalizada
+                            } //else {
                             //partida pausada, guardar
-                        //}
+                            //}
+                        }
+                        break;
                     }
-                    break;
+                    //                case 5: {
+                    //                    Object[] partidas = srl.readObjects();
+                    //                    for (Object o : partidas) {
+                    //                        System.out.println(o.toString());
+                    //                    }
+                    //                }
                 }
-                case 5: {
-                    Object[] partidas = srl.readObjects();
-                    for (Object o : partidas) {
-                        System.out.println(o.toString());
-                    }
-                }
+            } catch (InputMismatchException e) {
+                System.out.println("Debes ingresar un número entre 1 y 4");
             }
         } while (eleccion != -1 && !partidaIniciada);
     }
 
     private static void ranking(Controlador ctrl) throws RemoteException {
-        ctrl.getRanking();
+        System.out.println(ifVista.mostrarRanking(ctrl.getRanking()));
     }
 }

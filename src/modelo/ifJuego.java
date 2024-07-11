@@ -6,6 +6,8 @@ import src.serializacion.Serializador;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 
 public interface ifJuego extends IObservableRemoto {
 
@@ -16,25 +18,20 @@ public interface ifJuego extends IObservableRemoto {
     //PRIVATE-----------------------------------------------------
     static int comprobarEscalera(ArrayList<Carta> juego) throws RemoteException {
         int esEscalera = JUEGO_INVALIDO; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
+        ArrayList<Carta> comodines = extraerComodines(juego);
+
         if (comprobarMismoPalo(juego)) {
-            ArrayList<Carta> comodines = new ArrayList<>();
             int contadorEscalera = 1;
             ordenarCartas(juego);
-            //si es un comodin lo almaceno, sino: si es un numero siguiente incremento
-            //contador, sino: veo si puedo usar comodin
-            for (int i = 0; i < juego.size(); i++) {
-                Carta cartaActual = juego.get(i);
-                int numCartaActual = cartaActual.getNumero();
+            for (int i = 0; i < juego.size()-1; i++) {
+                int numCartaActual = juego.get(i).getNumero();
                 int numCartaSiguiente = juego.get(i + 1).getNumero();
-                if (numCartaActual == Juego.COMODIN) {
-                    comodines.add(cartaActual);
-                    juego.remove(cartaActual);
-                } else if (numCartaSiguiente == numCartaActual + 1) {
+                if (numCartaSiguiente == numCartaActual + 1) {
                     contadorEscalera++;
                 } else {
                     if (!comodines.isEmpty()) {
-                        if (numCartaSiguiente == numCartaActual + 2) {
-                            contadorEscalera++;
+                        if (numCartaActual == numCartaSiguiente - 2) {
+                            contadorEscalera += 2;
                             comodines.remove(0);
                         }
                     } else {
@@ -42,6 +39,7 @@ public interface ifJuego extends IObservableRemoto {
                     }
                 }
             }
+            if (!comodines.isEmpty())  contadorEscalera += comodines.size();
             if (contadorEscalera >= 4)
                 esEscalera = ESCALERA;
         }
@@ -52,13 +50,12 @@ public interface ifJuego extends IObservableRemoto {
         boolean mismoPalo = false;
         for (int i = 0; i < cartas.size() - 1; i++) {
             Palo palo = cartas.get(i).getPalo();
-            mismoPalo = (palo == cartas.get(i + 1).getPalo()) || palo == null;
+            mismoPalo = palo == cartas.get(i + 1).getPalo();
         }
         return mismoPalo;
     }
 
     static void ordenarCartas(ArrayList<Carta> cartas) throws RemoteException { //metodo de insercion
-        cartas.sort(null);
         boolean intercambio = true;
         while (intercambio) {
             intercambio = false;
@@ -71,6 +68,43 @@ public interface ifJuego extends IObservableRemoto {
                 }
             }
         }
+    }
+
+    static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) throws RemoteException{
+        ArrayList<Carta> comodines = extraerComodines(juego);
+        ordenarCartas(juego);
+        ArrayList<Carta> juegoOrdenado = new ArrayList<>();
+        int numCActual;
+        int numCSiguiente;
+        Iterator<Carta> iterador = juego.iterator();
+        while (iterador.hasNext()) {
+            Carta cActual = iterador.next();
+            numCActual = cActual.getNumero();
+            juegoOrdenado.add(cActual);
+            iterador.remove();
+            if (iterador.hasNext()) {
+                numCSiguiente = juego.get(0).getNumero();
+                if (numCActual != numCSiguiente - 1) {
+                    juegoOrdenado.add(comodines.get(0));
+                    comodines.remove(0);
+                }
+            }
+        }
+        if (!comodines.isEmpty()) juegoOrdenado.add(comodines.get(0));
+        return juegoOrdenado;
+    }
+
+    static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) throws RemoteException {
+        ArrayList<Carta> comodines = new ArrayList<>();
+        Iterator<Carta> iterador = juego.iterator();
+        while (iterador.hasNext()) {
+            Carta c = iterador.next();
+            if (c.getPalo()==Palo.COMODIN) {
+                comodines.add(c);
+                iterador.remove();
+            }
+        }
+        return comodines;
     }
 
     static int comprobarTrio(ArrayList<Carta> juego) throws RemoteException {
@@ -255,7 +289,7 @@ public interface ifJuego extends IObservableRemoto {
 
     void nuevaVentana() throws RemoteException;
 
-    void getRanking() throws RemoteException;
+    Serializador getRanking() throws RemoteException;
 
     void notificarRondaFinalizada() throws RemoteException;
 

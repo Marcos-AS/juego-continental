@@ -38,16 +38,19 @@ public class Consola implements ifVista{
 	}
 
     public void mostrarTurnoPropio() {
-        System.out.println("************\nEs tu turno.\n************");
+        System.out.println("************\nEs tu turno.");
     }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
         int numJuego = 1;
-        if (juegos.isEmpty()) System.out.println("No tiene juegos bajados.");
-        for (ArrayList<String> juego : juegos) {
-            mostrarJuego(numJuego);
-            mostrarCartas(juego);
-            numJuego++;
+        if (juegos.isEmpty()) {
+            System.out.println("No tiene juegos bajados.");
+        } else {
+            for (ArrayList<String> juego : juegos) {
+                mostrarJuego(numJuego);
+                mostrarCartas(juego);
+                numJuego++;
+            }
         }
     }
 
@@ -124,7 +127,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarAdvertenciaBajarse() {
-        System.out.println("Recuerda que sólo puedes bajar tus juegos dos veces durante la ronda, una en cualquier turno y otra si se procede a cortar.");
+        System.out.println("Recuerda que sólo puedes bajar tus juegos dos veces durante la ronda,\n una en cualquier turno y otra si se procede a cortar.");
     }
 
     public void mostrarCortoPropio() {
@@ -184,7 +187,6 @@ public class Consola implements ifVista{
         System.out.println("2 - Ver ranking mejores jugadores");
         System.out.println("3 - Ver reglas de juego");
         System.out.println("4 - Jugar partida recién creada");
-        System.out.println(("5 - Cargar partida"));
         System.out.println("-1 - Salir del juego");
         int eleccion = s.nextInt();
         System.out.println();
@@ -261,7 +263,6 @@ public class Consola implements ifVista{
             i++;
         }
         System.out.println("----------");
-        System.out.println("----------");
     }
 
     public void mostrarTurnoJugador(String nombreJugador) {
@@ -315,7 +316,7 @@ public class Consola implements ifVista{
     }
 
     public void mostrarJuego(int numJuego) {
-        System.out.println("Juego N° " + numJuego+":\n");
+        System.out.println("Juego N° " + numJuego+":");
     }
 
     public void mostrarCombinacionRequerida(int ronda) {
@@ -414,7 +415,7 @@ public class Consola implements ifVista{
 
     public boolean partida() throws RemoteException {
         ctrl.notificarComienzoPartida();
-        while (ctrl.getRonda() <= ctrl.getTotalRondas()) {
+        for (int j = 0; j < ctrl.getTotalRondas(); j++) {
             ctrl.notificarComienzoRonda();
             ctrl.iniciarCartasPartida();
             int i = ctrl.getNumJugadorQueEmpiezaRonda();
@@ -456,8 +457,8 @@ public class Consola implements ifVista{
             case 3:
             case 4:
             case 5: {
-                mostrarPozo(ctrl.getPozo());
                 mostrarCombinacionRequerida(ctrl.getRonda());
+                mostrarPozo(ctrl.getPozo());
                 ifJugador jA = (ifJugador) actualizacion;
                 String nombreJugador = jA.getNombre();
                 if (!nombreJugador.equals(nombreVista)) {

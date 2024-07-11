@@ -52,7 +52,7 @@ public class AppClienteGUI {
                 8888
         );
 
-        ifVista vista = new VentanaInicio(500, 700);
+        ifVista vista = new VentanaInicio(500, 700, false, null);
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);
         Cliente c = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
