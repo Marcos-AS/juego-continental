@@ -8,12 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class VentanaJuego extends VentanaInicio{
-    JPanel panelJuego;
+    protected JPanel panelJuego;
 
     public VentanaJuego(int ancho, int alto, Component ubicacionVentana) {
         super(ancho, alto, true, ubicacionVentana);
         //agregarBotones();
-        getContentPane().add(panelJuego);
+        panelJuego = crearPanel();
+        getContentPane().add(panelJuego, BorderLayout.CENTER);
     }
 
     public void agregarBotones() {

@@ -6,9 +6,7 @@ public final class Carta implements ifCarta, Serializable {
 
     private final int numero;
     private final Palo palo;
-    private String rutaImagen;
-    private static final int COMODIN = -1; //este valor para que al ordenar cartas queden los comodines primero
-
+    private static final int COMODIN = -1;
     public Carta(int num, Palo palo) {
         numero = num;
         this.palo = palo;
@@ -25,8 +23,4 @@ public final class Carta implements ifCarta, Serializable {
         return numero;
     }
 
-    @Override
-    public void setRutaImagen(String rutaImagen) {
-        this.rutaImagen = rutaImagen;
-    }
 }

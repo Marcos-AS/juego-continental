@@ -4,6 +4,4 @@ public interface ifCarta {
     Palo getPalo();
 
     int getNumero();
-
-    void setRutaImagen(String rutaImagen);
 }

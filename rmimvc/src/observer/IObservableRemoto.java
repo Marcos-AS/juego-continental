@@ -48,6 +48,6 @@ public interface IObservableRemoto extends Remote {
 	 * @see RemoteException
 	 */
 	void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo) throws RemoteException;
-
+	void notificarObservador(int numJugador, Object o) throws RemoteException;
 
 }

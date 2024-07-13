@@ -19,6 +19,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private static final int NUM_COMODINES_POR_BARAJA = 2;
     private boolean enCurso = false;
     private boolean corteRonda = false;
+    private boolean rondaEmpezada = false;
     private int numJugadorCorte;
     @Serial
     private static final long serialVersionUID = 1L;
@@ -310,5 +311,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     public void setNumJugadorCorte(int num) {
         numJugadorCorte = num;
+    }
+
+    public boolean isRondaEmpezada() {
+        return rondaEmpezada;
+    }
+
+    public void setRondaEmpezada(boolean rondaEmpezada) {
+        this.rondaEmpezada = rondaEmpezada;
     }
 }

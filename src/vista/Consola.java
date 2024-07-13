@@ -2,6 +2,7 @@ package src.vista;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import src.controlador.Controlador;
 import src.modelo.ifCarta;
@@ -14,11 +15,74 @@ public class Consola implements ifVista{
 
     public Consola(){}
 
-    public void mostrarComienzaPartida(ArrayList<ifJugador> jugadores) {
+    public void bienvenida() throws RemoteException {
+        ctrl.agregarNuevoJugador(preguntarNombreNuevoJugador()); //agrega jugador a juego y setea nombreVista
+        int eleccion;
+        int cantJugadores = 2; //minimo
+        boolean partidaIniciada = false;
+        do {
+            eleccion = menuBienvenida();
+            //1 - crear partida
+            //2 - ver ranking mejores jugadores
+            //3 - ver reglas de juego
+            //4 - jugar partida recien creada
+            //5 - cargar partida
+            try {
+                switch (eleccion) {
+                    case 1: {
+                        cantJugadores = preguntarCantJugadores();
+                        ctrl.crearPartida(this, cantJugadores);
+                        break;
+                    }
+                    case 2: {
+                        ranking(ctrl);
+                        break;
+                    }
+                    case 3: {
+                        mostrarReglas();
+                        break;
+                    }
+                    case 4: {
+                        int inicioPartida = ctrl.jugarPartidaRecienIniciada();
+                        if (inicioPartida == 0) {
+                            noSePuedeIniciarPartida(0); // partida aun no creada
+                        } else if (inicioPartida == 1) {
+                            partidaIniciada = true;
+                            noSePuedeIniciarPartida(1); //faltan jugadores para la cant deseada
+                        } else if (inicioPartida == 2) {
+                            partidaIniciada = true; //esto inicia el funcionamiento del juego
+                            ctrl.notificarComienzoPartida();
+                            if (!ctrl.partida()) {
+                                partidaIniciada = false;
+                                //partida finalizada
+                            } //else {
+                            //partida pausada, guardar
+                            //}
+                        }
+                        break;
+                    }
+                    //                case 5: {
+                    //                    Object[] partidas = srl.readObjects();
+                    //                    for (Object o : partidas) {
+                    //                        System.out.println(o.toString());
+                    //                    }
+                    //                }
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Debes ingresar un número entre 1 y 4");
+            }
+        } while (eleccion != -1 && !partidaIniciada);
+    }
+
+    private static void ranking(Controlador ctrl) throws RemoteException {
+        System.out.println(ifVista.mostrarRanking(ctrl.getRanking()));
+    }
+
+    public void mostrarComienzaPartida(String[] jugadores) {
         System.out.println("\n*******************\nCOMIENZA LA PARTIDA\nJugadores:");
         int i = 1;
-        for (ifJugador j : jugadores) {
-            System.out.println(i + "- " + j.getNombre());
+        for (String nombreJugador : jugadores) {
+            System.out.println(i + "- " + nombreJugador);
             i++;
         }
         System.out.println("*******************\n");
@@ -358,7 +422,7 @@ public class Consola implements ifVista{
         System.out.println("No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.");
     }
 
-    private void mostrarUltimoJugadorAgregado(String nombreJugador) {
+    public void mostrarUltimoJugadorAgregado(String nombreJugador) {
         System.out.println("El jugador " + nombreJugador + " ha ingresado.");
     }
 
@@ -378,8 +442,8 @@ public class Consola implements ifVista{
         System.out.println("--------------------------------\n");
     }
 
-    public void mostrarFinalizoTurno() {
-        System.out.println("Finalizó su turno");
+    public void mostrarFinalizoTurno(String nombreJugador) {
+        System.out.println("Finalizó el turno del jugador " + nombreJugador);
     }
 
     public void mostrarFinalizoPartida() {
@@ -390,19 +454,15 @@ public class Consola implements ifVista{
         System.out.println("-------------------|\nComienza la ronda " + ronda+"|\n-------------------|");
     }
 
+    public void jugadorInicioPartida(String nombreJugador) {
+        System.out.println("El jugador " + nombreJugador + " ha iniciado una partida nueva");
+    }
+
     public int preguntarCantJugadores() {
         System.out.println("Cuántos jugadores deseas para la nueva partida?");
         int cantJugadores = s.nextInt();
         System.out.println();
         return cantJugadores;
-    }
-
-    public void mostrarRanking(Object[] rankingJugadores) {
-        System.out.println("Ranking: ");
-        for (int i = 0; i < rankingJugadores.length; i++) {
-            ifJugador j = (ifJugador) rankingJugadores[i];
-            System.out.println((i+1) +": " + j.getNombre() + " --- puntos: " + j.getPuntosAlFinalizar());
-        }
     }
 
     public boolean preguntarSiQuiereRobarCastigo() {
@@ -413,165 +473,42 @@ public class Consola implements ifVista{
         return eleccion == ifVista.ELECCION_ROBAR_DEL_POZO;
     }
 
-    public boolean partida() throws RemoteException {
-        ctrl.notificarComienzoPartida();
-        for (int j = 0; j < ctrl.getTotalRondas(); j++) {
-            ctrl.notificarComienzoRonda();
-            ctrl.iniciarCartasPartida();
-            int i = ctrl.getNumJugadorQueEmpiezaRonda();
-
-            while (!ctrl.getCorteRonda()) {
-                ctrl.notificarTurno(i);
-                ctrl.notificarRobo(i);
-                if (ctrl.getRoboDelMazo(i)) {
-                    ctrl.setRoboDelMazo(i, false);
-                    ctrl.notificarRoboConCastigo(i);
-                    ctrl.resetearRoboConCastigo();
-                }
-                ctrl.notificarDesarrolloTurno(i);
-                i++;
-                if (i>ctrl.getCantJugadoresPartida()-1) {
-                    i = 0;
-                }
-            }
-            ctrl.notificarCorteRonda();
-            ctrl.notificarRondaFinalizada();
-            ctrl.partidaFinRonda(); //incrementa ronda
-            ctrl.incNumJugadorQueEmpiezaRonda();
+    public void comienzoTurno(ifJugador jA) throws RemoteException {
+        mostrarCombinacionRequerida(ctrl.getRonda());
+        mostrarPozo(ctrl.getPozo());
+        String nombreJugador = jA.getNombre();
+        if (!nombreJugador.equals(nombreVista)) {
+            mostrarTurnoJugador(nombreJugador);
         }
-        ctrl.determinarGanador(); //al finalizar las rondas
-        mostrarFinalizoPartida();
-        //lo siguiente es para poder seguir jugando otras partidas
-        ctrl.removerObservadores();
-        ctrl.sumarPartida();
-        return false;
-    }
-
-    //la invoca el metodo actualizar del controlador
-    @Override
-    public void actualizar(Object actualizacion, int indice) throws RemoteException {
-        switch (indice) {//del 0 al 5 porque como maximo 6 jugadores
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5: {
-                mostrarCombinacionRequerida(ctrl.getRonda());
-                mostrarPozo(ctrl.getPozo());
-                ifJugador jA = (ifJugador) actualizacion;
-                String nombreJugador = jA.getNombre();
-                if (!nombreJugador.equals(nombreVista)) {
-                    mostrarTurnoJugador(nombreJugador);
-                }
-                if (nombreJugador.equals(nombreVista)) {
-                    mostrarTurnoPropio();
-                    ctrl.setTurno(indice, true);
-                }
-                break;
-            }
-            case NUEVA_PARTIDA: {
-                mostrarInicioPartida();
-                break;
-            }
-            case NUEVO_JUGADOR: {
-                String nombreJugador = (String) actualizacion;
-                mostrarUltimoJugadorAgregado(nombreJugador);
-                break;
-            }
-            case ROBO: {
-                ifJugador j = (ifJugador) actualizacion;
-                if (j.getNombre().equals(nombreVista)) {
-                    ctrl.desarrolloRobo(j.getNumeroJugador());
-                }
-                break;
-            }
-            case DESARROLLO_TURNO: {
-                ifJugador j = (ifJugador) actualizacion;
-                if (j.getNombre().equals(nombreVista)) {
-                    ctrl.desarrolloTurno(j.getNumeroJugador()); //aca se modifica la variable corte del while
-                }
-                break;
-            }
-            case GANADOR: {
-                String s = (String) actualizacion;
-                mostrarGanador(s);
-                break;
-            }
-            case ROBO_CASTIGO: {
-                int numJugadorRoboCastigo = ctrl.getNumJugadorRoboCastigo();
-                if (!ctrl.getRoboConCastigo(numJugadorRoboCastigo)) {
-                    boolean roboConCastigo = false;
-                    ifJugador j = ctrl.getJugadorPartida(numJugadorRoboCastigo);
-                    mostrarPuedeRobarConCastigo(j.getNombre());
-                    if (nombreVista.equals(j.getNombre())) {
-                        if (ctrl.getPuedeBajar(numJugadorRoboCastigo)==0) {
-                            mostrarCartas(ctrl.enviarManoJugador(numJugadorRoboCastigo));
-                            if (preguntarSiQuiereRobarCastigo()) {
-                                ctrl.robarConCastigo(numJugadorRoboCastigo);
-                                ctrl.notificarHaRobadoConCastigo(numJugadorRoboCastigo);
-                                ctrl.setRoboConCastigo(numJugadorRoboCastigo, true);
-                                roboConCastigo = true;
-                            }
-                        }
-                        if (!roboConCastigo) {
-                            numJugadorRoboCastigo++;
-                            if (numJugadorRoboCastigo > ctrl.getCantJugadoresPartida() - 1)
-                                numJugadorRoboCastigo = 0;
-                            ctrl.setNumJugadorRoboCastigo(numJugadorRoboCastigo);
-                        }
-                    }
-                }
-                break;
-            }
-            case HUBO_ROBO_CASTIGO: {
-                String nombreJugador = ctrl.getJugadorPartida((int)actualizacion).getNombre();
-                jugadorHaRobadoConCastigo(nombreJugador);
-                break;
-            }
-            case RONDA_FINALIZADA: {
-                int ronda = (int) actualizacion;
-                System.out.println("La ronda " + ronda + " ha finalizado.");
-                System.out.println("--------------------------");
-                break;
-            }
-            case PUNTOS_RONDA: {
-                int[] puntos = (int[]) actualizacion;
-                mostrarPuntosRonda(puntos);
-                break;
-            }
-            case 16: {
-                mostrarRanking((Object[]) actualizacion);
-                break;
-            }
-            case JUGADOR_INICIO_PARTIDA: {
-                String s = (String) actualizacion;
-                if (!s.equalsIgnoreCase(nombreVista)) {
-                    System.out.println("El jugador " + s + " ha iniciado una partida nueva");
-                }
-                break;
-            }
-            case COMIENZA_PARTIDA: {
-                ArrayList<ifJugador> jugadores = (ArrayList<ifJugador>) actualizacion;
-                mostrarComienzaPartida(jugadores);
-                break;
-            }
-            case COMIENZA_RONDA: {
-                mostrarComienzoRonda((int)actualizacion);
-                break;
-            }
-            case CORTE_RONDA: {
-                String nombreJugador = (String)actualizacion;
-                if (!nombreJugador.equals(nombreVista)) {
-                    mostrarCorto((String) actualizacion);
-                } else {
-                    mostrarCortoPropio();
-                }
-                break;
-            }
+        else {
+            mostrarTurnoPropio();
+            ctrl.setTurno(jA.getNumeroJugador(), true);
         }
     }
 
+    public void roboCastigo() throws RemoteException {
+        int numJugadorRoboCastigo = ctrl.getNumJugadorRoboCastigo();
+        if (!ctrl.getRoboConCastigo(numJugadorRoboCastigo)) {
+            boolean roboConCastigo = false;
+            ifJugador j = ctrl.getJugadorPartida(numJugadorRoboCastigo);
+            mostrarPuedeRobarConCastigo(j.getNombre());
+            if (ctrl.getPuedeBajar(numJugadorRoboCastigo)==0) {
+                mostrarCartas(ctrl.enviarManoJugador(numJugadorRoboCastigo));
+                if (preguntarSiQuiereRobarCastigo()) {
+                    ctrl.robarConCastigo(numJugadorRoboCastigo);
+                    ctrl.notificarHaRobadoConCastigo(numJugadorRoboCastigo);
+                    ctrl.setRoboConCastigo(numJugadorRoboCastigo, true);
+                    roboConCastigo = true;
+                }
+            }
+            if (!roboConCastigo) {
+                numJugadorRoboCastigo++;
+                if (numJugadorRoboCastigo > ctrl.getCantJugadoresPartida() - 1)
+                    numJugadorRoboCastigo = 0;
+                ctrl.setNumJugadorRoboCastigo(numJugadorRoboCastigo);
+            }
+        }
+    }
 
     @Override
     public void setControlador(Controlador ctrl) {

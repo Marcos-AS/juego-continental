@@ -26,6 +26,7 @@ public interface ifVista {
     int HUBO_ROBO_CASTIGO = 12;
     int RONDA_FINALIZADA = 14;
     int PUNTOS_RONDA = 15;
+    int RANKING = 16;
     int JUGADOR_INICIO_PARTIDA = 17;
     int ROBO = 18;
     int COMIENZA_PARTIDA = 19;
@@ -132,8 +133,6 @@ public interface ifVista {
         return s;
     }
 
-    void actualizar(Object actualizacion, int indice) throws RemoteException;
-
     void setControlador(Controlador ctrl);
 
     int menuBienvenida();
@@ -178,20 +177,26 @@ public interface ifVista {
     int[] preguntarQueBajarParaJuego(int cantCartas);
     void mostrarPuedeRobarConCastigo(String nombreJugador);
     void mostrarAdvertenciaBajarse();
-    void mostrarFinalizoTurno();
+    void mostrarFinalizoTurno(String nombreJugador);
     void mostrarCorto(String nombreJugador);
     boolean preguntarSiQuiereSeguirBajandoJuegos();
     void nuevaVentana();
     int[] preguntarParaOrdenarCartas(int cantCartas);
     int preguntarCantParaBajar();
     int preguntarEnLosJuegosDeQueJugadorAcomodar();
-    boolean partida() throws RemoteException;
     void mostrarDebeCortar();
     void mostrarDebeQuedarle1o0Cartas();
     void mostrarTurnoPropio();
     boolean preguntarSiQuiereRobarCastigo();
-    void mostrarComienzaPartida(ArrayList<ifJugador> jugadores);
+    void mostrarComienzaPartida(String[] jugadores);
     void mostrarComienzoRonda(int ronda);
     void mostrarCortoPropio();
     int menuRobarConCastigo();
+    void bienvenida() throws RemoteException;
+    void mostrarUltimoJugadorAgregado(String nombreJugador);
+    void jugadorInicioPartida(String nombreJugador);
+    void comienzoTurno(ifJugador jA) throws RemoteException;
+    void roboCastigo() throws RemoteException;
+    void jugadorHaRobadoConCastigo(String nombreJugador);
+    void mostrarPuntosRonda(int[] puntos) throws RemoteException;
 }
